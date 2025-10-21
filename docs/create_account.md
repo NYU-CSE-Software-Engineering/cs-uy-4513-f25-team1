@@ -1,6 +1,9 @@
-# User Story
+# Task 1
+## User Story
 **As a** new user to Jira-lite
+
 **I want to** create an account
+
 **So that I can** access all the features of Jira-lite.
 
 ## Acceptance Criteria
@@ -11,7 +14,7 @@
 * Repeated password is the same as inputted password
 * Error messages follow good security principles (reveal as little information as possible)
 
-# Task 3: Model-View-Controller
+# Task 2: Model-View-Controller
 
 ## Model
 An identity model with the users table. Emails will be the primary key stored as a string, username:string, password:string but password's hash is stored, not its plaintext.
@@ -24,3 +27,5 @@ An accountCreate controller with the following functions:
 new: Displays the form login/create
 create: Handles form submission. Verfies email address, password specifications, and repeated password is actually repeated.
 redirect: Redirects back to login/create with an error message on fail. Else, redirects to login/signin.html.erb
+
+# Task 
