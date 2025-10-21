@@ -1,7 +1,7 @@
 Filter
 ------
 
-As a Customer  
+As a signed in user  
 I want to filter tasks by their types  
 So that I can view relevant tasks  
 
