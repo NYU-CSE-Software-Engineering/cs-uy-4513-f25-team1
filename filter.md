@@ -6,9 +6,9 @@ I want to filter tasks by their types
 So that I can view relevant tasks  
 
 Acceptance Criteria:  
+By default sorts by date created
 Can sort by types such as bug, feature, backlog  
-Can sort by date created  
-Can sort by date modified  
+Can sort by date modified
 
 
 MVC Components
