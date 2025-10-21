@@ -9,3 +9,4 @@
 * Username contains valid characters
 * Password is at least 8 characters long
 * Repeated password is the same as inputted password
+* Error messages follow good security principles (reveal as little information as possible)
