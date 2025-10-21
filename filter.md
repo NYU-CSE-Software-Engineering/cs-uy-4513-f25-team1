@@ -8,8 +8,8 @@ So that I can view relevant tasks
 Acceptance Criteria:  
 By default sorts by date created
 Can sort by types such as bug, feature, backlog  
-Can sort by date modified
-Doesn't accept invalid search params
+Can sort by date modified  
+Doesn't accept invalid search params  
 
 
 MVC Components
