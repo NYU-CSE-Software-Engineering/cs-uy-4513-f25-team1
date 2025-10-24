@@ -14,8 +14,7 @@ Feature:Create an account
     Scenario: User creates an account with invalid email
         Given I am a logged out user
         And I am on the page login/create
-        When I input an invalid email
-        And I input valid inputs for fields username password repeated_password
+        When I input an invalid email with other valid fields
         And I click "Create Account"
         Then I should be on the page login/create
         And I should see "Invalid email" 
@@ -23,23 +22,20 @@ Feature:Create an account
     Scenario: User creates an account with taken email
         Given I am a logged out user
         And I am on the page login/create
-        When I input a taken email
-        And I input valid inputs for fields username password repeated_password
+        When I input a taken email with other valid fields
         Then I should be on the page login/create
         And I should see "Email already taken"
     
     Scenario: User creates an account with invalid password
         Given I am a logged out user
         And I am on the page login/create
-        When I input an invalid password
-        And I input valid inputs for fields email username repeated_password
+        When I input an invalid password with other valid fields
         Then I should be on the page login/create
         And I should see "Password must be at least 8 characters"
     
     Scenario: User creates an account with invalid repeated_password
         Given I am a logged out user
         And I am on the page login/create
-        When I input an invalid repeated_password
-        And I input valid inputs for fields email username password
+        When I input an invalid repeated_password with other valid fields
         Then I should be on the page login/create
         And I should see "Passwords must match"
