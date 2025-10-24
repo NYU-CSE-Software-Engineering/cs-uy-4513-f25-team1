@@ -10,6 +10,15 @@ Given('I am on the Projects page') do
   visit projects_path
 end
 
+And('a project named {string} exists') do |name|
+  @user = User.create!(email: 'thisisonlyfortesting@test.com', password: 'test')
+  @project = Project.create!(name: name, key: name, description: '', created_by: 'thisisonlyfortesting@test.com')
+end
+
+And('I click the {string} project') do |project|
+  click_button project
+end
+
 Then('I should see tasks filtered by date created') do
   @prev = ""
   Task.order(:created_at).find_each do |task|
@@ -30,15 +39,15 @@ Then('I should see tasks filtered by date modified') do
   end
 end
 
-When('When I click "(filter)" in the filter select') do |filter|
+When('I click {string} in the filter select') do |filter|
   page.select filter, from: 'filter'
 end
 
-When('I click the (btn) button') do |btn|
+When('I click the {string} button') do |btn|
   click_button btn
 end
 
-Then('I should only see tasks with type (type)') do |type|
+Then('I should only see tasks with type {string}') do |type|
   Task.find_each do |task|
     if task.type == type then
       expect(page).to have_content task.desc
@@ -48,7 +57,7 @@ Then('I should only see tasks with type (type)') do |type|
   end
 end
 
-When('I add (filter) to the path and press enter') do |filter|
+And('I add {string} to the path and press enter') do |filter|
   url = URI.parse(current_url) + string
   visit url
 end
