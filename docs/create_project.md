@@ -13,25 +13,24 @@
 # Task 3: Model-View-Controller
 
 ## Model
-A `Project` model with the following attributes:  
+A `Project` model with these fields:  
 * name:string  
 * key:string  
 * description:text  
-* created_by:references (User)  
+* created_by:references (User)
 
 Validations:  
-* presence and uniqueness for `name` and `key`  
-* optional `description`
+* `name` and `key` must be present and unique  
+* `description` is optional  
 
-## View 
-A `projects/new.html.erb` view that displays a form for creating a project.  
-Form fields include name, key, and description, with a “Create Project” button.  
-On submission:
-* Successful creation redirects to `projects/show.html.erb`
-* On failure, the same form is re-rendered with error messages.
+## View
+A `projects/new.html.erb` page with a form for creating a project.  
+The form includes fields for name, key, and description, and a “Create Project” button.  
+If creation succeeds, it redirects to the project’s show page.  
+If it fails, it shows error messages on the same form.  
 
 ## Controller
-A `ProjectsController` with the following actions:  
-* `new`: Displays the project creation form  
-* `create`: Handles form submission, validates data, saves a new project, and redirects to the show page if successful  
-* `show`: Displays the created project’s details  
+A `ProjectsController` with:  
+* `new` – shows the project creation form  
+* `create` – saves the project and redirects or shows errors  
+* `show` – displays the project details 
