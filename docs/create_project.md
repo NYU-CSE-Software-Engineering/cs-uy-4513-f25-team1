@@ -4,8 +4,8 @@
 **So I can** organize and manage related tasks and issues under it  
 
 ## Acceptance Criteria
-* Project must have a unique name and key (e.g., `LIRA`, `WEBAPP`)  
-* Project must include a description field (optional, ≤ 500 characters)  
+* Project must have a unique name and key
+* Project must include a description field
 * Only admin users can create new projects  
 * After creation, user is redirected to the project’s board page  
 * Missing or duplicate fields display appropriate error messages  
@@ -21,7 +21,7 @@ A `Project` model with the following attributes:
 
 Validations:  
 * presence and uniqueness for `name` and `key`  
-* optional `description` (limited to 500 characters)
+* optional `description`
 
 ## View 
 A `projects/new.html.erb` view that displays a form for creating a project.  
