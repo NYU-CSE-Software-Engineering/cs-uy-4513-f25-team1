@@ -16,11 +16,12 @@ MVC Components
 --------------
 
 Models:  
-A Task model with type: {bug, feature, backlog, ...}  
+A User model with email:string password:string (not new)
+A Task model with desc:string type:string attributes
 
 Views:  
 projects/show.html.erb  
-Will show all the tasks and some dropdown menu to select filter and probably a confirm button
+Will show all the tasks and some dropdown menu to select filter and a confirm button
 
 Controllers:  
 A ProjectsController with a show action that accepts optional query params to sort  
