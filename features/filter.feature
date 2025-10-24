@@ -11,38 +11,33 @@ Feature: filter
     Scenario:
         Given I am a signed in user
         And I am on the Projects page
-        When I click the filter dropdown menu
-        And I click "Feature"
+        When I click "Feature" in the filter select
         And I click the "Apply filters" button
         Then I should only see tasks with type "Feature"
 
     Scenario:
         Given I am a signed in user
         And I am on the Projects page
-        When I click the filter dropdown menu
-        And I click "Backlog"
+        When I click "Feature" in the filter select
         And I click the "Apply filters" button
         Then I should only see tasks with type "Backlog"
 
     Scenario:
         Given I am a signed in user
         And I am on the Projects page
-        When I click the filter dropdown menu
-        And I click "Bug"
+        When I click "Bug" in the filter select
         And I click the "Apply filters" button
         Then I should only see tasks with type "Bug"
 
     Scenario:
         Given I am a signed in user
         And I am on the Projects page
-        When I click the filter dropdown menu
-        And I click "Date Modified"
+        When I click "Date Modified" in the filter select
         And I click the "Apply filters" button
         Then I should see tasks filtered by date modified
 
     Scenario:
         Given I am a signed in user
         And I am on the Projects page
-        When I add "?filter=blah" to the path
-        And I press enter
+        When I add "?filter=blah" to the path and press enter
         Then I should see tasks filtered by date created
