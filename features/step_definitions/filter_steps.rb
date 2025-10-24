@@ -40,7 +40,7 @@ end
 
 Then('I should only see tasks with type (type)') do |type|
   Task.find_each do |task|
-    if (task.type == type) then
+    if task.type == type then
       expect(page).to have_content task.desc
     else
       expect(page).not_to have_content task.desc
