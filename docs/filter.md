@@ -16,7 +16,9 @@ MVC Components
 --------------
 
 Models:  
+A Project model with name:string key:string description:text created_by:references (User email) (not new)
 A User model with email:string password:string (not new)
+A Role model with key: references (Project key) email: references (User email) type: string
 A Task model with desc:string type:string attributes
 
 Views:  
