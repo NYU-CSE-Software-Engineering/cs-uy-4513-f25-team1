@@ -1,21 +1,5 @@
-Given('I am signed in as an admin') do
-  @user = User.create!(
-    email: 'admin@example.com',
-    password: 'password',
-    role: 'admin'
-  )
-  visit new_user_session_path
-  fill_in 'Email', with: @user.email
-  fill_in 'Password', with: @user.password
-  click_button 'Log in'
-end
-
-Given('I am signed in as a developer') do
-  @user = User.create!(
-    email: 'dev@example.com',
-    password: 'password',
-    role: 'developer'
-  )
+Given('I am signed in as a user') do
+  @user = User.create!(email: 'test@example.com', password: 'password')
   visit new_user_session_path
   fill_in 'Email', with: @user.email
   fill_in 'Password', with: @user.password
@@ -30,7 +14,7 @@ Given('an existing project with key {string} already exists') do |key|
   Project.create!(
     name: 'Existing Project',
     key: key,
-    description: 'Already taken project key',
+    description: 'Existing description',
     created_by: @user
   )
 end
