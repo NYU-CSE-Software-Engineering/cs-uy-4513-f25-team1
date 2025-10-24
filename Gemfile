@@ -61,4 +61,5 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
   gem "cucumber"
+  gem "cucumber-rails"
 end
