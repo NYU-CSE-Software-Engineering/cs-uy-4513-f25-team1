@@ -78,7 +78,7 @@ Then('I should be on the home page') do
 end
 
 When('I go to my projects page') do
-  visit "exampleUser/projects"
+  visit user_project_path
 end
 
 Then('I should see an error page') do
