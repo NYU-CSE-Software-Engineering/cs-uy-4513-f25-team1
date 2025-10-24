@@ -6,14 +6,14 @@ Feature: Log in to an account
 	Scenario: User logs into their account
 		Given I am a logged out user
 		And I am on the login page
-		And I input "zr2197@nyu.edu" "SecurePassword"
+		When I input valid email and password
 		And I click "Log in"
 		Then I should be on the home page signed in
 
 	Scenario: User logs in with invalid email
 		Given I am a logged out user
 		And I am on the login page
-		And I input "invalidemail" "validpasswordig"
+		When I input invalid email and password
 		And I click "Log in"
 		Then I should be on the login page
 		And I should see "Invalid email"
@@ -21,7 +21,7 @@ Feature: Log in to an account
 	Scenario: User logs in with wrong credentials
 		Given I am a logged out user
 		And I am on the login page
-		And I input "zr2197@nyu.edu" "wrongPasswordHere"
+		When I input wrong password with email
 		And I click "Log in"
 		Then I should be on the login page
 		And I should see "Invalid email/password"
