@@ -27,5 +27,3 @@ An accountCreate controller with the following functions:
 new: Displays the form login/create
 create: Handles form submission. Verfies email address, password specifications, and repeated password is actually repeated.
 redirect: Redirects back to login/create with an error message on fail. Else, redirects to login/signin.html.erb
-
-# Task 
