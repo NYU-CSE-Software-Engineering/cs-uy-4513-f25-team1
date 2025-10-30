@@ -25,5 +25,3 @@ end
 When("I delete the card titled {string}") do |title|
   # TODO: implement UI interaction to delete a card
 end
-
-
