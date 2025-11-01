@@ -62,5 +62,3 @@ def add_column_via_ui(name)
   fill_in 'new-column-name', with: name
   find('#confirm-add-column').click
 end
-
-

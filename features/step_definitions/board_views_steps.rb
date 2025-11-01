@@ -25,5 +25,3 @@ Then("the column {string} should indicate over WIP") do |status|
     expect(page).to have_css('.wip-over')
   end
 end
-
-

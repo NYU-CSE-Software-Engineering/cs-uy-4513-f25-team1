@@ -1,6 +1,6 @@
 Given('I am a logged out user') do
   visit home_page
-  if(page.has_content?('Logout')) then click_button 'Logout' end
+  if page.has_content?('Logout') then click_button 'Logout' end
 end
 
 Given('I am on the page login\/create') do
@@ -55,7 +55,7 @@ When('I input a taken email with other valid fields') do
   fill_in 'Repeated Password', with: "password"
 end
 
-When('I input an invalid password with other valid fields') do 
+When('I input an invalid password with other valid fields') do
   fill_in 'Email', with: "taken@gmail.com"
   fill_in 'Username', with: "user"
   fill_in 'Password', with: "pass"

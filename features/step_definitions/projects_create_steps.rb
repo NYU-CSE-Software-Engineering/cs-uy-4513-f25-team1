@@ -11,5 +11,3 @@ Then("I should see the board columns:") do |table|
     expect(page).to have_css('.board-column .column-title', text: column_name)
   end
 end
-
-

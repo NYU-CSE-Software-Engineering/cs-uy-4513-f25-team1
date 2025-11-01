@@ -61,5 +61,3 @@ end
 Given("a project exists and I am not an admin") do
   # Placeholder: set role to non-admin in test stub
 end
-
-
