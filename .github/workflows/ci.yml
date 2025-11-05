@@ -69,11 +69,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Runs bundle install
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: .ruby-version
           bundler-cache: true
+
+      - name: Set up database
+        env:
+          RAILS_ENV: test
+        run: bundle exec rails db:setup
 
       - name: Run rspec tests
         env:
