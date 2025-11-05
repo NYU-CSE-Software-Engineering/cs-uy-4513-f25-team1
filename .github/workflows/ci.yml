@@ -69,6 +69,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Runs bundle install
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
