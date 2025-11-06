@@ -19,7 +19,7 @@
 
   <div>
     <%= form.label :status %>
-    <%= form.select :status, ["To Do", "In Progress", "Done"] %>
+    <%= form.select :status, Task::STATUS_OPTIONS %>
   </div>
 
   <div>
