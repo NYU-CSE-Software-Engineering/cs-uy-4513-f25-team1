@@ -1,0 +1,10 @@
+<h1>Tasks for <%= @project.name %></h1>
+
+<%= link_to "New Task", new_project_task_path(@project), class: "button" %>
+
+<ul>
+  <% @tasks.each do |task| %>
+    <li><%= task.title %></li>
+  <% end %>
+</ul>
+
