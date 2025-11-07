@@ -4,7 +4,7 @@ class CreateTasks < ActiveRecord::Migration[8.0]
       t.string :title
       t.string :status
       t.references :project, null: false, foreign_key: true
-
+      t.integer :wip_limit, default: 2
       t.timestamps
     end
   end
