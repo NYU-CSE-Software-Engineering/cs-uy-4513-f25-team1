@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe "Tasks", type: :request do
   describe "GET /projects/:project_id/tasks/new" do
     before do
-      stub_const("Task::STATUS_OPTIONS", ["not_started", "in_progress", "done"])
+      stub_const("Task::STATUS_OPTIONS", [ "not_started", "in_progress", "done" ])
     end
 
     it "responds with 200 and renders the new template" do
@@ -15,7 +15,7 @@ RSpec.describe "Tasks", type: :request do
 
   describe "POST /projects/:project_id/tasks" do
     before do
-      stub_const("Task::STATUS_OPTIONS", ["not_started", "in_progress", "done"])
+      stub_const("Task::STATUS_OPTIONS", [ "not_started", "in_progress", "done" ])
     end
 
     context "with valid params" do
