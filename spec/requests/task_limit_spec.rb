@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe "Task WIP limit", type: :request do
   before do
-    stub_const("Task::STATUS_OPTIONS", %w(not_started in_progress done))
+    stub_const("Task::STATUS_OPTIONS", %w[not_started in_progress done])
   end
 
   let!(:project) { Project.create!(name: "Alpha") }
