@@ -48,7 +48,7 @@ RSpec.describe "Tasks", type: :request do
           post project_tasks_path(project), params: invalid_params
         }.not_to change(Task, :count)
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         expect(flash[:alert]).to be_present
       end
     end
