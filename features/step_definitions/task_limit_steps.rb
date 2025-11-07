@@ -1,8 +1,8 @@
-# Cucumber Step Definitions for the task limit feature, using Capybara to simulate 
+# Cucumber Step Definitions for the task limit feature, using Capybara to simulate
 # controller interaction as requested by the reviewer.
 
 # Requires Capybara for simulating web interactions.
-require 'capybara/cucumber' 
+require 'capybara/cucumber'
 # Assuming your Rails environment is loaded for model access.
 
 # Helper method to find the current project (if needed)
@@ -24,7 +24,7 @@ end
 Given('I am on the {string} project\'s tasks page') do |project_name|
   @project ||= Project.find_by!(name: project_name)
   # Assumes a Rails route helper like project_tasks_path exists
-  visit project_tasks_path(@project) 
+  visit project_tasks_path(@project)
 end
 
 # --- Action Steps (Using Capybara to simulate UI interaction) ---
@@ -44,7 +44,7 @@ end
 # Step 5: When('I submit the task form')
 When('I submit the task form') do
   # Simulates clicking the final submit button, which triggers the Controller#create action.
-  click_button 'Create Task' 
+  click_button 'Create Task'
 end
 
 # --- Assertion Steps (Checking Controller and Model Outcomes) ---
@@ -77,7 +77,7 @@ end
 # Example step for setting up the state where the limit is already hit
 Given('the project already has {int} tasks with status {string}') do |count, status|
   project = current_project
-  
+
   # Check if the project already has enough tasks, if not, create them
   if project.tasks.where(status: status).count < count
     (count - project.tasks.where(status: status).count).times do |i|
@@ -94,4 +94,50 @@ When('I create a task titled {string}') do |title|
   fill_in 'Task Title', with: title
   select 'To Do', from: 'Task Status'
   click_button 'Create Task'
+end
+
+# --- New Steps to resolve "undefined" errors from the failed cucumber run ---
+
+# Defines 'Given there are already {int} tasks in status {string}'
+Given('there are already {int} tasks in status {string}') do |count, status|
+  project = current_project || Project.last
+
+  if project.tasks.where(status: status).count < count
+    (count - project.tasks.where(status: status).count).times do |i|
+      project.tasks.create!(title: "Pre-existing Task #{i+1}", status: status)
+    end
+  end
+  expect(project.tasks.where(status: status).count).to eq(count)
+end
+
+# Defines 'Given I am on the {string} project board'
+Given('I am on the {string} project board') do |project_name|
+  @project ||= Project.find_by!(name: project_name)
+  # Assumes the board is the tasks index path
+  visit project_tasks_path(@project)
+end
+
+# Defines 'When I move {string} to {string}'
+# Simulates updating the status of a task via the edit form.
+When('I move {string} to {string}') do |task_title, target_status|
+  task = current_project.tasks.find_by!(title: task_title)
+  # Simulate UI interaction to change the task status
+  visit edit_project_task_path(current_project, task)
+  select target_status, from: 'Task Status'
+  click_button 'Update Task'
+end
+
+# Defines 'Then {string} should remain in {string}'
+# Verifies that a task's status did NOT change due to a limit violation.
+Then('{string} should remain in {string}') do |task_title, expected_status|
+  # Database check (Model):
+  task = current_project.tasks.find_by!(title: task_title)
+  task.reload
+  expect(task.status).to eq(expected_status)
+
+  # UI check (Verifying the task is still visible in the correct column):
+  # NOTE: This depends on your HTML structure using IDs based on status, e.g., 'to-do-column'
+  within("##{expected_status.parameterize}-column") do
+    expect(page).to have_content(task_title)
+  end
 end
