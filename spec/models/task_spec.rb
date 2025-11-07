@@ -10,5 +10,10 @@ RSpec.describe Task, type: :model do
       @task = Task.create!(title: "Implement WIP limit", status: "To Do")
       expect(task).to_be valid
     end
+
+    it "fails to create task with title" do
+      @task = Task.create!(title: "", status: "To Do")
+      expect(task).to_be not_valid
+    end
   end
 end
