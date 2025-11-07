@@ -1,18 +1,18 @@
 # features/step_definitions/create_task_steps.rb
 
-# GIVEN: A project needs to exist. This will fail if the Project Model 
+# GIVEN: A project needs to exist. This will fail if the Project Model
 # or migration is missing, yielding a RED state.
 Given('a project named {string} exists') do |name|
   # Attempts to create a Project record. This line will cause a Failure (RED).
-  @project = Project.create!(name: name) 
+  @project = Project.create!(name: name)
 end
 
-# GIVEN: Navigates to the tasks page. This will fail if the routes/controller 
+# GIVEN: Navigates to the tasks page. This will fail if the routes/controller
 # are not defined, yielding a RED state.
 And('I am on the {string} project\'s tasks page') do |project_name|
   @project ||= Project.find_by!(name: project_name)
   # Attempts to visit the page. This line will cause a Failure (RED).
-  visit project_tasks_path(@project) 
+  visit project_tasks_path(@project)
 end
 
 # WHEN: Standard Capybara action to click a button or link.

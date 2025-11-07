@@ -29,4 +29,3 @@ class TasksController < ApplicationController
     params.require(:task).permit(:title, :status)
   end
 end
-

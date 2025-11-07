@@ -35,4 +35,3 @@ end
 When("I leave {string} blank") do |field_name|
   fill_in field_name, with: ""
 end
-
