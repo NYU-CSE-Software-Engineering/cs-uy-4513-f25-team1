@@ -1,18 +1,14 @@
 require "rails_helper"
 
-RSpec.describe "Task WIP limit", type: :request do
+RSpec.describe "Task limit", type: :request do
   before do
     stub_const("Task::STATUS_OPTIONS", %w[not_started in_progress done])
   end
 
-  let!(:project) { Project.create!(name: "Alpha") }
-
-  before do
-    allow_any_instance_of(Project).to receive(:wip_limit).and_return(2)
-  end
+  let!(:project) { Project.create!(name: "Alpha", wip_limit: 2) }
 
   describe "PATCH /projects/:project_id/tasks/:id" do
-    context "when in_progress is below the WIP limit" do
+    context "when in_progress is below the task limit" do
       it "updates the task to in_progress and redirects 303 (see_other)" do
         project.tasks.create!(title: "Pre-existing Task 1", status: "in_progress")
         task = project.tasks.create!(title: "Pre-existing Task 2", status: "not_started")
@@ -26,7 +22,7 @@ RSpec.describe "Task WIP limit", type: :request do
       end
     end
 
-    context "when in_progress has reached the WIP limit" do
+    context "when in_progress has reached the task limit" do
       it "does NOT update and redirects 303 back to edit with an alert" do
         project.tasks.create!(title: "Pre-existing Task A", status: "in_progress")
         project.tasks.create!(title: "Pre-existing Task B", status: "in_progress")
