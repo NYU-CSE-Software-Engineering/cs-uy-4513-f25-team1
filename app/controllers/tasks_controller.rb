@@ -1,7 +1,7 @@
 class TasksController < ApplicationController
   before_action :set_project
-  before_action :set_task, only: [:edit, :update]
-  
+  before_action :set_task, only: [ :edit, :update ]
+
   def new
     @task = @project.tasks.build
   end
@@ -62,19 +62,18 @@ class TasksController < ApplicationController
       @project[:WIPLimit]
     end
   end
-  
+
   def moving_to_in_progress?(target_status)
     target_status == "in_progress"
   end
-  
+
   def wip_reached?
     limit = project_wip_limit.to_i
-    return false if limit <= 0 
+    return false if limit <= 0
     current_in_progress = @project.tasks
                                   .where(status: "in_progress")
                                   .where.not(id: @task.id)
                                   .count
     current_in_progress >= limit
   end
-
 end
