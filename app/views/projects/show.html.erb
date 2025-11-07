@@ -1,0 +1,41 @@
+<h1><%= @project.name %></h1>
+
+<p><strong>WIP limit (In Progress):</strong>
+  <%= @project.wip_limit || @project.task_limit || "None" %>
+</p>
+
+<p><strong>In Progress :</strong>
+  <%= @project.tasks.where(status: "in_progress").count %>
+</p>
+
+<% if flash[:notice] %>
+  <div class="notice"><%= flash[:notice] %></div>
+<% end %>
+<% if flash[:alert] %>
+  <div class="alert"><%= flash[:alert] %></div>
+<% end %>
+
+<hr>
+
+<h2>Tasks</h2>
+
+<h3>To Do</h3>
+<ul>
+  <% @project.tasks.where(status: "not_started").each do |t| %>
+    <li><%= t.title %></li>
+  <% end %>
+</ul>
+
+<h3>In Progress</h3>
+<ul>
+  <% @project.tasks.where(status: "in_progress").each do |t| %>
+    <li><%= t.title %></li>
+  <% end %>
+</ul>
+
+<h3>Done</h3>
+<ul>
+  <% @project.tasks.where(status: "done").each do |t| %>
+    <li><%= t.title %></li>
+  <% end %>
+</ul>
