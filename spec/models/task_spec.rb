@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Task, type: :model do 
+RSpec.describe Task, type: :model do
   before do
     @project = Project.create!(name: "Alpha")
   end
