@@ -56,11 +56,7 @@ class TasksController < ApplicationController
   end
 
   def project_wip_limit
-    if @project.respond_to?(:wip_limit)
-      @project.wip_limit
-    else
-      @project[:WIPLimit]
-    end
+    @project.get_task_limit
   end
 
   def moving_to_in_progress?(target_status)

@@ -3,8 +3,8 @@ class Task < ApplicationRecord
 
   validates :title, presence: true
   validates :status, presence: true
-  #Only checks tasks that are in progress follow the limit
-  validate :follows_WIPLimit, if: -> {status == "In Progress"}
+  # Only checks tasks that are in progress follow the limit
+  validate :follows_WIPLimit, if: -> { status == "In Progress" }
 
   private
 
