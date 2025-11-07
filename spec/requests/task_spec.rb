@@ -31,10 +31,35 @@ RSpec.describe "Tasks", type: :request do
         expect {
           post project_tasks_path(project), params: valid_params
         }.to change(Task, :count).by(1)
-        expect(response).to have_http_status(:see_other) # 303
+        expect(response).to have_http_status(:see_other) 
         expect(response).to redirect_to(project_tasks_path(project))
       end
     end
+
+    context "with invalid params" do
+      before do
+        stub_const("Task::STATUS_OPTIONS", ["not_started", "in_progress", "done"])
+      end
+    
+      it "does not create a Task, returns 422, and sets a flash alert" do
+        project = Project.create!(name: "Test Project")
+    
+        invalid_params = {
+          task: {
+            title:  "",           
+            status: "not_started"
+          }
+        }
+    
+        expect {
+          post project_tasks_path(project), params: invalid_params
+        }.not_to change(Task, :count)
+    
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(flash[:alert]).to be_present       
+      end
+    end
+    
   end
 end
 
