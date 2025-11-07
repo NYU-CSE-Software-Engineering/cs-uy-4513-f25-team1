@@ -38,4 +38,12 @@ RSpec.describe "Task limit", type: :request do
       end
     end
   end
+
+  describe "GET /projects/:project_id" do
+    it "displays the page" do
+      get project_path(1)
+
+      expect(response).to have_http_status(:ok)
+    end
+  end
 end
