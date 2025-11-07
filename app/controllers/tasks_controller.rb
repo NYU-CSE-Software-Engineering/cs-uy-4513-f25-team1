@@ -35,6 +35,7 @@ class TasksController < ApplicationController
                     status: :see_other 
       end
     else
+      flash.now[:alert] = "Task could not be created."
       render :new, status: :unprocessable_entity
     end
   end
