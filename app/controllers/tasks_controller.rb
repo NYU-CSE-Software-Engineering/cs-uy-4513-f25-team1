@@ -1,19 +1,35 @@
 class TasksController < ApplicationController
-  before_action :set_project
+  before_action :set_project, if: -> { params[:project_id].present? }
 
   def index
-    @tasks = @project.tasks
+    if @project
+      @tasks = @project.tasks
+    else
+      @tasks = Task.all
+    end
   end
 
   def new
-    @task = @project.tasks.build
+    if @project
+      @task = @project.tasks.build
+    else
+      @task = Task.new
+    end
   end
 
   def create
-    @task = @project.tasks.build(task_params)
+    if @project
+      @task = @project.tasks.build(task_params)
+    else
+      @task = Task.new(task_params)
+    end
 
     if @task.save
-      redirect_to project_tasks_path(@project), notice: "Task was successfully created."
+      if @project
+        redirect_to project_tasks_path(@project), notice: "Task was successfully created."
+      else
+        redirect_to tasks_path, notice: "Task was successfully created."
+      end
     else
       render :new, status: :unprocessable_entity
     end
