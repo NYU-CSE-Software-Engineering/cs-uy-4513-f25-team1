@@ -15,6 +15,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_06_193020) do
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "task_limit", default: 2
   end
 
   create_table "tasks", force: :cascade do |t|
