@@ -62,6 +62,8 @@ group :test do
   gem "selenium-webdriver"
   gem "cucumber"
   gem "cucumber-rails", require: false
+  gem "rspec-expectations"
+  gem "rspec-core"
   gem "rspec-rails"
   gem "database_cleaner"
 end
