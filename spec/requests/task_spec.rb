@@ -1,14 +1,21 @@
 require 'rails_helper'
 
 RSpec.describe "Tasks", type: :request do
+  include Devise::Test::IntegrationHelpers
+
+  let(:user) { User.create!(email: "test@example.com", password: "password", username: "testuser") }
+  let(:project) { Project.create!(name: "Test Project", user: user) }
+
+  before do
+    sign_in user, scope: :user
+  end
+
   describe "GET /projects/:project_id/tasks/new" do
     before do
       stub_const("Task::STATUS_OPTIONS", [ "not_started", "in_progress", "done" ])
     end
 
     it "responds with 200 and renders the new template" do
-      user = User.create!(email: "test@example.com", password: "password")
-      project = Project.create!(name: "Test Project", user: user)
       get new_project_task_path(project)
       expect(response).to have_http_status(:ok)
     end
@@ -21,9 +28,6 @@ RSpec.describe "Tasks", type: :request do
 
     context "with valid params" do
       it "creates a new Task under a project and redirects with 303 back to the project's new task page" do
-        user = User.create!(email: "test@example.com", password: "password")
-        project = Project.create!(name: "Test Project", user: user)
-
         valid_params = {
           task: {
             title:  "Write request spec",
@@ -42,9 +46,6 @@ RSpec.describe "Tasks", type: :request do
 
     context "with invalid params" do
       it "does not create a Task, returns 422, and sets a flash alert" do
-        user = User.create!(email: "test@example.com", password: "password")
-        project = Project.create!(name: "Test Project", user: user)
-
         invalid_params = { task: { title: "", status: "not_started" } }
 
         expect {

@@ -16,7 +16,7 @@ Feature: Log in to an account
 		When I input invalid email and password
 		And I click "Log in"
 		Then I should be on the login page
-		And I should see "Invalid email"
+		And I should see "Invalid Email or password."
 
 	Scenario: User logs in with wrong credentials
 		Given I am a logged out user
@@ -24,4 +24,4 @@ Feature: Log in to an account
 		When I input wrong password with email
 		And I click "Log in"
 		Then I should be on the login page
-		And I should see "Invalid email/password"
+		And I should see "Invalid Email or password."

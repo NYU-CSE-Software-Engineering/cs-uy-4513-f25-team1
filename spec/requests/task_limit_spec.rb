@@ -1,12 +1,18 @@
 require "rails_helper"
 
 RSpec.describe "Task limit", type: :request do
+  include Devise::Test::IntegrationHelpers
+
   before do
     stub_const("Task::STATUS_OPTIONS", %w[not_started in_progress done])
   end
 
   let!(:user) { User.create!(email: "test@example.com", password: "password") }
   let!(:project) { Project.create!(name: "Alpha", wip_limit: 2, user: user) }
+
+  before do
+    sign_in user, scope: :user
+  end
 
   describe "PATCH /projects/:project_id/tasks/:id" do
     context "when in_progress is below the task limit" do
