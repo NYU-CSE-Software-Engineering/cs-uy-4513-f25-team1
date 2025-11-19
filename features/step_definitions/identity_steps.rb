@@ -1,10 +1,10 @@
 Given('I am a logged out user') do
-  visit home_page
+  visit root_path
   if page.has_content?('Logout') then click_button 'Logout' end
 end
 
 Given('I am on the page login\/create') do
-  visit create_account_path
+  visit new_user_registration_path
 end
 
 When('I input valid inputs for fields email username password repeated_password') do
@@ -14,12 +14,9 @@ When('I input valid inputs for fields email username password repeated_password'
   fill_in 'Repeated Password', with: 'securePassword'
 end
 
-When('I click {string}') do |string|
-  click_button string
-end
 
 Then('I should be on the page login\/signin') do
-  expect(page).to have_current_path(sign_in_path)
+  expect(page).to have_current_path(new_user_session_path)
 end
 
 Then('my account should be in the Users table') do
@@ -36,18 +33,14 @@ When('I input an invalid email with other valid fields') do
 end
 
 Then('I should be on the page login\/create') do
-  expect(page).to have_current_path(create_account_path)
+  expect([ new_user_registration_path, '/users' ]).to include(page.current_path)
 end
 
-Then('I should see {string}') do |string|
-  expect(page).to have_content(string)
-end
 
 When('I input a taken email with other valid fields') do
   @user = User.create!(
-    email = 'taken@gmail.com',
-    username = 'user',
-    password = 'password'
+    email: 'taken@gmail.com',
+    password: 'password'
   )
   fill_in 'Email', with: "taken@gmail.com"
   fill_in 'Username', with: "user"
@@ -74,7 +67,7 @@ Given('I am a logged in user') do
 end
 
 Then('I should be on the home page') do
-  expect(page).to have_current_path(home_page)
+  expect(page).to have_current_path(root_path)
 end
 
 When('I go to my projects page') do
@@ -86,14 +79,13 @@ Then('I should see an error page') do
 end
 
 Given('I am on the login page') do
-  visit login_page_path
+  visit new_user_session_path
 end
 
 When('I input valid email and password') do
   @user = User.create!(
-    email = 'taken@gmail.com',
-    username = 'user',
-    password = 'password'
+    email: 'taken@gmail.com',
+    password: 'password'
   )
   fill_in 'Email', with: 'taken@gmail.com'
   fill_in 'Password', with: 'password'
@@ -106,19 +98,18 @@ end
 
 When('I input wrong password with email') do
   @user = User.create!(
-    email = 'taken@gmail.com',
-    username = 'user',
-    password = 'password'
+    email: 'taken@gmail.com',
+    password: 'password'
   )
   fill_in 'Email', with: 'taken@gmail.com'
   fill_in 'Password', with: 'wrongPassword'
 end
 
 Then('I should be on the home page signed in') do
-  expect(page).to have_current_path(home_page)
+  expect(page).to have_current_path(root_path)
   expect(page).to have_content("Log out")
 end
 
 Then('I should be on the login page') do
-  expect(page).to have_current_path(login_path)
+  expect(page).to have_current_path(new_user_session_path)
 end

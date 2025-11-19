@@ -36,9 +36,9 @@ When('I leave {string} blank') do |field|
 end
 
 # THEN: Checks if specific content (success message or error message) is visible.
-Then('I should see {string}') do |content|
-  expect(page).to have_content(content)
-end
+# Then('I should see {string}') do |content|
+#   expect(page).to have_content(content)
+# end
 
 # THEN: Checks if the newly created task is present in the list display.
 And('I should see the task in the list for project {string}') do |project_name|

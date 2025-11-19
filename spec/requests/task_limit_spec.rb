@@ -5,7 +5,8 @@ RSpec.describe "Task limit", type: :request do
     stub_const("Task::STATUS_OPTIONS", %w[not_started in_progress done])
   end
 
-  let!(:project) { Project.create!(name: "Alpha", wip_limit: 2) }
+  let!(:user) { User.create!(email: "test@example.com", password: "password") }
+  let!(:project) { Project.create!(name: "Alpha", wip_limit: 2, user: user) }
 
   describe "PATCH /projects/:project_id/tasks/:id" do
     context "when in_progress is below the task limit" do

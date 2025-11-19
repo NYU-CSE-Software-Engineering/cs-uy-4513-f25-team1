@@ -67,3 +67,5 @@ group :test do
   gem "rspec-rails"
   gem "database_cleaner"
 end
+
+gem "devise", "~> 4.9"

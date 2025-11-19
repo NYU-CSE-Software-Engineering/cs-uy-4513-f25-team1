@@ -1,5 +1,10 @@
 class ProjectsController < ApplicationController
+  before_action :authenticate_user!
   before_action :set_project, only: :show
+
+  def index
+    @projects = current_user.projects
+  end
 
   def show
   end

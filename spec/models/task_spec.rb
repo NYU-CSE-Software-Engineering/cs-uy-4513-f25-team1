@@ -2,7 +2,8 @@ require 'rails_helper'
 
 RSpec.describe Task, type: :model do
   before do
-    @project = Project.create!(name: "Alpha")
+    @user = User.create!(email: "test@example.com", password: "password")
+    @project = Project.create!(name: "Alpha", user: @user)
   end
 
   context "creating a task in project Alpha" do

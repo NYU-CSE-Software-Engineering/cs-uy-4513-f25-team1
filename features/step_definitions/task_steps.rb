@@ -7,13 +7,13 @@ Given("I am on the {string} project's tasks page") do |project_name|
   visit project_tasks_path(project)
 end
 
-When("I click {string}") do |button_text|
-  begin
-    click_button button_text
-  rescue Capybara::ElementNotFound
-    click_link button_text
-  end
-end
+# When("I click {string}") do |button_text|
+#   begin
+#     click_button button_text
+#   rescue Capybara::ElementNotFound
+#     click_link button_text
+#   end
+# end
 
 When("I fill in {string} with {string}") do |field_name, value|
   fill_in field_name, with: value
