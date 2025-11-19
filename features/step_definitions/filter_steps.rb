@@ -10,30 +10,26 @@ Given('I am on the Projects page') do
   visit projects_path
 end
 
-And('a project named {string} exists') do |name|
-  @user = User.create!(email: 'thisisonlyfortesting@test.com', password: 'test')
-  @project = Project.create!(name: name, key: name, description: '', created_by: 'thisisonlyfortesting@test.com')
-end
 
 And('I click the {string} project') do |project|
   click_button project
 end
 
 Then('I should see tasks filtered by date created') do
-  @prev = ""
+  prev = ""
   Task.order(:created_at).find_each do |task|
-    if prev != "" then
-      expect(page.body.index prev).to be < page.body.index(task.desc)
+    if prev != ""
+      expect(page.body.index(prev)).to be < page.body.index(task.desc)
     end
     prev = task.desc
   end
 end
 
 Then('I should see tasks filtered by date modified') do
-  @prev = ""
+  prev = ""
   Task.order(:date_modified).find_each do |task|
-    if prev != "" then
-      expect(page.body.index prev).to be < page.body.index(task.desc)
+    if prev != ""
+      expect(page.body.index(prev)).to be < page.body.index(task.desc)
     end
     prev = task.desc
   end

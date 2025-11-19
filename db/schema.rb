@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_11_19_173111) do
+ActiveRecord::Schema[8.0].define(version: 2025_11_19_175601) do
   create_table "projects", force: :cascade do |t|
     t.string "name"
     t.integer "wip_limit", default: 2
@@ -22,7 +22,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_19_173111) do
 
   create_table "tasks", force: :cascade do |t|
     t.string "title"
-    t.string "status"
+    t.integer "status", default: 0
     t.integer "project_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

@@ -11,7 +11,7 @@ class TasksController < ApplicationController
     @task = @project.tasks.build(task_params)
 
     if @task.save
-      redirect_to new_project_task_path(@project),
+      redirect_to project_path(@project),
                   notice: "Task was successfully created.",
                   status: :see_other
     else
@@ -61,16 +61,13 @@ class TasksController < ApplicationController
   end
 
   def moving_to_in_progress?(target_status)
-    target_status == "in_progress"
+    target_status.to_s == "in_progress"
   end
 
   def wip_reached?
     limit = project_wip_limit.to_i
     return false if limit <= 0
-    current_in_progress = @project.tasks
-                                  .where(status: "in_progress")
-                                  .where.not(id: @task.id)
-                                  .count
+    current_in_progress = @project.tasks.in_progress.where.not(id: @task.id).count
     current_in_progress >= limit
   end
 end

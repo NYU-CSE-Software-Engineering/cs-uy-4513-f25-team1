@@ -19,14 +19,6 @@ Given('an existing project with key {string} already exists') do |key|
   )
 end
 
-When('I fill in {string} with {string}') do |field, value|
-  fill_in field, with: value
-end
-
-When('I press {string}') do |button|
-  click_button button
-end
-
 Then('I should be on the project\'s show page') do
   expect(current_path).to match(%r{/projects/\d+})
 end

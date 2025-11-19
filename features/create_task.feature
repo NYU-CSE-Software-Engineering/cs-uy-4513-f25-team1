@@ -10,7 +10,7 @@ Feature: Create task
   Scenario: Create a task with valid inputs
     When I click "New Task"
     And I fill in "Title" with "Implement WIP limit"
-    And I select "To Do" from "Status"
+    And I select "Todo" from "Status"
     And I click "Create Task"
     Then I should see "Implement WIP limit"
     And I should see the task in the list for project "Alpha"
