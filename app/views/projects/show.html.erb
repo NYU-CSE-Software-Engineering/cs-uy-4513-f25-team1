@@ -20,11 +20,20 @@
 
 <h2>Tasks</h2>
 
+<div id="backlog-column">
+  <h3>Backlog</h3>
+  <ul>
+    <% @project.tasks.backlog.each do |t| %>
+      <li><%= t.title %> - <small><%= t.priority.titleize %></small></li>
+    <% end %>
+  </ul>
+</div>
+
 <div id="todo-column">
   <h3>To Do</h3>
   <ul>
     <% @project.tasks.todo.each do |t| %>
-      <li><%= t.title %></li>
+      <li><%= t.title %> - <small><%= t.priority.titleize %></small></li>
     <% end %>
   </ul>
 </div>
@@ -33,7 +42,7 @@
   <h3>In Progress</h3>
   <ul>
     <% @project.tasks.in_progress.each do |t| %>
-      <li><%= t.title %></li>
+      <li><%= t.title %> - <small><%= t.priority.titleize %></small></li>
     <% end %>
   </ul>
 </div>
@@ -42,7 +51,7 @@
   <h3>Done</h3>
   <ul>
     <% @project.tasks.done.each do |t| %>
-      <li><%= t.title %></li>
+      <li><%= t.title %> - <small><%= t.priority.titleize %></small></li>
     <% end %>
   </ul>
 </div>

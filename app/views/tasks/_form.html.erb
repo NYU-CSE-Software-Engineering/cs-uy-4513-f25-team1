@@ -21,6 +21,11 @@
   </div>
 
   <div>
+    <%= form.label :priority, "Priority" %>
+    <%= form.select :priority, Task.priorities.keys.map { |p| [p.titleize, p] } %>
+  </div>
+
+  <div>
     <%= form.submit %>
   </div>
 <% end %>

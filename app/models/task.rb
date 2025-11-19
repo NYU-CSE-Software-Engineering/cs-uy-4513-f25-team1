@@ -3,6 +3,7 @@ class Task < ApplicationRecord
 
   validates :title, presence: true
   enum :status, { backlog: 0, todo: 1, in_progress: 2, done: 3 }, default: :backlog
+  enum :priority, { low: 0, medium: 1, high: 2, urgent: 3 }, default: :low
 
   validates :title, presence: true
   # Only checks tasks that are in progress follow the limit
