@@ -17,8 +17,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_01_145428) do
     t.datetime "updated_at", null: false
     t.integer "project_id", null: false
     t.integer "user_id", null: false
-    t.index ["project_id"], name: "index_collaborators_on_project_id"
-    t.index ["user_id"], name: "index_collaborators_on_user_id"
+    t.index [ "project_id" ], name: "index_collaborators_on_project_id"
+    t.index [ "user_id" ], name: "index_collaborators_on_user_id"
   end
 
   create_table "projects", force: :cascade do |t|
@@ -34,7 +34,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_01_145428) do
     t.integer "project_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["project_id"], name: "index_tasks_on_project_id"
+    t.index [ "project_id" ], name: "index_tasks_on_project_id"
   end
 
   create_table "users", force: :cascade do |t|
