@@ -19,6 +19,16 @@
   </div>
 
   <div class="field">
+    <%= form.label :key %>
+    <%= form.text_field :key %>
+  </div>
+
+  <div class="field">
+    <%= form.label :description %>
+    <%= form.text_area :description %>
+  </div>
+
+  <div class="field">
     <%= form.label :wip_limit, "WIP Limit" %>
     <%= form.number_field :wip_limit %>
   </div>

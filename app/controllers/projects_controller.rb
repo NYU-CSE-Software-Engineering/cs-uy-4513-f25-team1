@@ -16,7 +16,7 @@ class ProjectsController < ApplicationController
     @project = Project.new(project_params)
 
     if @project.save
-      redirect_to @project, notice: "Project created"
+      redirect_to @project, notice: "Project was successfully created."
     else
       render :new, status: :unprocessable_entity
     end
@@ -40,6 +40,6 @@ class ProjectsController < ApplicationController
   end
 
   def project_params
-    params.require(:project).permit(:name, :wip_limit)
+    params.require(:project).permit(:name, :wip_limit, :key, :description)
   end
 end

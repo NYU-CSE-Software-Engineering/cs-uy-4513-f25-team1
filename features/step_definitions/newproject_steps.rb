@@ -11,6 +11,7 @@ Given('an existing project with key {string} already exists') do |key|
   # Assuming name is used as key or key is missing
   Project.create!(
     name: "Project #{key}",
+    key: key,
     wip_limit: 3
   )
 end

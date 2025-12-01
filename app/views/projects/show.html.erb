@@ -27,6 +27,19 @@
       <div class="status-icon in-progress"></div>
       <span class="group-title">In Progress</span>
       <span class="group-count"><%= @project.tasks.where(status: "in_progress").count %></span>
+
+
+<h1><%= @project.name %> (<%= @project.key %>)</h1>
+
+<p>
+  <strong>Description:</strong>
+  <%= @project.description %>
+</p>
+
+<p>
+  <strong>WIP Limit:</strong>
+  <%= @project.wip_limit %>
+</p>
       <% if @project.wip_limit.present? %>
         <span class="wip-limit">/ <%= @project.wip_limit %></span>
       <% end %>

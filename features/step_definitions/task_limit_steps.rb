@@ -21,7 +21,7 @@ end
 
 # Defines a project
 Given('a project named {string} exists with WIP limit {int}') do |name, limit|
-  @project = Project.create!(name: name, wip_limit: limit)
+  @project = Project.create!(name: name, wip_limit: limit, key: name.upcase[0..3])
 end
 
 # Navigation step for the project board

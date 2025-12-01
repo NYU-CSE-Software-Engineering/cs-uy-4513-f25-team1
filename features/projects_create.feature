@@ -9,6 +9,7 @@ Feature: Project creation with default board
   Scenario: Create a project with a valid name
     When I go to the new project page
     And I fill in "Name" with "My Project"
+    And I fill in "Key" with "MYPROJ"
     And I press "Create Project"
     Then I should see "Project created"
     And I should see "My Project"

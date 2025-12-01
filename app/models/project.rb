@@ -2,6 +2,7 @@ class Project < ApplicationRecord
   has_many :tasks, dependent: :destroy
 
   validates :name, presence: true
+  validates :key, presence: true, uniqueness: true
 
   def get_task_limit
     wip_limit
