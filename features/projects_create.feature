@@ -11,7 +11,7 @@ Feature: Project creation with default board
     And I fill in "Name" with "My Project"
     And I fill in "Key" with "MYPROJ"
     And I press "Create Project"
-    Then I should see "Project created"
+    Then I should see "Project was successfully created."
     And I should see "My Project"
     And I should see the board columns:
       | To Do       |
