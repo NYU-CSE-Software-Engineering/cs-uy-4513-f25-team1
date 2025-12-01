@@ -11,7 +11,7 @@ Feature: Project creation with default board
     And I fill in "Name" with "My Project"
     And I press "Create Project"
     Then I should see "Project created"
-    And I should see "Main Board"
+    And I should see "My Project"
     And I should see the board columns:
       | To Do       |
       | In Progress |

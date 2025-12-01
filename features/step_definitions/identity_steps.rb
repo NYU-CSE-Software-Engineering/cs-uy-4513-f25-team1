@@ -39,8 +39,8 @@ Then('I should be on the page login\/create') do
   expect(page).to have_current_path(create_account_path)
 end
 
-Then('I should see {string}') do |string|
-  expect(page).to have_content(string)
+Then('I should be on the page login\/create') do
+  expect(page).to have_current_path(create_account_path)
 end
 
 When('I input a taken email with other valid fields') do

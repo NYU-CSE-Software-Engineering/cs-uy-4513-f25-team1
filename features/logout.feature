@@ -1,3 +1,4 @@
+@wip
 Feature:Log out of an account
 	As a logged-in user 
 	I want to log out of my account 

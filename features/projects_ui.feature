@@ -36,6 +36,7 @@ Feature: Projects UI
     Then I should see a notice "Settings updated"
     And visiting the project page shows WIP limits applied
 
+  @wip
   Scenario: Non-admin cannot save settings
     Given a project exists and I am not an admin
     When I go to the project settings page

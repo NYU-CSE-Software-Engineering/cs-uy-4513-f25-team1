@@ -11,7 +11,7 @@ class Task < ApplicationRecord
   def follows_WIPLimit
     in_progress_count = project.tasks.where(status: "In Progress").where.not(id: id).count
 
-    if in_progress_count >= project.WIPLimit
+    if in_progress_count >= project.wip_limit
       errors.add(:base, "WIP limit reached for In Progress")
     end
   end

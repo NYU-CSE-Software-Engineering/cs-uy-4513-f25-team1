@@ -1,41 +1,82 @@
-<h1><%= @project.name %></h1>
+<% content_for :header_title, @project.name %>
 
-<p><strong>WIP limit (In Progress):</strong>
-  <%= @project.wip_limit || @project.task_limit || "None" %>
-</p>
+<div class="project-view">
+  <!-- Todo Group -->
+  <div class="task-group" id="to-do-column">
+    <div class="group-header">
+      <div class="status-icon todo"></div>
+      <span class="group-title">To Do</span>
+      <span class="group-count"><%= @project.tasks.where(status: "not_started").count %></span>
+    </div>
+    <div class="task-list">
+      <% @project.tasks.where(status: "not_started").each do |task| %>
+        <div class="task-row" data-task-id="<%= task.id %>">
+          <div class="task-id">OCC-<%= task.id %></div>
+          <div class="task-title"><%= task.title %></div>
+          <div class="task-meta">
+            <span><%= task.created_at.strftime("%b %d") %></span>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
 
-<p><strong>In Progress :</strong>
-  <%= @project.tasks.where(status: "in_progress").count %>
-</p>
+  <!-- In Progress Group -->
+  <div class="task-group" id="in-progress-column">
+    <div class="group-header">
+      <div class="status-icon in-progress"></div>
+      <span class="group-title">In Progress</span>
+      <span class="group-count"><%= @project.tasks.where(status: "in_progress").count %></span>
+      <% if @project.wip_limit.present? %>
+        <span class="wip-limit">/ <%= @project.wip_limit %></span>
+      <% end %>
+    </div>
+    <div class="task-list">
+      <% @project.tasks.where(status: "in_progress").each do |task| %>
+        <div class="task-row" data-task-id="<%= task.id %>">
+          <div class="task-id">OCC-<%= task.id %></div>
+          <div class="task-title"><%= task.title %></div>
+          <div class="task-meta">
+            <span><%= task.created_at.strftime("%b %d") %></span>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
 
-<% if flash[:notice] %>
-  <div class="notice"><%= flash[:notice] %></div>
-<% end %>
-<% if flash[:alert] %>
-  <div class="alert"><%= flash[:alert] %></div>
-<% end %>
+  <!-- Done Group -->
+  <div class="task-group" id="done-column">
+    <div class="group-header">
+      <div class="status-icon done"></div>
+      <span class="group-title">Done</span>
+      <span class="group-count"><%= @project.tasks.where(status: "done").count %></span>
+    </div>
+    <div class="task-list">
+      <% @project.tasks.where(status: "done").each do |task| %>
+        <div class="task-row" data-task-id="<%= task.id %>">
+          <div class="task-id">OCC-<%= task.id %></div>
+          <div class="task-title"><%= task.title %></div>
+          <div class="task-meta">
+            <span><%= task.created_at.strftime("%b %d") %></span>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
 
-<hr>
+<!-- Context Menu -->
+<div id="context-menu" class="context-menu">
+  <div class="context-menu-item">
+    <span>Edit Task</span>
+  </div>
+  <div class="context-menu-item">
+    <span>Change Status</span>
+  </div>
+  <div class="context-menu-separator"></div>
+  <div class="context-menu-item" style="color: #ff4d4d;">
+    <span>Delete</span>
+  </div>
+</div>
 
-<h2>Tasks</h2>
 
-<h3>To Do</h3>
-<ul>
-  <% @project.tasks.where(status: "not_started").each do |t| %>
-    <li><%= t.title %></li>
-  <% end %>
-</ul>
-
-<h3>In Progress</h3>
-<ul>
-  <% @project.tasks.where(status: "in_progress").each do |t| %>
-    <li><%= t.title %></li>
-  <% end %>
-</ul>
-
-<h3>Done</h3>
-<ul>
-  <% @project.tasks.where(status: "done").each do |t| %>
-    <li><%= t.title %></li>
-  <% end %>
-</ul>

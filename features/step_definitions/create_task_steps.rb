@@ -20,11 +20,6 @@ When('I click {string}') do |button_or_link|
   click_on button_or_link
 end
 
-# WHEN: Standard Capybara action to fill in a text field.
-When('I fill in {string} with {string}') do |field, value|
-  fill_in field, with: value
-end
-
 # WHEN: Standard Capybara action to select an option from a dropdown.
 When('I select {string} from {string}') do |value, field|
   select value, from: field
@@ -33,11 +28,6 @@ end
 # WHEN: Fills a field with an empty string, used for validation failure scenarios.
 When('I leave {string} blank') do |field|
   fill_in field, with: ''
-end
-
-# THEN: Checks if specific content (success message or error message) is visible.
-Then('I should see {string}') do |content|
-  expect(page).to have_content(content)
 end
 
 # THEN: Checks if the newly created task is present in the list display.

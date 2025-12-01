@@ -19,10 +19,37 @@
 
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "linear_theme", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
   <body>
-    <%= yield %>
+    <div class="app-sidebar">
+      <div class="sidebar-header">
+        Occupi
+      </div>
+      <div class="sidebar-nav">
+        <div class="sidebar-section-title">Projects</div>
+        <% if @sidebar_projects.present? %>
+          <% @sidebar_projects.each do |project| %>
+            <%= link_to project.name, project_path(project), class: "sidebar-item #{'active' if current_page?(project_path(project))}" %>
+          <% end %>
+        <% else %>
+          <div class="sidebar-item">No projects</div>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="app-main">
+      <div class="main-header">
+        <%= content_for(:header_title) || "Dashboard" %>
+      </div>
+      <div class="main-content">
+        <% flash.each do |key, value| %>
+          <div class="flash <%= key %>"><%= value %></div>
+        <% end %>
+        <%= yield %>
+      </div>
+    </div>
   </body>
 </html>

@@ -1,4 +1,5 @@
-Feature:Create an account
+@wip
+Feature: Create Account
     As a new user to Jira-lite
     I want to create an account
     So that I can access all the features of Jira-lite

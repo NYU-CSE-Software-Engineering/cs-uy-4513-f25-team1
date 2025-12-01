@@ -36,7 +36,7 @@ Then("I should see the status columns:") do |table|
 end
 
 Given("a project exists") do
-  # Placeholder: ensure a project is present for navigation
+  @project = Project.create!(name: "Existing Project")
 end
 
 When("I go to the project settings page") do
@@ -44,9 +44,8 @@ When("I go to the project settings page") do
 end
 
 When("I set WIP limit for {string} to {int}") do |status, limit|
-  within(".wip-limit-row[data-status='#{status}']") do
-    fill_in 'wip_limit', with: limit
-  end
+  # The current model only supports a single WIP limit, which applies to "In Progress"
+  fill_in 'project_wip_limit', with: limit
 end
 
 When("I save project settings") do
@@ -55,9 +54,9 @@ end
 
 Then("visiting the project page shows WIP limits applied") do
   visit path_to("the project page")
-  expect(page).to have_css(".board-column[data-status='in progress'] .wip-limit", text: /2/)
+  expect(page).to have_css("#in-progress-column .wip-limit", text: /2/)
 end
 
 Given("a project exists and I am not an admin") do
-  # Placeholder: set role to non-admin in test stub
+  @project = Project.create!(name: "Test Project", wip_limit: 3)
 end
