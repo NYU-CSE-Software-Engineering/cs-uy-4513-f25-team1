@@ -1,70 +1,43 @@
-<div class="sidebar">
-  <div class="sidebar-header">
-    <h3>My Projects</h3>
+<div class="app-sidebar">
+  <div class="sidebar-header mb-4">
+    <h3 style="margin: 0; font-size: 18px;">Jira Lite</h3>
   </div>
-  <ul class="project-list">
-    <% Project.all.each do |project| %>
-      <li>
-        <%= link_to project.name, project_path(project), class: "project-link" %>
-      </li>
-    <% end %>
-  </ul>
-  <div class="sidebar-footer">
-    <%= link_to "New Project", new_project_path, class: "btn btn-primary" %>
-    <!-- Placeholder for Join Project logic -->
-    <button class="btn btn-secondary" disabled>Join Project</button>
+  
+  <div class="sidebar-section mb-4">
+    <div class="text-muted" style="font-size: 12px; font-weight: 600; margin-bottom: 8px; text-transform: uppercase;">Projects</div>
+    <ul class="nav-list">
+      <% Project.all.each do |project| %>
+        <li>
+          <%= link_to project.name, project_path(project), class: "nav-link" %>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+
+  <div class="sidebar-footer mt-auto">
+    <%= link_to "New Project", new_project_path, class: "btn btn-primary btn-block mb-2" %>
+    <button class="btn btn-secondary btn-block" disabled>Join Project</button>
   </div>
 </div>
 
 <style>
-  .sidebar {
-    box-sizing: border-box;
-    width: 250px;
-    background-color: #f5f5f5;
-    height: 100vh;
-    padding: 20px;
-    position: fixed;
-    left: 0;
-    top: 0;
-    border-right: 1px solid #ddd;
-    display: flex;
-    flex-direction: column;
-    z-index: 1000; /* Ensure it stays on top if needed, though layout fix is primary */
-  }
-  .project-list {
+  /* Local overrides if strictly necessary, but prefer global CSS */
+  .nav-list {
     list-style: none;
     padding: 0;
-    flex-grow: 1;
+    margin: 0;
   }
-  .project-list li {
-    margin-bottom: 10px;
-  }
-  .project-link {
-    text-decoration: none;
-    color: #333;
-    font-weight: 500;
-  }
-  .project-link:hover {
-    color: #000;
-  }
-  .sidebar-footer {
-    margin-top: auto;
-  }
-  .btn {
+  .nav-link {
     display: block;
-    width: 100%;
-    margin-bottom: 10px;
-    text-align: center;
-    padding: 8px;
-    border-radius: 4px;
+    padding: 6px 8px;
+    color: var(--text-secondary);
+    border-radius: var(--radius-sm);
     text-decoration: none;
+    font-size: 14px;
   }
-  .btn-primary {
-    background-color: #007bff;
-    color: white;
-  }
-  .btn-secondary {
-    background-color: #6c757d;
-    color: white;
+  .nav-link:hover {
+    background-color: var(--bg-hover);
+    color: var(--text-primary);
+    text-decoration: none;
   }
 </style>

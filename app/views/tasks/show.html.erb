@@ -1,71 +1,71 @@
-<div class="task-detail-container">
+<div class="d-flex gap-2 mb-4 text-muted" style="font-size: 14px;">
+  <%= link_to @project.name, project_path(@project), class: "text-muted" %> 
+  <span>/</span>
+  <span>Task #<%= @task.id %></span>
+</div>
+
+<div class="app-layout-columns" style="display: grid; grid-template-columns: 1fr 300px; gap: 40px;">
+  
+  <!-- Main Content -->
   <div class="task-main">
-    <div class="task-header">
-      <div class="task-breadcrumbs">
-        <%= link_to @project.name, project_path(@project) %> / Task #<%= @task.id %>
-      </div>
-      <div class="task-title-row">
+    <div class="task-header mb-4">
+      <div class="d-flex align-items-center gap-2 mb-2">
         <span class="status-badge status-<%= @task.status %>"><%= @task.status.humanize %></span>
-        <h1><%= @task.title %></h1>
       </div>
+      <h1><%= @task.title %></h1>
     </div>
 
-    <div class="task-content">
-      <% if @task.github_branch.present? %>
-        <div class="github-branch-section">
-          <strong>GitHub Branch:</strong>
-          <%= link_to @task.github_branch, "https://github.com/#{@task.github_branch}", target: "_blank", class: "github-link" %>
+    <% if @task.github_branch.present? %>
+      <div class="info-box mb-4">
+        <div class="text-muted mb-1" style="font-size: 12px; text-transform: uppercase; font-weight: 600;">GitHub Branch</div>
+        <%= link_to @task.github_branch, "https://github.com/#{@task.github_branch}", target: "_blank", class: "d-flex align-items-center gap-2" %>
+      </div>
+    <% end %>
+
+    <div class="section mb-4">
+      <h3 class="section-title">Description</h3>
+      <% if @task.description.present? %>
+        <div class="content-body">
+          <%= simple_format(@task.description) %>
         </div>
+      <% else %>
+        <p class="text-muted font-italic">No description provided.</p>
+      <% end %>
+    </div>
+
+    <div class="section mb-4">
+      <h3 class="section-title">Attachments</h3>
+      <% if @task.attachments.attached? %>
+        <ul class="attachment-list">
+          <% @task.attachments.each do |attachment| %>
+            <li class="attachment-item">
+              <%= link_to attachment.filename, rails_blob_path(attachment, disposition: "attachment") %>
+              <span class="text-muted" style="font-size: 12px;">(<%= number_to_human_size(attachment.byte_size) %>)</span>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p class="text-muted mb-2">No attachments.</p>
       <% end %>
 
-      <div class="description-section">
-        <h3>Description</h3>
-        <% if @task.description.present? %>
-          <div class="description-content">
-            <%= simple_format(@task.description) %>
-          </div>
-        <% else %>
-          <p class="text-muted">No description provided.</p>
+      <div class="upload-form mt-2">
+        <%= form_with model: [@project, @task], local: true, class: "d-flex gap-2" do |f| %>
+          <%= f.file_field :attachments, multiple: true, class: "form-control form-control-sm", style: "width: auto;" %>
+          <%= f.submit "Upload", class: "btn btn-secondary btn-sm" %>
         <% end %>
-      </div>
-
-      <div class="attachments-section">
-        <h3>Attachments</h3>
-        <% if @task.attachments.attached? %>
-          <ul class="attachment-list">
-            <% @task.attachments.each do |attachment| %>
-              <li>
-                <%= link_to attachment.filename, rails_blob_path(attachment, disposition: "attachment") %>
-                <span class="text-muted">(<%= number_to_human_size(attachment.byte_size) %>)</span>
-              </li>
-            <% end %>
-          </ul>
-        <% else %>
-          <p class="text-muted">No attachments.</p>
-        <% end %>
-
-        <div class="upload-form">
-          <%= form_with model: [@project, @task], local: true do |f| %>
-            <div class="form-group">
-              <%= f.label :attachments, "Add Attachment" %>
-              <%= f.file_field :attachments, multiple: true, class: "form-control" %>
-            </div>
-            <%= f.submit "Upload", class: "btn btn-sm btn-secondary" %>
-          <% end %>
-        </div>
       </div>
     </div>
     
-    <div class="comments-section">
-      <h3>Discussion</h3>
-      <div class="comments-list">
+    <div class="section">
+      <h3 class="section-title">Discussion</h3>
+      <div class="comments-list mb-4">
         <% @comments.each do |comment| %>
-          <div class="comment">
-            <div class="comment-header">
-              <strong><%= comment.user&.username || "User #{comment.user_id}" %></strong>
-              <span class="text-muted"><%= time_ago_in_words(comment.created_at) %> ago</span>
+          <div class="comment-item">
+            <div class="comment-header d-flex justify-content-between">
+              <strong><%= comment.user&.username || "User" %></strong>
+              <span class="text-muted" style="font-size: 12px;"><%= time_ago_in_words(comment.created_at) %> ago</span>
             </div>
-            <div class="comment-body">
+            <div class="comment-body mt-1">
               <%= simple_format(comment.body) %>
             </div>
           </div>
@@ -77,98 +77,116 @@
           <div class="form-group">
             <%= f.text_area :body, rows: 3, class: "form-control", placeholder: "Add a comment..." %>
           </div>
-          <%= f.submit "Comment", class: "btn btn-primary mt-2" %>
+          <div class="d-flex justify-content-end">
+            <%= f.submit "Comment", class: "btn btn-primary" %>
+          </div>
         <% end %>
       </div>
     </div>
   </div>
 
+  <!-- Sidebar -->
   <div class="task-sidebar">
-    <div class="sidebar-section">
-      <h4>Details</h4>
-      <dl>
-        <dt>Priority</dt>
-        <dd><%= @task.priority %></dd>
-        <dt>Assignee</dt>
-        <dd><%= @task.user&.username || "Unassigned" %></dd>
-        <dt>Created</dt>
-        <dd><%= @task.created_at.strftime("%b %d, %Y") %></dd>
-      </dl>
+    <div class="sidebar-group mb-4">
+      <div class="sidebar-label">Status</div>
+      <div class="sidebar-value"><%= @task.status.humanize %></div>
     </div>
-    <div class="sidebar-actions">
-      <%= link_to "Edit Task", edit_project_task_path(@project, @task), class: "btn btn-secondary" %>
+    
+    <div class="sidebar-group mb-4">
+      <div class="sidebar-label">Priority</div>
+      <div class="sidebar-value"><%= @task.priority %></div>
     </div>
+    
+    <div class="sidebar-group mb-4">
+      <div class="sidebar-label">Assignee</div>
+      <div class="sidebar-value">
+        <% if @task.user %>
+          <div class="d-flex align-items-center gap-2">
+            <span class="avatar-sm"><%= @task.user.username.first.upcase %></span>
+            <%= @task.user.username %>
+          </div>
+        <% else %>
+          <span class="text-muted">Unassigned</span>
+        <% end %>
+      </div>
+    </div>
+    
+    <div class="sidebar-group mb-4">
+      <div class="sidebar-label">Created</div>
+      <div class="sidebar-value"><%= @task.created_at.strftime("%b %d, %Y") %></div>
+    </div>
+    
+    <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 20px 0;">
+    
+    <%= link_to "Edit Task", edit_project_task_path(@project, @task), class: "btn btn-secondary btn-block" %>
   </div>
 </div>
 
 <style>
-  .task-detail-container {
-    display: flex;
-    gap: 30px;
-  }
-  .task-main {
-    flex-grow: 1;
-    max-width: 800px;
-  }
-  .task-sidebar {
-    width: 250px;
-    border-left: 1px solid #eee;
-    padding-left: 20px;
+  .section-title {
+    font-size: 16px;
+    border-bottom: 1px solid var(--border-subtle);
+    padding-bottom: 8px;
+    margin-bottom: 16px;
   }
   
-  .task-breadcrumbs {
-    color: #586069;
-    font-size: 14px;
-    margin-bottom: 10px;
+  .info-box {
+    background: var(--bg-sidebar);
+    padding: 12px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
   }
-  .task-title-row {
+  
+  .status-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    background: var(--bg-active);
+    color: var(--text-primary);
+  }
+  
+  .attachment-list {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .attachment-item {
+    padding: 4px 0;
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 20px;
-  }
-  .task-title-row h1 {
-    margin: 0;
-    font-size: 24px;
+    gap: 8px;
   }
   
-  .github-branch-section {
-    background: #f6f8fa;
-    padding: 10px;
-    border-radius: 6px;
-    margin-bottom: 20px;
-    border: 1px solid #e1e4e8;
+  .comment-item {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-subtle);
   }
   
-  .description-section, .attachments-section, .comments-section {
-    margin-bottom: 30px;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 20px;
-  }
-  
-  .comment {
-    margin-bottom: 15px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid #f0f0f0;
-  }
-  .comment-header {
-    font-size: 13px;
-    margin-bottom: 5px;
-  }
-  
-  .task-sidebar dt {
+  .sidebar-label {
+    font-size: 12px;
     font-weight: 600;
-    font-size: 12px;
-    color: #586069;
-    margin-top: 10px;
-  }
-  .task-sidebar dd {
-    margin: 0;
-    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+    text-transform: uppercase;
   }
   
-  .btn-sm {
-    padding: 4px 10px;
-    font-size: 12px;
+  .sidebar-value {
+    font-size: 14px;
+    color: var(--text-primary);
+  }
+  
+  .avatar-sm {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background: var(--primary-color);
+    color: white;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 20px;
+    font-size: 10px;
   }
 </style>

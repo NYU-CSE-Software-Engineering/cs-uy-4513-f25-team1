@@ -23,9 +23,11 @@
   </head>
 
   <body>
-    <%= render "shared/sidebar" %>
-    <main style="margin-left: 250px; padding: 20px;">
-      <%= yield %>
-    </main>
+    <div class="app-layout">
+      <%= render "shared/sidebar" %>
+      <main class="app-main">
+        <%= yield %>
+      </main>
+    </div>
   </body>
 </html>

@@ -1,114 +1,130 @@
-<div class="project-header">
-  <h1><%= @project.name %></h1>
-  <p class="text-muted"><%= @project.description %></p>
+<div class="project-header d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h1 class="mb-2"><%= @project.name %></h1>
+    <p class="text-muted" style="margin: 0;"><%= @project.description %></p>
+  </div>
+  <div>
+    <%= link_to "New Task", new_project_task_path(@project), class: "btn btn-primary" %>
+  </div>
 </div>
 
-<div class="task-list-container">
+<div class="card">
   <% if @tasks.any? %>
     <div class="task-list-header">
-      <div class="task-col-id">ID</div>
-      <div class="task-col-status">Status</div>
-      <div class="task-col-title">Title</div>
-      <div class="task-col-priority">Priority</div>
-      <div class="task-col-assignee">Assignee</div>
+      <div class="col-id">ID</div>
+      <div class="col-status">Status</div>
+      <div class="col-title">Title</div>
+      <div class="col-priority">Priority</div>
+      <div class="col-assignee">Assignee</div>
     </div>
     
-    <% @tasks.each do |task| %>
-      <%= link_to project_task_path(@project, task), class: "task-row-link" do %>
-        <div class="task-row">
-          <div class="task-col-id text-muted">#<%= task.id %></div>
-          <div class="task-col-status">
-            <span class="status-badge status-<%= task.status %>"><%= task.status.humanize %></span>
+    <div class="task-list-body">
+      <% @tasks.each do |task| %>
+        <%= link_to project_task_path(@project, task), class: "task-row" do %>
+          <div class="col-id text-muted">#<%= task.id %></div>
+          <div class="col-status">
+            <span class="status-dot status-<%= task.status %>"></span>
+            <%= task.status.humanize %>
           </div>
-          <div class="task-col-title"><%= task.title %></div>
-          <div class="task-col-priority"><%= task.priority %></div>
-          <div class="task-col-assignee">
-            <% if task.user %>
-              <span class="avatar"><%= task.user.username&.first&.upcase || "U" %></span>
+          <div class="col-title"><%= task.title %></div>
+          <div class="col-priority">
+            <%# Simple priority visualization %>
+            <% if task.priority > 0 %>
+              <span class="priority-high">!!!</span>
             <% else %>
               <span class="text-muted">-</span>
             <% end %>
           </div>
-        </div>
+          <div class="col-assignee">
+            <% if task.user %>
+              <span class="avatar-sm"><%= task.user.username&.first&.upcase || "U" %></span>
+            <% else %>
+              <span class="text-muted">-</span>
+            <% end %>
+          </div>
+        <% end %>
       <% end %>
-    <% end %>
+    </div>
   <% else %>
     <div class="empty-state">
-      <p>No tasks found in this project.</p>
-      <%= link_to "Create Task", new_project_task_path(@project), class: "btn btn-primary" %>
+      <p class="text-muted">No tasks found in this project.</p>
+      <%= link_to "Create Task", new_project_task_path(@project), class: "btn btn-primary mt-2" %>
     </div>
   <% end %>
 </div>
 
 <style>
-  .project-header {
-    margin-bottom: 20px;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 10px;
+  .card {
+    background: var(--bg-app);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    overflow: hidden;
   }
-  .task-list-container {
-    background: #fff;
-    border: 1px solid #e1e4e8;
-    border-radius: 6px;
-  }
+  
   .task-list-header {
     display: flex;
-    padding: 10px 15px;
-    background: #f6f8fa;
-    border-bottom: 1px solid #e1e4e8;
+    padding: 10px 16px;
+    background: var(--bg-sidebar);
+    border-bottom: 1px solid var(--border-color);
+    font-size: 12px;
     font-weight: 600;
-    color: #586069;
-    font-size: 14px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
   }
+  
   .task-row {
     display: flex;
-    padding: 10px 15px;
-    border-bottom: 1px solid #eaecef;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-subtle);
     align-items: center;
-    color: #24292e;
-    transition: background 0.1s;
-  }
-  .task-row:hover {
-    background-color: #f6f8fa;
-  }
-  .task-row-link {
+    color: var(--text-primary);
     text-decoration: none;
-    display: block;
+    font-size: 14px;
+    transition: background-color 0.1s;
   }
-  .task-row-link:last-child .task-row {
+  
+  .task-row:last-child {
     border-bottom: none;
   }
   
-  /* Columns */
-  .task-col-id { width: 60px; font-family: monospace; }
-  .task-col-status { width: 120px; }
-  .task-col-title { flex-grow: 1; font-weight: 500; }
-  .task-col-priority { width: 80px; }
-  .task-col-assignee { width: 80px; text-align: right; }
-
-  /* Status Badges */
-  .status-badge {
-    display: inline-block;
-    padding: 2px 6px;
-    font-size: 12px;
-    border-radius: 10px;
-    text-transform: capitalize;
+  .task-row:hover {
+    background-color: var(--bg-hover);
+    text-decoration: none;
   }
-  .status-todo { background-color: #e1e4e8; color: #586069; }
-  .status-in_progress { background-color: #dbedff; color: #0366d6; }
-  .status-done { background-color: #dcffe4; color: #22863a; }
-
-  .avatar {
+  
+  /* Columns */
+  .col-id { width: 60px; font-family: var(--font-mono); font-size: 12px; }
+  .col-status { width: 140px; display: flex; align-items: center; gap: 8px; }
+  .col-title { flex-grow: 1; font-weight: 500; }
+  .col-priority { width: 80px; text-align: center; }
+  .col-assignee { width: 80px; text-align: right; }
+  
+  /* Status Dots */
+  .status-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid currentColor;
+  }
+  .status-todo { color: var(--text-tertiary); }
+  .status-in_progress { color: #d29922; background: #d29922; } /* Yellow/Orange */
+  .status-done { color: var(--primary-color); background: var(--primary-color); }
+  
+  .avatar-sm {
     display: inline-block;
-    width: 24px;
-    height: 24px;
-    background: #0366d6;
-    color: white;
+    width: 20px;
+    height: 20px;
+    background: var(--border-color);
+    color: var(--text-secondary);
     border-radius: 50%;
     text-align: center;
-    line-height: 24px;
-    font-size: 12px;
+    line-height: 20px;
+    font-size: 10px;
+    font-weight: bold;
   }
-  .text-muted { color: #6a737d; }
-  .empty-state { padding: 40px; text-align: center; color: #586069; }
+  
+  .empty-state {
+    padding: 40px;
+    text-align: center;
+  }
 </style>

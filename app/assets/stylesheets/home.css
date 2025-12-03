@@ -5,9 +5,9 @@
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #333;
+    background: linear-gradient(135deg, var(--bg-sidebar) 0%, #eef2f5 100%);
+    font-family: var(--font-sans);
+    color: var(--text-primary);
 }
 
 .hero-section {
@@ -24,7 +24,7 @@
 .app-title {
     font-size: 3rem;
     margin-bottom: 1rem;
-    color: #2c3e50;
+    color: var(--text-primary);
     font-weight: 700;
     letter-spacing: -1px;
 }
@@ -42,37 +42,11 @@
     justify-content: center;
 }
 
-.btn {
-    padding: 0.8rem 2rem;
-    border-radius: 50px;
-    text-decoration: none;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    font-size: 1rem;
-}
-
-.btn-primary {
-    background-color: #007bff;
-    color: white;
-    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
-}
-
-.btn-primary:hover {
-    background-color: #0056b3;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
-}
-
-.btn-secondary {
-    background-color: transparent;
-    color: #007bff;
-    border: 2px solid #007bff;
-}
-
-.btn-secondary:hover {
-    background-color: #007bff;
-    color: white;
-    transform: translateY(-2px);
+/* Buttons inherit from application.css */
+.cta-buttons .btn {
+    padding: 10px 24px;
+    /* Slightly larger for hero */
+    font-size: 16px;
 }
 
 /* Features Page Styles */
@@ -95,13 +69,13 @@
 
 .features-title {
     font-size: 2.5rem;
-    color: #2c3e50;
+    color: var(--text-primary);
     margin-bottom: 0.5rem;
 }
 
 .features-intro {
     font-size: 1.2rem;
-    color: #666;
+    color: var(--text-secondary);
     margin-bottom: 3rem;
 }
 
@@ -126,12 +100,12 @@
 }
 
 .feature-card h3 {
-    color: #007bff;
+    color: var(--primary-color);
     margin-bottom: 1rem;
     font-size: 1.4rem;
 }
 
 .feature-card p {
-    color: #555;
+    color: var(--text-secondary);
     line-height: 1.6;
 }
