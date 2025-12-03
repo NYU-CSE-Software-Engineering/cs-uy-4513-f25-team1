@@ -17,5 +17,6 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   get "features" => "home#features"
+  get "settings" => "settings#index", as: :settings
   root "home#index"
 end

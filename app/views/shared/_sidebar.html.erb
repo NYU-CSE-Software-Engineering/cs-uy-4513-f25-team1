@@ -5,37 +5,26 @@
   
   <div class="sidebar-section mb-4">
     <div class="text-muted" style="font-size: 12px; font-weight: 600; margin-bottom: 8px; text-transform: uppercase;">Projects</div>
-    <ul class="nav-list">
+    <ul class="nav-list mb-4">
       <% Project.all.each do |project| %>
         <li>
           <%= link_to project.name, project_path(project), class: "nav-link" %>
         </li>
       <% end %>
     </ul>
+    
+    <%= link_to "New Project", new_project_path, class: "btn btn-primary btn-block mb-2" %>
+    <button class="btn btn-secondary btn-block" disabled>Join Project</button>
   </div>
 
   <div class="sidebar-footer mt-auto">
-    <div data-controller="theme" class="mb-3">
-      <button data-action="click->theme#toggle" class="btn btn-secondary btn-block d-flex align-items-center justify-content-center gap-2">
-        <span data-theme-target="icon">
-          <!-- Default Sun Icon (will be updated by controller) -->
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="5"></circle>
-            <line x1="12" y1="1" x2="12" y2="3"></line>
-            <line x1="12" y1="21" x2="12" y2="23"></line>
-            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-            <line x1="1" y1="12" x2="3" y2="12"></line>
-            <line x1="21" y1="12" x2="23" y2="12"></line>
-            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-          </svg>
-        </span>
-        <span>Toggle Theme</span>
-      </button>
-    </div>
-    <%= link_to "New Project", new_project_path, class: "btn btn-primary btn-block mb-2" %>
-    <button class="btn btn-secondary btn-block" disabled>Join Project</button>
+    <%= link_to settings_path, class: "btn btn-secondary btn-block d-flex align-items-center justify-content-center gap-2" do %>
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"></circle>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+      </svg>
+      <span>Settings</span>
+    <% end %>
   </div>
 </div>
 

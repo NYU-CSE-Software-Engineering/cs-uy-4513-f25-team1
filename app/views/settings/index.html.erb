@@ -1,0 +1,89 @@
+<div class="settings-container">
+  <h1 class="mb-4">Settings</h1>
+
+  <div class="row">
+    <div class="col-md-8">
+      <!-- Profile Section -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <h3 class="card-title">Profile</h3>
+        </div>
+        <div class="card-body">
+          <form>
+            <div class="form-group">
+              <label class="form-label">Full Name</label>
+              <input type="text" class="form-control" value="Wes Simpson" placeholder="Enter your name">
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Email Address</label>
+              <input type="email" class="form-control" value="wes@example.com" placeholder="Enter your email">
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Bio</label>
+              <textarea class="form-control" rows="3" placeholder="Tell us about yourself..."></textarea>
+            </div>
+            
+            <button type="button" class="btn btn-primary">Save Profile</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Preferences Section -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Preferences</h3>
+        </div>
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="font-weight-bold">Dark Mode</div>
+              <div class="text-muted text-sm">Toggle between light and dark themes</div>
+            </div>
+            
+            <div data-controller="theme">
+              <button data-action="click->theme#toggle" class="btn btn-secondary d-flex align-items-center gap-2">
+                <span data-theme-target="icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                  </svg>
+                </span>
+                <span>Toggle Theme</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .card-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-color);
+    background-color: var(--bg-sidebar);
+  }
+  .card-title {
+    margin: 0;
+    font-size: 16px;
+  }
+  .card-body {
+    padding: 20px;
+  }
+  .text-sm {
+    font-size: 12px;
+  }
+  .font-weight-bold {
+    font-weight: 600;
+  }
+</style>
