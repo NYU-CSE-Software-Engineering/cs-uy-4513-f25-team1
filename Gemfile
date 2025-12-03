@@ -18,6 +18,7 @@ gem "stimulus-rails"
 gem "jbuilder"
 # Secure password checking
 gem "bcrypt"
+gem "simplecov", require: false, group: :test
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 # gem "bcrypt", "~> 3.1.7"
 
@@ -50,6 +51,8 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
+  gem "faker"
+  gem "factory_bot_rails"
 end
 
 group :development do
