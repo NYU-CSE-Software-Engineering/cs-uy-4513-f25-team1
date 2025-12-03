@@ -80,7 +80,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_03_225858) do
     t.integer "user_id", null: false
     t.string "type"
     t.text "description"
-    t.string "github_branch"
+    t.string "github_branch", null: true
     t.index ["project_id"], name: "index_tasks_on_project_id"
     t.index ["user_id"], name: "index_tasks_on_user_id"
   end
