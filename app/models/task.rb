@@ -1,5 +1,8 @@
 class Task < ApplicationRecord
+  self.inheritance_column = :_type_disabled # Disable STI to allow 'type' as a regular column
   belongs_to :project
+  belongs_to :user
+
 
   validates :title, presence: true
   validates :status, presence: true
@@ -11,7 +14,7 @@ class Task < ApplicationRecord
   def follows_WIPLimit
     in_progress_count = project.tasks.where(status: "In Progress").where.not(id: id).count
 
-    if in_progress_count >= project.WIPLimit
+    if in_progress_count >= project.wip_limit
       errors.add(:base, "WIP limit reached for In Progress")
     end
   end
