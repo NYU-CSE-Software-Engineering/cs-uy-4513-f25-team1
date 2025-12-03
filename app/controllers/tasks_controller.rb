@@ -1,6 +1,11 @@
 class TasksController < ApplicationController
   before_action :set_project
-  before_action :set_task, only: [ :edit, :update ]
+  before_action :set_task, only: [ :show, :edit, :update ]
+
+  def show
+    @comments = @task.comments.includes(:user).order(created_at: :asc)
+    @comment = Comment.new
+  end
 
   def new
     @task = @project.tasks.build
@@ -52,7 +57,7 @@ class TasksController < ApplicationController
   end
 
   def task_params
-    params.require(:task).permit(:title, :status)
+    params.require(:task).permit(:title, :status, :description, :github_branch, attachments: [])
   end
 
   def project_wip_limit

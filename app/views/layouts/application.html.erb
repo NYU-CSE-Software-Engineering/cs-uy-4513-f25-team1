@@ -23,6 +23,9 @@
   </head>
 
   <body>
-    <%= yield %>
+    <%= render "shared/sidebar" %>
+    <main style="margin-left: 250px; padding: 20px;">
+      <%= yield %>
+    </main>
   </body>
 </html>

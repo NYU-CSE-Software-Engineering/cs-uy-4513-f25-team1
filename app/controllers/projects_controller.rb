@@ -2,6 +2,7 @@ class ProjectsController < ApplicationController
   before_action :set_project, only: :show
 
   def show
+    @tasks = @project.tasks.order(status: :asc, priority: :desc)
   end
 
   private

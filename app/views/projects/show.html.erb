@@ -1,41 +1,114 @@
-<h1><%= @project.name %></h1>
+<div class="project-header">
+  <h1><%= @project.name %></h1>
+  <p class="text-muted"><%= @project.description %></p>
+</div>
 
-<p><strong>WIP limit (In Progress):</strong>
-  <%= @project.wip_limit || @project.task_limit || "None" %>
-</p>
-
-<p><strong>In Progress :</strong>
-  <%= @project.tasks.where(status: "in_progress").count %>
-</p>
-
-<% if flash[:notice] %>
-  <div class="notice"><%= flash[:notice] %></div>
-<% end %>
-<% if flash[:alert] %>
-  <div class="alert"><%= flash[:alert] %></div>
-<% end %>
-
-<hr>
-
-<h2>Tasks</h2>
-
-<h3>To Do</h3>
-<ul>
-  <% @project.tasks.where(status: "not_started").each do |t| %>
-    <li><%= t.title %></li>
+<div class="task-list-container">
+  <% if @tasks.any? %>
+    <div class="task-list-header">
+      <div class="task-col-id">ID</div>
+      <div class="task-col-status">Status</div>
+      <div class="task-col-title">Title</div>
+      <div class="task-col-priority">Priority</div>
+      <div class="task-col-assignee">Assignee</div>
+    </div>
+    
+    <% @tasks.each do |task| %>
+      <%= link_to project_task_path(@project, task), class: "task-row-link" do %>
+        <div class="task-row">
+          <div class="task-col-id text-muted">#<%= task.id %></div>
+          <div class="task-col-status">
+            <span class="status-badge status-<%= task.status %>"><%= task.status.humanize %></span>
+          </div>
+          <div class="task-col-title"><%= task.title %></div>
+          <div class="task-col-priority"><%= task.priority %></div>
+          <div class="task-col-assignee">
+            <% if task.user %>
+              <span class="avatar"><%= task.user.username&.first&.upcase || "U" %></span>
+            <% else %>
+              <span class="text-muted">-</span>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+  <% else %>
+    <div class="empty-state">
+      <p>No tasks found in this project.</p>
+      <%= link_to "Create Task", new_project_task_path(@project), class: "btn btn-primary" %>
+    </div>
   <% end %>
-</ul>
+</div>
 
-<h3>In Progress</h3>
-<ul>
-  <% @project.tasks.where(status: "in_progress").each do |t| %>
-    <li><%= t.title %></li>
-  <% end %>
-</ul>
+<style>
+  .project-header {
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+  }
+  .task-list-container {
+    background: #fff;
+    border: 1px solid #e1e4e8;
+    border-radius: 6px;
+  }
+  .task-list-header {
+    display: flex;
+    padding: 10px 15px;
+    background: #f6f8fa;
+    border-bottom: 1px solid #e1e4e8;
+    font-weight: 600;
+    color: #586069;
+    font-size: 14px;
+  }
+  .task-row {
+    display: flex;
+    padding: 10px 15px;
+    border-bottom: 1px solid #eaecef;
+    align-items: center;
+    color: #24292e;
+    transition: background 0.1s;
+  }
+  .task-row:hover {
+    background-color: #f6f8fa;
+  }
+  .task-row-link {
+    text-decoration: none;
+    display: block;
+  }
+  .task-row-link:last-child .task-row {
+    border-bottom: none;
+  }
+  
+  /* Columns */
+  .task-col-id { width: 60px; font-family: monospace; }
+  .task-col-status { width: 120px; }
+  .task-col-title { flex-grow: 1; font-weight: 500; }
+  .task-col-priority { width: 80px; }
+  .task-col-assignee { width: 80px; text-align: right; }
 
-<h3>Done</h3>
-<ul>
-  <% @project.tasks.where(status: "done").each do |t| %>
-    <li><%= t.title %></li>
-  <% end %>
-</ul>
+  /* Status Badges */
+  .status-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    font-size: 12px;
+    border-radius: 10px;
+    text-transform: capitalize;
+  }
+  .status-todo { background-color: #e1e4e8; color: #586069; }
+  .status-in_progress { background-color: #dbedff; color: #0366d6; }
+  .status-done { background-color: #dcffe4; color: #22863a; }
+
+  .avatar {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    background: #0366d6;
+    color: white;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 24px;
+    font-size: 12px;
+  }
+  .text-muted { color: #6a737d; }
+  .empty-state { padding: 40px; text-align: center; color: #586069; }
+</style>

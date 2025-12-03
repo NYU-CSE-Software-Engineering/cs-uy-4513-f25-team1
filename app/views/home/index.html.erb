@@ -3,7 +3,11 @@
     <h1 class="app-title">Jira Lite</h1>
     <p class="app-subtitle">Streamline your workflow with our powerful project management tool.</p>
     <div class="cta-buttons">
-      <a href="#" class="btn btn-primary">Login</a>
+      <% if Project.any? %>
+        <%= link_to "View Projects", project_path(Project.first), class: "btn btn-primary" %>
+      <% else %>
+        <%= link_to "Create Project", new_project_path, class: "btn btn-primary" %>
+      <% end %>
       <a href="/features" class="btn btn-secondary">Features</a>
     </div>
   </div>
