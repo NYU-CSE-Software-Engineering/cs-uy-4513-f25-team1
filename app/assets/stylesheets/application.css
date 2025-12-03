@@ -40,6 +40,28 @@
     --font-mono: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
 }
 
+[data-theme="dark"] {
+    /* Dark Mode Colors */
+    --bg-app: #0d1117;
+    --bg-sidebar: #161b22;
+    --bg-hover: #21262d;
+    --bg-active: #30363d;
+
+    --text-primary: #c9d1d9;
+    --text-secondary: #8b949e;
+    --text-tertiary: #6e7681;
+
+    --border-color: #30363d;
+    --border-subtle: #21262d;
+
+    --primary-color: #58a6ff;
+    /* Lighter blue for dark mode */
+    --primary-hover: #79c0ff;
+    --primary-text: #0d1117;
+
+    --danger-color: #f85149;
+}
+
 /* Reset & Base */
 *,
 *::before,
