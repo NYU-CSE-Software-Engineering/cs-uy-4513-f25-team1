@@ -1,8 +1,8 @@
 class User < ApplicationRecord
-  has_secure_password #keyword that confirms password, requires password to be renamed to password_digest and requires bcrypt gem
+  has_secure_password # keyword that confirms password, requires password to be renamed to password_digest and requires bcrypt gem
 
   validates :email, presence: true, uniqueness: true, format: {
-    with: /\A[^@\s]+@[^@\s]+\z/, #Regex for valid looking email
+    with: /\A[^@\s]+@[^@\s]+\z/, # Regex for valid looking email
     message: "must be a valid email address"
   }
 

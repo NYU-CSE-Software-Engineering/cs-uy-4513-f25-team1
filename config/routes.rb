@@ -12,11 +12,11 @@ Rails.application.routes.draw do
   resources :projects do
     resources :tasks, only: [ :new, :create, :edit, :update ]
   end
-  
-  #Registration routes
+
+  # Registration routes
   resources :users, only: [ :new, :create ]
 
-  resources :session, only: [ :new, :create, :destroy]
+  resources :session, only: [ :new, :create, :destroy ]
   # Defines the root path route ("/")
   # root "posts#index"
 end
