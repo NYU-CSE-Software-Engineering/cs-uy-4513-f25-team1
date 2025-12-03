@@ -14,5 +14,6 @@ Rails.application.routes.draw do
   end
 
   # Defines the root path route ("/")
+  get "features" => "home#features"
   root "home#index"
 end

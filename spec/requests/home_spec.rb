@@ -9,4 +9,13 @@ RSpec.describe "Home", type: :request do
       expect(response.body).to include("Login")
     end
   end
+
+  describe "GET /features" do
+    it "returns http success" do
+      get "/features"
+      expect(response).to have_http_status(:success)
+      expect(response.body).to include("Features")
+      expect(response.body).to include("Kanban Boards")
+    end
+  end
 end
