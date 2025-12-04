@@ -94,7 +94,9 @@
     
     <div class="sidebar-group mb-4">
       <div class="sidebar-label">Priority</div>
-      <div class="sidebar-value"><%= @task.priority %></div>
+      <div class="sidebar-value">
+        <span class="<%= priority_badge_class(@task.priority) %>"><%= @task.priority.humanize %></span>
+      </div>
     </div>
     
     <div class="sidebar-group mb-4">
@@ -118,7 +120,8 @@
     
     <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 20px 0;">
     
-    <%= link_to "Edit Task", edit_project_task_path(@project, @task), class: "btn btn-secondary btn-block" %>
+    <%= link_to "Edit Task", edit_project_task_path(@project, @task), class: "btn btn-secondary btn-block mb-2" %>
+    <%= link_to "Delete Task", project_task_path(@project, @task), data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-danger btn-block" %>
   </div>
 </div>
 

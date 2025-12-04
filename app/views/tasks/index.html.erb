@@ -1,10 +1,125 @@
-<h1>Tasks for <%= @project.name %></h1>
+<div class="w-full">
+  <div class="flex justify-between items-center mb-4">
+    <h1 class="font-bold text-4xl">Tasks for <%= @project.name %></h1>
+    <%= link_to "New Task", new_project_task_path(@project), class: "rounded-lg py-3 px-5 bg-blue-600 text-white block font-medium" %>
+  </div>
 
-<%= link_to "New Task", new_project_task_path(@project), class: "button" %>
+  <div class="card">
+    <% if @tasks.any? %>
+      <div class="task-list-header">
+        <div class="col-id">ID</div>
+        <div class="col-status">Status</div>
+        <div class="col-title">Title</div>
+        <div class="col-priority">Priority</div>
+        <div class="col-assignee">Assignee</div>
+        <div class="col-actions">Actions</div>
+      </div>
+      
+      <div class="task-list-body">
+        <% @tasks.each do |task| %>
+          <div class="task-row">
+            <div class="col-id text-muted">#<%= task.id %></div>
+            <div class="col-status">
+              <span class="status-dot status-<%= task.status %>"></span>
+              <%= task.status.humanize %>
+            </div>
+            <div class="col-title"><%= link_to task.title, project_task_path(@project, task), class: "text-blue-600 hover:underline" %></div>
+            <div class="col-priority">
+              <span class="<%= priority_badge_class(task.priority) %>"><%= task.priority.humanize %></span>
+            </div>
+            <div class="col-assignee">
+              <% if task.user %>
+                <span class="avatar-sm"><%= task.user.username&.first&.upcase || "U" %></span>
+              <% else %>
+                <span class="text-muted">-</span>
+              <% end %>
+            </div>
+            <div class="col-actions flex space-x-2">
+               <%= link_to "Edit", edit_project_task_path(@project, task), class: "text-yellow-600 hover:text-yellow-800 text-sm" %>
+               <%= link_to "Delete", project_task_path(@project, task), data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "text-red-600 hover:text-red-800 text-sm" %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="empty-state">
+        <p class="text-muted">No tasks found in this project.</p>
+        <%= link_to "Create Task", new_project_task_path(@project), class: "btn btn-primary mt-2" %>
+      </div>
+    <% end %>
+  </div>
 
-<ul>
-  <% @tasks.each do |task| %>
-    <li><%= task.title %></li>
-  <% end %>
-</ul>
+  <div class="mt-4">
+    <%= link_to "Back to Project", project_path(@project), class: "text-blue-600 hover:underline" %>
+  </div>
+</div>
 
+<style>
+  .card {
+    background: var(--bg-app);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+  
+  .task-list-header {
+    display: flex;
+    padding: 10px 16px;
+    background: var(--bg-sidebar);
+    border-bottom: 1px solid var(--border-color);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+  }
+  
+  .task-row {
+    display: flex;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-subtle);
+    align-items: center;
+    color: var(--text-primary);
+    font-size: 14px;
+  }
+  
+  .task-row:last-child {
+    border-bottom: none;
+  }
+  
+  /* Columns */
+  .col-id { width: 60px; font-family: var(--font-mono); font-size: 12px; }
+  .col-status { width: 140px; display: flex; align-items: center; gap: 8px; }
+  .col-title { flex-grow: 1; font-weight: 500; }
+  .col-priority { width: 80px; text-align: center; }
+  .col-assignee { width: 80px; text-align: right; }
+  .col-actions { width: 100px; text-align: right; justify-content: flex-end; }
+
+  /* Status Dots */
+  .status-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid currentColor;
+  }
+  .status-todo { color: var(--text-tertiary); }
+  .status-in_progress { color: #d29922; background: #d29922; }
+  .status-done { color: var(--primary-color); background: var(--primary-color); }
+  
+  .avatar-sm {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background: var(--border-color);
+    color: var(--text-secondary);
+    border-radius: 50%;
+    text-align: center;
+    line-height: 20px;
+    font-size: 10px;
+    font-weight: bold;
+  }
+  
+  .empty-state {
+    padding: 40px;
+    text-align: center;
+  }
+</style>

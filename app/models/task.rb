@@ -6,6 +6,7 @@ class Task < ApplicationRecord
   has_many_attached :attachments
 
   enum :status, { todo: 0, in_progress: 1, done: 2 }, default: :todo
+  enum :priority, { no_priority: 0, low: 1, medium: 2, high: 3, urgent: 4 }, default: :no_priority
 
   validates :title, presence: true
   validates :status, presence: true

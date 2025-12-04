@@ -2,6 +2,10 @@ class TasksController < ApplicationController
   before_action :set_project
   before_action :set_task, only: [ :show, :edit, :update ]
 
+  def index
+    @tasks = @project.tasks.order(status: :asc, priority: :desc)
+  end
+
   def show
     @comments = @task.comments.includes(:user).order(created_at: :asc)
     @comment = Comment.new
@@ -13,11 +17,11 @@ class TasksController < ApplicationController
 
   def create
     @task = @project.tasks.build(task_params)
+    @task.user = current_user # Ensure user is assigned
 
     if @task.save
-      redirect_to new_project_task_path(@project),
-                  notice: "Task was successfully created.",
-                  status: :see_other
+      redirect_to project_task_path(@project, @task),
+                  notice: "Task was successfully created."
     else
       flash.now[:alert] = "Task could not be created."
       render :new, status: :unprocessable_entity
@@ -36,7 +40,7 @@ class TasksController < ApplicationController
                   status: :see_other
     else
       if @task.update(task_params)
-        redirect_to edit_project_task_path(@project, @task),
+        redirect_to project_task_path(@project, @task),
                     notice: "Task updated.",
                     status: :see_other
       else
@@ -44,6 +48,11 @@ class TasksController < ApplicationController
         render :edit, status: :unprocessable_entity
       end
     end
+  end
+
+  def destroy
+    @task.destroy
+    redirect_to project_tasks_path(@project), notice: "Task was successfully destroyed."
   end
 
   private
@@ -57,7 +66,7 @@ class TasksController < ApplicationController
   end
 
   def task_params
-    params.require(:task).permit(:title, :status, :description, :github_branch, attachments: [])
+    params.require(:task).permit(:title, :status, :description, :github_branch, :priority, attachments: [])
   end
 
   def project_wip_limit

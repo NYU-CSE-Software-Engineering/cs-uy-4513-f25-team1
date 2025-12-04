@@ -3,7 +3,9 @@
     <h1 class="mb-2"><%= @project.name %></h1>
     <p class="text-muted" style="margin: 0;"><%= @project.description %></p>
   </div>
-  <div>
+  <div class="flex space-x-2">
+    <%= link_to "Edit Project", edit_project_path(@project), class: "btn btn-secondary" %>
+    <%= link_to "Delete Project", @project, data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-danger" %>
     <%= link_to "New Task", new_project_task_path(@project), class: "btn btn-primary" %>
   </div>
 </div>
@@ -28,12 +30,7 @@
           </div>
           <div class="col-title"><%= task.title %></div>
           <div class="col-priority">
-            <%# Simple priority visualization %>
-            <% if task.priority > 0 %>
-              <span class="priority-high">!!!</span>
-            <% else %>
-              <span class="text-muted">-</span>
-            <% end %>
+            <span class="<%= priority_badge_class(task.priority) %>"><%= task.priority.humanize %></span>
           </div>
           <div class="col-assignee">
             <% if task.user %>

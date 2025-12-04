@@ -1,0 +1,24 @@
+<div class="w-full">
+  <% if notice.present? %>
+    <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-lg inline-block" id="notice"><%= notice %></p>
+  <% end %>
+
+  <div class="flex justify-between items-center">
+    <h1 class="font-bold text-4xl">Projects</h1>
+    <%= link_to "New project", new_project_path, class: "rounded-lg py-3 px-5 bg-blue-600 text-white block font-medium" %>
+  </div>
+
+  <div id="projects" class="min-w-full">
+    <% @projects.each do |project| %>
+      <div class="bg-white p-6 rounded-lg shadow-md mt-4 border border-gray-200">
+        <h2 class="text-2xl font-bold mb-2"><%= link_to project.name, project %></h2>
+        <p class="text-gray-600 mb-4"><%= project.description %></p>
+        <div class="flex space-x-4">
+          <%= link_to "Show", project, class: "text-blue-600 hover:text-blue-800" %>
+          <%= link_to "Edit", edit_project_path(project), class: "text-yellow-600 hover:text-yellow-800" %>
+          <%= link_to "Destroy", project, data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "text-red-600 hover:text-red-800" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
