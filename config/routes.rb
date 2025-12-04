@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  resource :session
+  resource :session, only: [ :new, :create, :destroy ]
   resources :passwords, param: :token
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
@@ -18,7 +18,6 @@ Rails.application.routes.draw do
   # Registration routes
   resources :users, only: [ :new, :create ]
 
-  resources :session, only: [ :new, :create, :destroy ]
   # Defines the root path route ("/")
   get "features" => "home#features"
   root "home#index"
