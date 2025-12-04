@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_03_225858) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_04_013055) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -69,6 +69,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_03_225858) do
     t.index ["key"], name: "index_projects_on_key"
   end
 
+  create_table "sessions", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.string "ip_address"
+    t.string "user_agent"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_sessions_on_user_id"
+  end
+
   create_table "tasks", force: :cascade do |t|
     t.string "title"
     t.integer "status", default: 0
@@ -80,13 +89,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_03_225858) do
     t.integer "user_id", null: false
     t.string "type"
     t.text "description"
-    t.string "github_branch", null: true
+    t.string "github_branch"
+    t.datetime "due_date"
     t.index ["project_id"], name: "index_tasks_on_project_id"
     t.index ["user_id"], name: "index_tasks_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
-    t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
     t.string "reset_password_token"
     t.datetime "reset_password_sent_at"
@@ -94,7 +103,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_03_225858) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "username"
-    t.index ["email"], name: "index_users_on_email", unique: true
+    t.string "password_digest", null: false
+    t.string "email_address", null: false
+    t.index ["email_address"], name: "index_users_on_email_address", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
@@ -104,6 +115,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_03_225858) do
   add_foreign_key "collaborators", "users"
   add_foreign_key "comments", "tasks"
   add_foreign_key "comments", "users"
+  add_foreign_key "sessions", "users"
   add_foreign_key "tasks", "projects"
   add_foreign_key "tasks", "users"
 end

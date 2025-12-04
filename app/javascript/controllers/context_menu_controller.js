@@ -112,27 +112,25 @@ export default class extends Controller {
     delete(event) {
         event.preventDefault()
         if (this.currentDeleteUrl) {
-            if (confirm("Are you sure you want to delete this task?")) {
-                // Create a form to submit the delete request via Turbo
-                const form = document.createElement('form')
-                form.method = 'post'
-                form.action = this.currentDeleteUrl
+            // Create a form to submit the delete request via Turbo
+            const form = document.createElement('form')
+            form.method = 'post'
+            form.action = this.currentDeleteUrl
 
-                const methodInput = document.createElement('input')
-                methodInput.type = 'hidden'
-                methodInput.name = '_method'
-                methodInput.value = 'delete'
+            const methodInput = document.createElement('input')
+            methodInput.type = 'hidden'
+            methodInput.name = '_method'
+            methodInput.value = 'delete'
 
-                const tokenInput = document.createElement('input')
-                tokenInput.type = 'hidden'
-                tokenInput.name = 'authenticity_token'
-                tokenInput.value = document.querySelector('meta[name="csrf-token"]').content
+            const tokenInput = document.createElement('input')
+            tokenInput.type = 'hidden'
+            tokenInput.name = 'authenticity_token'
+            tokenInput.value = document.querySelector('meta[name="csrf-token"]').content
 
-                form.appendChild(methodInput)
-                form.appendChild(tokenInput)
-                document.body.appendChild(form)
-                form.submit()
-            }
+            form.appendChild(methodInput)
+            form.appendChild(tokenInput)
+            document.body.appendChild(form)
+            form.submit()
         }
         this.close()
     }

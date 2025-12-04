@@ -1,6 +1,6 @@
 class TasksController < ApplicationController
   before_action :set_project
-  before_action :set_task, only: [ :show, :edit, :update ]
+  before_action :set_task, only: [ :show, :edit, :update, :destroy ]
 
   def index
     @tasks = @project.tasks.order(status: :asc, priority: :desc)
@@ -66,7 +66,7 @@ class TasksController < ApplicationController
   end
 
   def task_params
-    params.require(:task).permit(:title, :status, :description, :github_branch, :priority, attachments: [])
+    params.require(:task).permit(:title, :status, :description, :github_branch, :priority, :due_date, attachments: [])
   end
 
   def project_wip_limit

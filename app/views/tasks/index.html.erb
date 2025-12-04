@@ -11,6 +11,7 @@
         <div class="col-status">Status</div>
         <div class="col-title">Title</div>
         <div class="col-priority">Priority</div>
+        <div class="col-due-date">Due Date</div>
         <div class="col-assignee">Assignee</div>
         <div class="col-actions">Actions</div>
       </div>
@@ -26,6 +27,13 @@
             <div class="col-title"><%= link_to task.title, project_task_path(@project, task), class: "text-blue-600 hover:underline" %></div>
             <div class="col-priority">
               <span class="<%= priority_badge_class(task.priority) %>"><%= task.priority.humanize %></span>
+            </div>
+            <div class="col-due-date text-muted">
+              <% if task.due_date %>
+                <%= task.due_date.strftime("%b %d") %>
+              <% else %>
+                -
+              <% end %>
             </div>
             <div class="col-assignee">
               <% if task.user %>
@@ -91,6 +99,7 @@
   .col-status { width: 140px; display: flex; align-items: center; gap: 8px; }
   .col-title { flex-grow: 1; font-weight: 500; }
   .col-priority { width: 80px; text-align: center; }
+  .col-due-date { width: 100px; text-align: right; font-size: 12px; }
   .col-assignee { width: 80px; text-align: right; }
   .col-actions { width: 100px; text-align: right; justify-content: flex-end; }
 

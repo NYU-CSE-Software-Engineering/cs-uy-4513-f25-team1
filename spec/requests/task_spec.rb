@@ -84,4 +84,17 @@ RSpec.describe "Tasks", type: :request do
       expect(task.reload.status).to eq("in_progress")
     end
   end
+
+  describe "DELETE /projects/:project_id/tasks/:id" do
+    it "destroys the requested task" do
+      project = Project.create!(name: "Test Project")
+      task = project.tasks.create!(title: "Test Task", status: "not_started")
+
+      expect {
+        delete project_task_path(project, task)
+      }.to change(Task, :count).by(-1)
+
+      expect(response).to redirect_to(project_tasks_path(project))
+    end
+  end
 end

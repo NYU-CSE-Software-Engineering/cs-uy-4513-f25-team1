@@ -91,9 +91,9 @@
   .card {
     background: var(--bg-app);
     border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-    overflow: hidden;
-    position: relative; /* For context menu positioning context if needed, though fixed is better usually */
+    border-radius: 0; /* Sharper edges */
+    /* overflow: hidden; Removed to allow hover shadow */
+    position: relative; 
   }
   
   .task-list-header {
@@ -101,10 +101,11 @@
     padding: 10px 16px;
     background: var(--bg-sidebar);
     border-bottom: 1px solid var(--border-color);
-    font-size: 12px;
+    font-size: 11px; /* Slightly smaller */
     font-weight: 600;
     color: var(--text-secondary);
     text-transform: uppercase;
+    letter-spacing: 0.05em; /* More spacing */
   }
   
   .task-row {
@@ -115,8 +116,9 @@
     color: var(--text-primary);
     text-decoration: none;
     font-size: 14px;
-    transition: background-color 0.1s;
-    cursor: default; /* Change cursor to default to look less like a link if desired, or keep pointer */
+    transition: all 0.2s ease; /* Smoother transition */
+    cursor: pointer;
+    position: relative;
   }
   
   .task-row:last-child {
@@ -126,6 +128,10 @@
   .task-row:hover {
     background-color: var(--bg-hover);
     text-decoration: none;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    z-index: 10;
+    border-color: transparent;
   }
   
   /* Columns */
