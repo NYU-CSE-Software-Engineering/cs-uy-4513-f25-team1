@@ -63,11 +63,20 @@ When('I input an invalid repeated_password with other valid fields') do
 end
 
 Given('I am a logged in user') do
+  @user = User.create!(
+    email_address: 'taken@gmail.com',
+    username: 'user',
+    password: 'SecurePassword'
+  )
+  visit '/session/new'
+  fill_in 'email_address', with: 'taken@gmail.com'
+  fill_in 'password', with: 'SecurePassword'
+  click_button 'Sign in'
   expect(page).to have_content('Log out')
 end
 
 Then('I should be on the home page') do
-  expect(page).to have_current_path(home_page)
+  expect(page).to have_current_path("/")
 end
 
 When('I go to my projects page') do
