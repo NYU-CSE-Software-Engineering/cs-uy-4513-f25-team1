@@ -94,9 +94,15 @@ export default class extends Controller {
             statusInput.name = 'task[status]'
             statusInput.value = newStatus
 
+            const redirectInput = document.createElement('input')
+            redirectInput.type = 'hidden'
+            redirectInput.name = 'redirect_to'
+            redirectInput.value = window.location.href
+
             form.appendChild(methodInput)
             form.appendChild(tokenInput)
             form.appendChild(statusInput)
+            form.appendChild(redirectInput)
             document.body.appendChild(form)
             form.submit()
         }

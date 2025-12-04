@@ -40,7 +40,7 @@ class TasksController < ApplicationController
                   status: :see_other
     else
       if @task.update(task_params)
-        redirect_to project_task_path(@project, @task),
+        redirect_to params[:redirect_to] || project_task_path(@project, @task),
                     notice: "Task updated.",
                     status: :see_other
       else
