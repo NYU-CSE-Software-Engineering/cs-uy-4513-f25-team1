@@ -1,4 +1,5 @@
 class UsersController < ApplicationController
+  allow_unauthenticated_access only: [:new, :create]
   def new
     @user = User.new
   end
@@ -16,6 +17,6 @@ class UsersController < ApplicationController
   private
 
   def user_params
-    params.require(:user).permit(:email, :username, :password, :password_confirmation)
+    params.fetch(:user, {}).permit(:email_address, :username, :password, :password_confirmation)
   end
 end

@@ -2,8 +2,8 @@
 
 <%= form_with model: @user, url: "/users", method: :post do |f| %>
   <p>
-    <%= f.label :email %><br>
-    <%= f.text_field :email %>
+    <%= f.label :email_address, "Email" %><br>
+    <%= f.text_field :email_address %>
   </p>
 
   <p>
