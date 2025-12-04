@@ -17,7 +17,7 @@ class TasksController < ApplicationController
 
   def create
     @task = @project.tasks.build(task_params)
-    @task.user = current_user # Ensure user is assigned
+    # @task.user = current_user # User assignment temporarily removed
 
     if @task.save
       redirect_to project_task_path(@project, @task),

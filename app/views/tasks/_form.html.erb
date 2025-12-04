@@ -1,8 +1,8 @@
-<%= form_with model: [@project, task], local: true, class: "contents" do |form| %>
+<%= form_with model: [@project, task], local: true, class: "task-form" do |form| %>
   <% if task.errors.any? %>
-    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-lg mt-3">
-      <h2><%= pluralize(task.errors.count, "error") %> prohibited this task from being saved:</h2>
-      <ul>
+    <div class="error-explanation mb-4 p-3" style="background-color: #fee2e2; color: var(--danger-color); border-radius: var(--radius-md);">
+      <h2 style="font-size: 16px; margin-bottom: 8px;"><%= pluralize(task.errors.count, "error") %> prohibited this task from being saved:</h2>
+      <ul style="padding-left: 20px; margin: 0;">
         <% task.errors.full_messages.each do |message| %>
           <li><%= message %></li>
         <% end %>
@@ -10,36 +10,36 @@
     </div>
   <% end %>
 
-  <div class="my-5">
-    <%= form.label :title %>
-    <%= form.text_field :title, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full" %>
+  <div class="form-group">
+    <%= form.label :title, class: "form-label" %>
+    <%= form.text_field :title, class: "form-control" %>
   </div>
 
-  <div class="my-5">
-    <%= form.label :description %>
-    <%= form.text_area :description, rows: 4, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full" %>
+  <div class="form-group">
+    <%= form.label :description, class: "form-label" %>
+    <%= form.text_area :description, rows: 4, class: "form-control" %>
   </div>
 
-  <div class="my-5">
-    <%= form.label :status %>
+  <div class="form-group">
+    <%= form.label :status, class: "form-label" %>
     <%= form.select :status, options_for_select([
       ["To Do", "todo"],
       ["In Progress", "in_progress"],
       ["Done", "done"]
-    ], task.status), {}, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full" %>
+    ], task.status), {}, class: "form-control" %>
   </div>
 
-  <div class="my-5">
-    <%= form.label :priority %>
-    <%= form.select :priority, options_for_select(Task.priorities.keys.map { |k| [k.humanize, k] }, task.priority), {}, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full" %>
+  <div class="form-group">
+    <%= form.label :priority, class: "form-label" %>
+    <%= form.select :priority, options_for_select(Task.priorities.keys.map { |k| [k.humanize, k] }, task.priority), {}, class: "form-control" %>
   </div>
 
-  <div class="my-5">
-    <%= form.label :github_branch, "GitHub Branch" %>
-    <%= form.text_field :github_branch, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full" %>
+  <div class="form-group">
+    <%= form.label :github_branch, "GitHub Branch", class: "form-label" %>
+    <%= form.text_field :github_branch, class: "form-control" %>
   </div>
 
-  <div class="inline">
-    <%= form.submit class: "rounded-lg py-3 px-5 bg-blue-600 text-white inline-block font-medium cursor-pointer" %>
+  <div class="form-actions mt-4">
+    <%= form.submit class: "btn btn-primary" %>
   </div>
 <% end %>
