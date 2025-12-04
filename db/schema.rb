@@ -25,8 +25,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_03_231443) do
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "task_limit", default: 2
-    t.integer "WIPLimit"
+    t.integer "wip_limit"
   end
 
   create_table "sessions", force: :cascade do |t|

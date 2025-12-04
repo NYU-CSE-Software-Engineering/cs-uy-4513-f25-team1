@@ -452,7 +452,7 @@ PLATFORMS
   x86_64-linux-musl
 
 DEPENDENCIES
-  bcrypt
+  bcrypt (~> 3.1.7)
   bootsnap
   brakeman (~> 7.1.1)
   capybara
