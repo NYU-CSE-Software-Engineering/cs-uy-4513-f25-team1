@@ -7,6 +7,7 @@ class SessionsController < ApplicationController
 
   def create
     if user = User.authenticate_by(params.permit(:email_address, :password))
+      reset_session
       start_new_session_for user
       redirect_to "/"
     else
