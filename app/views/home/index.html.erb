@@ -5,6 +5,13 @@
     <div class="cta-buttons">
       <a href="/session/new" class="btn btn-primary">Login</a>
       <a href="/features" class="btn btn-secondary">Features</a>
+      <% if session[:user_id].present? %>
+        <%= button_to "Log out",
+              session_path,
+              method: :delete,
+              class: "btn btn-danger",
+              form: { style: "display:inline;" } %>
+      <% end %>
     </div>
   </div>
 </div>
