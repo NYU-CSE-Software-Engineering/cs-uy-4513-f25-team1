@@ -30,7 +30,3 @@ end
 Then('I should be on the project\'s show page') do
   expect(current_path).to match(%r{/projects/\d+})
 end
-
-Then('I should see {string}') do |text|
-  expect(page).to have_content(text)
-end
