@@ -4,6 +4,20 @@ class ProjectsController < ApplicationController
     @developer_projects = Current.user.developer_projects
   end
 
+  def new
+    @project = Project.new
+  end
+
+  def create
+    @project = Project.new(project_params)
+    if @project.save
+      Collaborator.create!(project: @project, user: Current.user, role: "manager")
+      redirect_to @project, notice: "Project created successfully!"
+    else
+      render :new, status: :unprocessable_entity
+    end
+  end
+
   def join_page
   end
 
@@ -29,7 +43,12 @@ class ProjectsController < ApplicationController
 
   private
 
+
   def set_project
     @project = Project.find(params[:id]) # ← 用 :id，不是 :project_id
+  end
+
+  def project_params
+    params.require(:project).permit(:name, :description, :wip_limit)
   end
 end
