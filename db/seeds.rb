@@ -1,41 +1,47 @@
 # Clear existing data
-puts "Cleaning database..."
 Collaborator.destroy_all
 Task.destroy_all
 Project.destroy_all
 User.destroy_all
 
-puts "Creating users..."
-users = FactoryBot.create_list(:user, 5)
-main_user = FactoryBot.create(:user, email: "test@example.com", username: "tester", password: "password", password_confirmation: "password")
-users << main_user
+# Create Users
+manager = User.create!(
+  email_address: "manager@example.com",
+  password: "password",
+  password_confirmation: "password",
+  username: "ManagerUser"
+)
 
-puts "Creating projects..."
+dev = User.create!(
+  email_address: "dev@example.com",
+  password: "password",
+  password_confirmation: "password",
+  username: "DevUser"
+)
 
-# 1. Empty Project
-empty_project = FactoryBot.create(:project, name: "Empty Project", key: "EMP", wip_limit: 3)
-Collaborator.create!(user: main_user, project: empty_project, role: "owner")
+new_user = User.create!(
+  email_address: "new@example.com",
+  password: "password",
+  password_confirmation: "password",
+  username: "NewUser"
+)
 
-# 2. Standard Project (Mixed tasks)
-standard_project = FactoryBot.create(:project, name: "Standard Project", key: "STD", wip_limit: 5)
-Collaborator.create!(user: main_user, project: standard_project, role: "owner")
-Collaborator.create!(user: users.first, project: standard_project, role: "editor")
+# Create Projects for Manager
+proj1 = Project.create!(name: "Alpha Project", wip_limit: 3)
+proj2 = Project.create!(name: "Beta Project", wip_limit: 5)
 
-FactoryBot.create_list(:task, 3, :todo, project: standard_project, user: main_user)
-FactoryBot.create_list(:task, 2, :in_progress, project: standard_project, user: users.first)
-FactoryBot.create_list(:task, 2, :done, project: standard_project, user: main_user)
+# Assign Manager
+Collaborator.create!(user: manager, project: proj1, role: "manager")
+Collaborator.create!(user: manager, project: proj2, role: "manager")
 
-# 3. Busy Project (At WIP Limit)
-busy_project = FactoryBot.create(:project, name: "Busy Project", key: "BSY", wip_limit: 2)
-Collaborator.create!(user: main_user, project: busy_project, role: "owner")
-# Create tasks exactly at WIP limit
-FactoryBot.create_list(:task, 2, :in_progress, project: busy_project, user: main_user)
-FactoryBot.create_list(:task, 3, :todo, project: busy_project, user: main_user)
+# Assign Developer to Alpha
+Collaborator.create!(user: dev, project: proj1, role: "developer")
 
-# 4. Completed Project
-completed_project = FactoryBot.create(:project, name: "Completed Project", key: "CMP", wip_limit: 3)
-Collaborator.create!(user: main_user, project: completed_project, role: "owner")
-FactoryBot.create_list(:task, 5, :done, project: completed_project, user: main_user)
+# Create Project where Manager is Developer (unlikely but possible to test "Developer Projects" section for manager)
+proj3 = Project.create!(name: "Gamma Service", wip_limit: 2)
+Collaborator.create!(user: manager, project: proj3, role: "developer")
 
-puts "Seeding completed!"
-puts "Main User: test@example.com / password"
+puts "Seeding complete!"
+puts "Manager: manager@example.com / password"
+puts "Dev: dev@example.com / password"
+puts "New User: new@example.com / password"

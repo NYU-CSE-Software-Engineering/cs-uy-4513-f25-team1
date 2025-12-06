@@ -1,0 +1,18 @@
+<div class="auth-container">
+  <h1>Join a Project</h1>
+  
+  <%= form_with url: join_projects_path, method: :post, local: true do |form| %>
+    <div class="input-group">
+      <%= form.label :key, "Project Key" %>
+      <%= form.text_field :key, required: true, placeholder: "Enter project key (e.g. CORE-A1B2)" %>
+    </div>
+    
+    <div class="actions">
+      <%= form.submit "Join Project", class: "button primary" %>
+    </div>
+  <% end %>
+
+  <div class="links">
+      <%= link_to "Back to Dashboard", projects_path, class: "button secondary" %>
+  </div>
+</div>
