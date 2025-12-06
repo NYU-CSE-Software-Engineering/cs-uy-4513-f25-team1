@@ -21,10 +21,6 @@ class Project < ApplicationRecord
     end
   end
 
-  def get_task_limit
-    wip_limit
-  end
-
   def count_tasks
     tasks.count
   end

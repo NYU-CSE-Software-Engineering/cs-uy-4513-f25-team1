@@ -43,19 +43,8 @@ When("I go to the project settings page") do
   visit path_to("the project settings page")
 end
 
-When("I set WIP limit for {string} to {int}") do |status, limit|
-  within(".wip-limit-row[data-status='#{status}']") do
-    fill_in 'wip_limit', with: limit
-  end
-end
-
 When("I save project settings") do
   find('#save-project-settings').click
-end
-
-Then("visiting the project page shows WIP limits applied") do
-  visit path_to("the project page")
-  expect(page).to have_css(".board-column[data-status='in progress'] .wip-limit", text: /2/)
 end
 
 Given("a project exists and I am not an admin") do

@@ -28,19 +28,4 @@ Feature: Projects UI
     And I submit the create project form
     Then I should see an alert "Name can't be blank"
 
-  Scenario: Configure WIP limits
-    Given a project exists
-    When I go to the project settings page
-    And I set WIP limit for "in progress" to 2
-    And I save project settings
-    Then I should see a notice "Settings updated"
-    And visiting the project page shows WIP limits applied
-
-  Scenario: Non-admin cannot save settings
-    Given a project exists and I am not an admin
-    When I go to the project settings page
-    And I set WIP limit for "done" to 1
-    And I save project settings
-    Then I should see an alert "You do not have permission to change settings"
-
 

@@ -25,9 +25,4 @@ Feature: Board views
     Then I should see a column "in progress" with count 2
     And I should not see a card of type "bug"
 
-  Scenario: Over WIP limit indication
-    Given project settings set WIP limit for "in progress" to 1
-    When I visit the board page for the project
-    Then the column "in progress" should indicate over WIP
-
 

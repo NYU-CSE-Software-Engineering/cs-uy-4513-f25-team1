@@ -27,8 +27,8 @@ new_user = User.create!(
 )
 
 # Create Projects for Manager
-proj1 = Project.create!(name: "Alpha Project", wip_limit: 3)
-proj2 = Project.create!(name: "Beta Project", wip_limit: 5)
+proj1 = Project.create!(name: "Alpha Project")
+proj2 = Project.create!(name: "Beta Project")
 
 # Assign Manager
 Collaborator.create!(user: manager, project: proj1, role: "manager")
@@ -38,7 +38,7 @@ Collaborator.create!(user: manager, project: proj2, role: "manager")
 Collaborator.create!(user: dev, project: proj1, role: "developer")
 
 # Create Project where Manager is Developer (unlikely but possible to test "Developer Projects" section for manager)
-proj3 = Project.create!(name: "Gamma Service", wip_limit: 2)
+proj3 = Project.create!(name: "Gamma Service")
 Collaborator.create!(user: manager, project: proj3, role: "developer")
 
 puts "Seeding complete!"

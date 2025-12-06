@@ -6,7 +6,6 @@
 
 ### WIP visualization
 - Show count per column
-- If `settings.wip_limits[status]` is set, indicate over-limit visually
 
 ### Filters
 - Filter by `issue_type` (bug/task/subtask)

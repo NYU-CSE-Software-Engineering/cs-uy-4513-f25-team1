@@ -1,9 +1,5 @@
 <h1><%= @project.name %></h1>
 
-<p><strong>WIP limit (In Progress):</strong>
-  <%= @project.wip_limit || @project.task_limit || "None" %>
-</p>
-
 <p><strong>In Progress :</strong>
   <%= @project.tasks.where(status: "in_progress").count %>
 </p>
