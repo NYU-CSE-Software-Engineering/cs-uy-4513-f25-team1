@@ -1,48 +1,17 @@
-<div class="app-layout">
-  <aside class="sidebar">
-    <div class="sidebar-section">
-      <h3>Managed Projects</h3>
-      <ul>
-        <% @manager_projects.each do |project| %>
-          <li><%= link_to project.name, project_path(project) %></li>
-        <% end %>
-      </ul>
+<% if @manager_projects.empty? && @developer_projects.empty? %>
+  <div class="empty-state-cards">
+    <div class="card">
+      <h2>Create a Project</h2>
+      <p>Start a new project and invite collaborators.</p>
+      <%= link_to "Create New", new_project_path, class: "button primary" %>
     </div>
     
-    <div class="sidebar-section">
-      <h3>Developer Projects</h3>
-      <ul>
-        <% @developer_projects.each do |project| %>
-          <li><%= link_to project.name, project_path(project) %></li>
-        <% end %>
-      </ul>
+    <div class="card">
+      <h2>Join a Project</h2>
+      <p>Have a project key? Join an existing team.</p>
+      <%= link_to "Join Existing", join_projects_path, class: "button secondary" %>
     </div>
-
-    <div class="sidebar-footer">
-      <%= link_to "Settings", "#" %> <!-- Placeholder -->
-      <%= link_to "Create Project", new_project_path %>
-      <%= link_to "Join Project", join_projects_path %>
-      <%= button_to "Logout", session_path, method: :delete, class: "logout-button" %>
-    </div>
-  </aside>
-
-  <main class="dashboard-content">
-    <% if @manager_projects.empty? && @developer_projects.empty? %>
-      <div class="empty-state-cards">
-        <div class="card">
-          <h2>Create a Project</h2>
-          <p>Start a new project and invite collaborators.</p>
-          <%= link_to "Create New", new_project_path, class: "button primary" %>
-        </div>
-        
-        <div class="card">
-          <h2>Join a Project</h2>
-          <p>Have a project key? Join an existing team.</p>
-          <%= link_to "Join Existing", join_projects_path, class: "button secondary" %>
-        </div>
-      </div>
-    <% else %>
-      <h1>Select a project from the sidebar to get started.</h1>
-    <% end %>
-  </main>
-</div>
+  </div>
+<% else %>
+  <h1>Select a project from the sidebar to get started.</h1>
+<% end %>

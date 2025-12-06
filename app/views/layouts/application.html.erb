@@ -27,6 +27,16 @@
   </head>
 
   <body>
-    <%= yield %>
+    <% if Current.user %>
+      <div class="app-layout">
+        <%= render "shared/sidebar" %>
+        <main class="dashboard-content">
+          <%= yield %>
+        </main>
+      </div>
+    <% else %>
+      <%= yield %>
+    <% end %>
+
   </body>
 </html>

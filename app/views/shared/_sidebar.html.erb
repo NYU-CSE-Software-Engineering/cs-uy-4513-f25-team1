@@ -1,0 +1,26 @@
+<aside class="sidebar">
+  <div class="sidebar-section">
+    <h3>Managed Projects</h3>
+    <ul>
+      <% @sidebar_manager_projects.each do |project| %>
+        <li><%= link_to project.name, project_path(project) %></li>
+      <% end %>
+    </ul>
+  </div>
+  
+  <div class="sidebar-section">
+    <h3>Developer Projects</h3>
+    <ul>
+      <% @sidebar_developer_projects.each do |project| %>
+        <li><%= link_to project.name, project_path(project) %></li>
+      <% end %>
+    </ul>
+  </div>
+
+  <div class="sidebar-footer">
+    <%= link_to "Settings", "#" %> <!-- Placeholder -->
+    <%= link_to "Create Project", new_project_path %>
+    <%= link_to "Join Project", join_projects_path %>
+    <%= button_to "Logout", session_path, method: :delete, class: "logout-button" %>
+  </div>
+</aside>
