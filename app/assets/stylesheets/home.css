@@ -6,9 +6,10 @@
     justify-content: center;
     align-items: center;
     min-height: 100vh;
+    width: 100%;
     /* Very subtle, professional gradient */
     background: radial-gradient(circle at 0% 0%, #eef2ff 0%, #f8fafc 100%);
-    padding: var(--spacing-md);
+    padding: var(--spacing-xl);
     position: relative;
     overflow: hidden;
 }
@@ -42,12 +43,18 @@
     position: relative;
     z-index: 1;
     text-align: center;
-    padding: 4rem 3rem;
+    padding: 5rem 4rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    margin: 0 auto;
 
     /* Clean Glassmorphism */
     background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.8);
     border-bottom: 1px solid rgba(255, 255, 255, 0.4);
     border-right: 1px solid rgba(255, 255, 255, 0.4);
@@ -58,39 +65,53 @@
         0 20px 40px -4px rgba(0, 0, 0, 0.05);
     /* Soft, diffused shadow */
 
-    max-width: 600px;
+    max-width: 700px;
     width: 100%;
 }
 
 .app-title {
     font-size: 3.5rem;
-    margin-bottom: var(--spacing-md);
+    margin: 0 auto;
+    margin-bottom: 0;
     color: var(--primary-color);
     font-weight: 700;
     letter-spacing: -1.5px;
     line-height: 1.1;
+    text-align: center;
+    width: 100%;
 }
 
 .app-subtitle {
     font-size: 1.125rem;
-    margin-bottom: var(--spacing-2xl);
+    margin: 0 auto;
+    margin-bottom: 0;
     color: var(--text-secondary);
-    line-height: 1.6;
+    line-height: 1.7;
     font-weight: 400;
-    max-width: 480px;
-    margin-left: auto;
-    margin-right: auto;
+    max-width: 520px;
+    text-align: center;
+    width: 100%;
 }
 
 .cta-buttons {
     display: flex;
     gap: var(--spacing-md);
     justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
 }
 
 .cta-buttons .btn {
-    padding: 0.75rem 2rem;
+    padding: 0.875rem 2.25rem;
     font-size: 1rem;
+    min-width: 140px;
+}
+
+/* Flash notice styling */
+.hero-section > div[style*="color: green"] {
+    text-align: center;
+    width: 100%;
+    margin-bottom: 1rem;
 }
 
 /* Features Section - Clean & Grid-based */
@@ -156,4 +177,43 @@
     color: var(--text-secondary);
     line-height: 1.6;
     font-size: 0.95rem;
+}
+
+/* Responsive improvements for home page */
+@media (max-width: 768px) {
+    .home-container {
+        padding: var(--spacing-md);
+    }
+
+    .hero-section {
+        padding: 3rem 2rem;
+        max-width: 100%;
+    }
+
+    .app-title {
+        font-size: 2.5rem;
+    }
+
+    .app-subtitle {
+        font-size: 1rem;
+    }
+
+    .cta-buttons {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .cta-buttons .btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-section {
+        padding: 2.5rem 1.5rem;
+    }
+
+    .app-title {
+        font-size: 2rem;
+    }
 }
