@@ -22,6 +22,7 @@
       <%= link_to "Settings", "#" %> <!-- Placeholder -->
       <%= link_to "Create Project", new_project_path %>
       <%= link_to "Join Project", join_projects_path %>
+      <%= button_to "Logout", session_path, method: :delete, class: "logout-button" %>
     </div>
   </aside>
 
