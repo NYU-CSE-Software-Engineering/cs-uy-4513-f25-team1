@@ -1,20 +1,25 @@
-<div class="home-container">
-  <div class="hero-section">
+<div class="auth-container">
+  <div class="auth-card" style="text-align: center;">
     <% if flash[:notice] %>
-      <div style="color: green;"><%= flash[:notice] %></div>
+      <div class="flash-message flash-notice"><%= flash[:notice] %></div>
     <% end %>
-    <h1 class="app-title">Jira Lite</h1>
-    <p class="app-subtitle">Streamline your workflow with our powerful project management tool.</p>
-    <div class="cta-buttons">
-      <a href="/session/new" class="btn btn-primary">Login</a>
-      <a href="/features" class="btn btn-secondary">Features</a>
+    
+    <h1 class="app-title" style="font-size: 3.5rem; margin-bottom: 1rem;">Jira Lite</h1>
+    <p class="auth-subtitle" style="font-size: 1.2rem; margin-bottom: 2.5rem;">Streamline your workflow with our powerful project management tool.</p>
+    
+    <div style="display: flex; gap: 1rem; justify-content: center;">
       <% if session[:user_id].present? %>
-        <%= button_to "Log out",
+         <%= link_to "Go to Projects", projects_path, class: "btn btn-primary" %>
+         <%= button_to "Log out",
               session_path,
               method: :delete,
               class: "btn btn-danger",
               form: { style: "display:inline;" } %>
+      <% else %>
+        <a href="/session/new" class="btn btn-primary">Login</a>
+        <a href="/users/new" class="btn btn-secondary">Sign Up</a>
       <% end %>
+      <a href="/features" class="btn btn-secondary">Features</a>
     </div>
   </div>
 </div>

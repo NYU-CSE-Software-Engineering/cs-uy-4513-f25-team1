@@ -1,41 +1,108 @@
-<h1><%= @project.name %></h1>
+<div class="app-container">
+  <div class="main-content">
+    
+    <% if flash[:notice] %>
+      <div class="flash-message flash-notice"><%= flash[:notice] %></div>
+    <% end %>
+    <% if flash[:alert] %>
+      <div class="flash-message flash-alert"><%= flash[:alert] %></div>
+    <% end %>
 
-<p><strong>WIP limit (In Progress):</strong>
-  <%= @project.wip_limit || @project.task_limit || "None" %>
-</p>
+    <!-- Project Header -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <div>
+          <h1 class="page-title" style="font-size: 2rem; margin: 0;"><%= @project.name %></h1>
+           <p style="color: var(--text-secondary); margin-top: 0.5rem;">Manage your project tasks</p>
+        </div>
+        <div style="text-align: right;">
+          <%= link_to "New Task", new_project_task_path(@project), class: "btn btn-primary" %>
+          <%= link_to "Back to Projects", projects_path, class: "btn btn-secondary", style: "margin-left: 0.5rem;" %>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="d-flex gap-md">
+          <div>
+            <span style="color: var(--text-secondary); font-size: 0.9rem;">WIP LIMIT</span>
+            <div style="font-size: 1.5rem; font-weight: 700;"><%= @project.wip_limit || @project.task_limit || "None" %></div>
+          </div>
+          <div>
+            <span style="color: var(--text-secondary); font-size: 0.9rem;">IN PROGRESS</span>
+            <div style="font-size: 1.5rem; font-weight: 700; color: var(--accent-primary);"><%= @project.tasks.where(status: "in_progress").count %></div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-<p><strong>In Progress :</strong>
-  <%= @project.tasks.where(status: "in_progress").count %>
-</p>
+    <!-- Kanban Board -->
+    <div class="dashboard-grid">
+      
+      <!-- To Do Column -->
+      <div class="card">
+        <div class="card-header">
+           <span class="badge badge-todo">To Do</span>
+           <span style="color: var(--text-secondary); font-size: 0.9rem;"><%= @project.tasks.where(status: "not_started").count %></span>
+        </div>
+        <div class="card-body task-list">
+          <% @project.tasks.where(status: "not_started").each do |task| %>
+            <div class="task-card">
+              <div style="font-weight: 600; margin-bottom: 0.25rem;"><%= task.title %></div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem;">
+                <span style="font-size: 0.8rem; color: var(--text-secondary);"><%= task.created_at.strftime("%b %d") %></span>
+                <%= link_to "Edit", edit_project_task_path(@project, task), class: "btn btn-secondary", style: "padding: 0.25rem 0.5rem; font-size: 0.8rem;" %>
+              </div>
+            </div>
+          <% end %>
+           <% if @project.tasks.where(status: "not_started").empty? %>
+            <div style="text-align: center; color: var(--text-secondary); padding: 1rem; font-style: italic;">No tasks</div>
+          <% end %>
+        </div>
+      </div>
 
-<% if flash[:notice] %>
-  <div class="notice"><%= flash[:notice] %></div>
-<% end %>
-<% if flash[:alert] %>
-  <div class="alert"><%= flash[:alert] %></div>
-<% end %>
+      <!-- In Progress Column -->
+      <div class="card">
+        <div class="card-header">
+           <span class="badge badge-inprogress">In Progress</span>
+           <span style="color: var(--text-secondary); font-size: 0.9rem;"><%= @project.tasks.where(status: "in_progress").count %></span>
+        </div>
+        <div class="card-body task-list">
+          <% @project.tasks.where(status: "in_progress").each do |task| %>
+            <div class="task-card" style="border-left: 3px solid var(--accent-primary);">
+              <div style="font-weight: 600; margin-bottom: 0.25rem;"><%= task.title %></div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem;">
+                <span style="font-size: 0.8rem; color: var(--text-secondary);"><%= task.created_at.strftime("%b %d") %></span>
+                 <%= link_to "Edit", edit_project_task_path(@project, task), class: "btn btn-secondary", style: "padding: 0.25rem 0.5rem; font-size: 0.8rem;" %>
+              </div>
+            </div>
+          <% end %>
+           <% if @project.tasks.where(status: "in_progress").empty? %>
+            <div style="text-align: center; color: var(--text-secondary); padding: 1rem; font-style: italic;">No active tasks</div>
+          <% end %>
+        </div>
+      </div>
 
-<hr>
+      <!-- Done Column -->
+      <div class="card">
+        <div class="card-header">
+           <span class="badge badge-done">Done</span>
+           <span style="color: var(--text-secondary); font-size: 0.9rem;"><%= @project.tasks.where(status: "done").count %></span>
+        </div>
+        <div class="card-body task-list">
+          <% @project.tasks.where(status: "done").each do |task| %>
+            <div class="task-card" style="opacity: 0.7;">
+              <div style="font-weight: 600; margin-bottom: 0.25rem; text-decoration: line-through;"><%= task.title %></div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem;">
+                <span style="font-size: 0.8rem; color: var(--text-secondary);"><%= task.created_at.strftime("%b %d") %></span>
+                 <%= link_to "Edit", edit_project_task_path(@project, task), class: "btn btn-secondary", style: "padding: 0.25rem 0.5rem; font-size: 0.8rem;" %>
+              </div>
+            </div>
+          <% end %>
+           <% if @project.tasks.where(status: "done").empty? %>
+            <div style="text-align: center; color: var(--text-secondary); padding: 1rem; font-style: italic;">No completed tasks</div>
+          <% end %>
+        </div>
+      </div>
 
-<h2>Tasks</h2>
-
-<h3>To Do</h3>
-<ul>
-  <% @project.tasks.where(status: "not_started").each do |t| %>
-    <li><%= t.title %></li>
-  <% end %>
-</ul>
-
-<h3>In Progress</h3>
-<ul>
-  <% @project.tasks.where(status: "in_progress").each do |t| %>
-    <li><%= t.title %></li>
-  <% end %>
-</ul>
-
-<h3>Done</h3>
-<ul>
-  <% @project.tasks.where(status: "done").each do |t| %>
-    <li><%= t.title %></li>
-  <% end %>
-</ul>
+    </div>
+  </div>
+</div>
