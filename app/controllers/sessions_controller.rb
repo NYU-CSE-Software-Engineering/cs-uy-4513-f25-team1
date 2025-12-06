@@ -9,6 +9,7 @@ class SessionsController < ApplicationController
     if user = User.authenticate_by(params.permit(:email_address, :password))
       reset_session
       start_new_session_for user
+      session[:user_id] = user.id
       redirect_to projects_path
     else
       redirect_to new_session_path, alert: "Try another email address or password."
@@ -17,6 +18,8 @@ class SessionsController < ApplicationController
 
   def destroy
     terminate_session
-    redirect_to new_session_path
+    session.delete(:user_id)
+    flash[:notice] = "Signed out successfully"
+    redirect_to "/"
   end
 end
