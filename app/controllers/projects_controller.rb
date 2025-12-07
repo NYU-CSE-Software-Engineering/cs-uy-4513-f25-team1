@@ -13,9 +13,14 @@ class ProjectsController < ApplicationController
   def create
     @project = Project.new(name: params[:project][:name], wip_limit: params[:project][:wip_limit], description: params[:project][:description])
     valid = @project.save
-    if !valid then
+    # if name is duplicate of another project owned by the user then valid is false as well
+    duplicate_project = Collaborator.where(user_id: @user, role: "manager").joins(:project).where(projects: { name: @project.name }).exists?
+    if !valid or duplicate_project then
       if @project.errors[:name] then
         flash[:name_error] = "Name can't be blank"
+      end
+      if duplicate_project then
+        flash[:name_duplicate_error] = "Name has already been taken"
       end
       if @project.errors[:wip_limit] then
         flash[:wip_limit_error] = "WIP limit must be 0 or greater"

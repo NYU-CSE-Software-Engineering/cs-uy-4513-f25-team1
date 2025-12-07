@@ -1,5 +1,8 @@
 <h1>Projects#new</h1>
 
+<% if flash[:name_duplicate_error] %>
+  <p><%= flash[:name_duplicate_error] %></p>
+<% end %>
 <% if flash[:name_error] %>
   <p> <%= flash[:name_error] %> </p>
 <% end %>
