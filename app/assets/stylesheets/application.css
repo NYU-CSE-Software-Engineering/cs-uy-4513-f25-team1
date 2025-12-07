@@ -205,7 +205,49 @@ label {
     /* Slate 500 */
     margin-bottom: var(--spacing-sm);
     margin-top: var(--spacing-lg);
+    margin-right: auto;
     font-weight: 600;
+}
+
+.sidebar-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-top: var(--spacing-lg);
+    margin-bottom: var(--spacing-sm);
+}
+
+.sidebar-section:first-of-type .sidebar-section-header {
+    margin-top: 0;
+}
+
+.sidebar-section-header h3 {
+    margin: 0;
+    flex: 1;
+}
+
+.sidebar-add-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 4px;
+    color: #64748b;
+    font-size: 3rem;
+    font-weight: 400;
+    line-height: 1;
+    text-decoration: none;
+    transition: all 0.2s;
+    flex-shrink: 0;
+    padding: 0;
+    vertical-align: middle;
+}
+
+.sidebar-add-button:hover {
+    background-color: var(--primary-hover);
+    color: white;
 }
 
 .sidebar ul {
@@ -236,7 +278,7 @@ label {
 }
 
 /* Remove top margin for the first section header */
-.sidebar-section:first-of-type h3 {
+.sidebar-section:first-of-type .sidebar-section-header h3 {
     margin-top: 0;
 }
 

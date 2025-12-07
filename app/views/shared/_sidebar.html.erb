@@ -1,6 +1,11 @@
 <aside class="sidebar">
   <div class="sidebar-section">
-    <h3>Managed Projects</h3>
+    <div class="sidebar-section-header">
+      <h3>Managed Projects</h3>
+      <%= link_to new_project_path, class: "sidebar-add-button", title: "Create Project" do %>
+        +
+      <% end %>
+    </div>
     <ul>
       <% @sidebar_manager_projects.each do |project| %>
         <li><%= link_to project.name, project_path(project) %></li>
@@ -9,7 +14,12 @@
   </div>
   
   <div class="sidebar-section">
-    <h3>Developer Projects</h3>
+    <div class="sidebar-section-header">
+      <h3>Developer Projects</h3>
+      <%= link_to join_projects_path, class: "sidebar-add-button", title: "Join Project" do %>
+        +
+      <% end %>
+    </div>
     <ul>
       <% @sidebar_developer_projects.each do |project| %>
         <li><%= link_to project.name, project_path(project) %></li>
@@ -19,8 +29,6 @@
 
   <div class="sidebar-footer">
     <%= link_to "Settings", "#" %> <!-- Placeholder -->
-    <%= link_to "Create Project", new_project_path %>
-    <%= link_to "Join Project", join_projects_path %>
     <%= button_to "Logout", session_path, method: :delete, class: "logout-button" %>
   </div>
 </aside>

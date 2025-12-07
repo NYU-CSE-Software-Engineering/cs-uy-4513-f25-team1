@@ -19,6 +19,11 @@
     </div>
 
     <div class="input-group">
+      <%= form.label :key, "Project Key" %>
+      <%= form.text_field :key, placeholder: "e.g. CORE-A1B2", required: true %>
+    </div>
+
+    <div class="input-group">
       <%= form.label :description, "Description" %>
       <%= form.text_area :description, placeholder: "Briefly describe the project goals...", rows: 3 %>
     </div>
