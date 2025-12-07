@@ -1,7 +1,13 @@
 <h1>Projects#new</h1>
 
-<% if flash[:error] %>
-  <p> <%= flash[:error] %> </p>
+<% if flash[:name_duplicate_error] %>
+  <p><%= flash[:name_duplicate_error] %></p>
+<% end %>
+<% if flash[:name_error] %>
+  <p> <%= flash[:name_error] %> </p>
+<% end %>
+<% if flash[:wip_limit_error] %>
+  <p> <%= flash[:wip_limit_error] %> </p>
 <% end %>
 
 <%= form_with model: @project do |form| %>
@@ -12,6 +18,10 @@
   <div>
     <%= form.label :wip_limit %>
     <%= form.number_field :wip_limit, min: 0.0, step: 1.0 %>
+  </div>
+  <div>
+    <%= form.label :description %>
+    <%= form.text_field :description %>
   </div>
   <%= form.submit %>
 <% end %>
