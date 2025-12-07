@@ -4,7 +4,7 @@ end
 
 Given("I am on the {string} project's tasks page") do |project_name|
   project = Project.find_by!(name: project_name)
-  visit project_tasks_path(project)
+  visit project_path(project)
 end
 
 When("I fill in {string} with {string}") do |field_name, value|

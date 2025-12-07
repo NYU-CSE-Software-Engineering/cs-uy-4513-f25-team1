@@ -37,3 +37,11 @@
     <%= form.submit "Create Task" %>
   </div>
 <% end %>
+
+<h2>Tasks</h2>
+<ul>
+  <% @project.tasks.each do |task| %>
+    <li><%= task.title %></li>
+  <% end %>
+</ul>
+

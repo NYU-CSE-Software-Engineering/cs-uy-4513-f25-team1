@@ -9,6 +9,8 @@ class TasksController < ApplicationController
   def create
     @task = @project.tasks.build(task_params)
 
+    @task.user = current_user
+
     if @task.save
       redirect_to new_project_task_path(@project),
                   notice: "Task was successfully created.",
