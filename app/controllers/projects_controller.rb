@@ -9,6 +9,11 @@ class ProjectsController < ApplicationController
     @project = Project.new
   end
 
+  def create
+    @project = Project.new(name: params[:name], wip_limit: params[:wip_limit])
+    @project.save!
+  end
+
   def show
   end
 
