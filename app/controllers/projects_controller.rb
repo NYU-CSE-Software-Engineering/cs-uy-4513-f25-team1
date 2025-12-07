@@ -24,7 +24,7 @@ class ProjectsController < ApplicationController
       collaborator = Collaborator.new(user_id: session[:user_id], project_id: @project.id, role: "owner")
       collaborator.save!
     end
-    redirect_to new_project_path
+    redirect_to project_path(@project.id)
   end
 
   def show
