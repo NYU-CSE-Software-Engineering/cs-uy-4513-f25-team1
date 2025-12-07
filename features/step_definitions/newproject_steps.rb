@@ -10,17 +10,16 @@ Given('I am on the new project page') do
   visit new_project_path
 end
 
-Given('an existing project with key {string} already exists') do |key|
-  Project.create!(
-    name: 'Existing Project',
-    key: key,
+Given('an existing project with name {string} already exists') do |name|
+  proj = Project.create!(
+    name: name,
     description: 'Existing description',
-    created_by: @user
   )
-end
-
-When('I fill in {string} with {string}') do |field, value|
-  fill_in field, with: value
+  Collaborator.create!(
+    project_id: proj.id,
+    user_id: @user.id,
+    role: "manager"
+  )
 end
 
 When('I press {string}') do |button|

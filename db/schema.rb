@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_03_231443) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_07_201652) do
   create_table "collaborators", force: :cascade do |t|
     t.string "role"
     t.datetime "created_at", null: false
@@ -26,6 +26,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_03_231443) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "wip_limit"
+    t.string "description"
   end
 
   create_table "sessions", force: :cascade do |t|

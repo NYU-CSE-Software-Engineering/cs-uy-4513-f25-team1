@@ -1,0 +1,7 @@
+<% if session[:user_id].present? %>
+  <%= button_to "Log out",
+        session_path,
+        method: :delete,
+        class: "btn btn-danger",
+        form: { style: "display:inline;" } %>
+<% end %>
