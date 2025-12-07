@@ -8,7 +8,7 @@ Feature: Log in to an account
 		And I am on the login page
 		When I input valid email and password
 		And I click "Sign in"
-		Then I should be on the home page signed in
+		Then I should be on the projects page
 
 	Scenario: User logs in with invalid email
 		Given I am a logged out user
