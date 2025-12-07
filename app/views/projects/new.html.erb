@@ -1,2 +1,13 @@
 <h1>Projects#new</h1>
-<p>Find me in app/views/projects/new.html.erb</p>
+
+<%= form_with model: @project do |form| %>
+  <div>
+    <%= form.label :name %>
+    <%= form.text_field :name %>
+  </div>
+  <div>
+    <%= form.label :wip_limit %>
+    <%= form.number_field :wip_limit, min: 0.0, step: 1.0 %>
+  </div>
+  <%= form.submit %>
+<% end %>
