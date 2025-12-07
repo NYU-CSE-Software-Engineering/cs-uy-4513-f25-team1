@@ -197,6 +197,24 @@ label {
     border-right: 1px solid var(--primary-hover);
 }
 
+.sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: var(--spacing-xl);
+    text-decoration: none;
+}
+
+.sidebar-brand .logo-placeholder {
+    background-color: white;
+    color: var(--primary-color);
+}
+
+.sidebar-brand .navbar-title {
+    color: white;
+    font-size: 1.1rem;
+}
+
 .sidebar h3 {
     font-size: 0.75rem;
     text-transform: uppercase;
@@ -337,6 +355,49 @@ label {
     height: 100%;
     /* Take full height of main */
     gap: var(--spacing-xl);
+}
+
+.no-project-selected {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    text-align: center;
+    color: var(--text-secondary);
+    animation: fadeIn 0.5s ease-out;
+}
+
+.no-project-icon {
+    width: 64px;
+    height: 64px;
+    margin-bottom: var(--spacing-lg);
+    color: var(--border-color);
+}
+
+.no-project-selected h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: var(--spacing-sm);
+}
+
+.no-project-selected p {
+    font-size: 1rem;
+    max-width: 400px;
+    margin-bottom: var(--spacing-xl);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .card {
