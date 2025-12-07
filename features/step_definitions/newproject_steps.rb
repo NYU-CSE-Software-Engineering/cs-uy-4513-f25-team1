@@ -19,10 +19,6 @@ Given('an existing project with key {string} already exists') do |key|
   )
 end
 
-When('I fill in {string} with {string}') do |field, value|
-  fill_in field, with: value
-end
-
 When('I press {string}') do |button|
   click_button button
 end
