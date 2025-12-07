@@ -79,8 +79,12 @@ Then('I should be on the projects page') do
   expect(page).to have_current_path("/projects")
 end
 
+Then('I should be on the home page') do
+  expect(page).to have_current_path("/")
+end
+
 When('I go to my projects page') do
-  visit user_project_path
+  visit projects_path
 end
 
 Then('I should see an error page') do
