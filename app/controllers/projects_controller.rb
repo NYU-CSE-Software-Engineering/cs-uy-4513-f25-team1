@@ -1,5 +1,6 @@
 class ProjectsController < ApplicationController
   before_action :set_project, only: :show
+  before_action :set_user
 
   def index
     @projects = Project.all
@@ -28,5 +29,9 @@ class ProjectsController < ApplicationController
 
   def set_project
     @project = Project.find(params[:id]) # use :id not :project_id
+  end
+
+  def set_user
+    @user = session[:user_id]
   end
 end
