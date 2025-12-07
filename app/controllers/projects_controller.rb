@@ -11,10 +11,15 @@ class ProjectsController < ApplicationController
   end
 
   def create
-    @project = Project.new(name: params[:project][:name], wip_limit: params[:project][:wip_limit])
+    @project = Project.new(name: params[:project][:name], wip_limit: params[:project][:wip_limit], description: params[:project][:description])
     valid = @project.save
     if !valid then
-      flash[:error] = "some error happened"
+      if @project.errors[:name] then
+        flash[:name_error] = "Name can't be blank"
+      end
+      if @project.errors[:wip_limit] then
+        flash[:wip_limit_error] = "WIP limit must be 0 or greater"
+      end
     else
       collaborator = Collaborator.new(user_id: session[:user_id], project_id: @project.id, role: "owner")
       collaborator.save!
