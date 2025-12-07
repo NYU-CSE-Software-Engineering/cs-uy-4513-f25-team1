@@ -10,8 +10,12 @@ class ProjectsController < ApplicationController
   end
 
   def create
-    @project = Project.new(name: params[:name], wip_limit: params[:wip_limit])
-    @project.save!
+    @project = Project.new(name: params[:project][:name], wip_limit: params[:project][:wip_limit])
+    valid = @project.save
+    if !valid then
+      flash[:error] = "some error happened"
+    end
+    redirect_to new_project_path
   end
 
   def show
