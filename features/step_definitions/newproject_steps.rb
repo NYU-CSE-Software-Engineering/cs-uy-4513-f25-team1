@@ -10,10 +10,9 @@ Given('I am on the new project page') do
   visit new_project_path
 end
 
-Given('an existing project with key {string} already exists') do |key|
+Given('an existing project with name {string} already exists') do |name|
   Project.create!(
-    name: 'Existing Project',
-    key: key,
+    name: name,
     description: 'Existing description',
     created_by: @user
   )
