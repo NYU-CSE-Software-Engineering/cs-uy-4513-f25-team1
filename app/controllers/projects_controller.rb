@@ -1,12 +1,16 @@
 class ProjectsController < ApplicationController
   before_action :set_project, only: :show
 
+  def index
+    @projects = Project.all
+  end
+
   def show
   end
 
   private
 
   def set_project
-    @project = Project.find(params[:id]) # ← 用 :id，不是 :project_id
+    @project = Project.find(params[:id]) # use :id not :project_id
   end
 end
