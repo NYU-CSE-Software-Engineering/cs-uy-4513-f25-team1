@@ -11,7 +11,7 @@ class Project < ApplicationRecord
   private
 
   def generate_key
-    return if key.present?
+    return if self.key.present?
 
     base = name.parameterize.upcase.gsub(/[^A-Z]/, "")[0..3]
     self.key = loop do

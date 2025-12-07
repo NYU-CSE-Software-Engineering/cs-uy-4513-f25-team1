@@ -39,6 +39,14 @@ class ProjectsController < ApplicationController
   before_action :set_project, only: :show
 
   def show
+    @collaborators = @project.collaborators.includes(:user)
+    @tasks = @project.tasks.includes(:user).ordered
+
+    if params[:sort] == "due_date"
+      @tasks = @tasks.reorder(due_date: :asc)
+    elsif params[:sort] == "urgency"
+      @tasks = @tasks.reorder(priority: :desc)
+    end
   end
 
   private

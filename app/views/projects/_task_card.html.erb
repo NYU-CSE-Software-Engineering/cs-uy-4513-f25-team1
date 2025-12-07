@@ -1,0 +1,9 @@
+<div class="task-card">
+  <h3><%= link_to task.title, project_task_path(@project, task) %></h3>
+  <p class="status-badge <%= task.status %>"><%= task.status.humanize %></p>
+  <div class="task-meta">
+    <p>Due: <%= task.due_date&.to_date || "None" %></p>
+    <p>Priority: <%= task.priority.humanize %></p>
+    <p>Assignee: <%= task.user&.username || "Unassigned" %></p>
+  </div>
+</div>

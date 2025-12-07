@@ -16,7 +16,14 @@ Rails.application.routes.draw do
       get :join, to: "projects#join_page"
       post :join
     end
-    resources :tasks, only: [ :new, :create, :edit, :update ]
+    resources :tasks do
+      member do
+        patch :request_review
+        patch :mark_complete
+      end
+      resources :checklist_items, only: [ :create, :update, :destroy ]
+      resources :comments, only: [ :create, :destroy ]
+    end
   end
 
   # Registration routes

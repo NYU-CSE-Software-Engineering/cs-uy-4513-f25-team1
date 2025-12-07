@@ -1,0 +1,89 @@
+<div class="task-details">
+  <div class="task-header">
+    <h1><%= @task.title %> <span class="status-badge <%= @task.status %>"><%= @task.status.humanize %></span></h1>
+    <div class="actions">
+      <% if Current.user.role_for(@project) == 'developer' && @task.status == 'in_progress' && @task.checklist_items.all?(&:completed) %>
+        <%= button_to "Request Review", request_review_project_task_path(@project, @task), method: :patch, data: { confirm: "Request review?" } %>
+      <% end %>
+      <% if Current.user.role_for(@project) == 'manager' && @task.status == 'review' %>
+        <%= button_to "Mark as Complete", mark_complete_project_task_path(@project, @task), method: :patch, data: { confirm: "Mark task as complete?" } %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="task-info">
+    <p><strong>Description:</strong> <%= @task.description %></p>
+    <p><strong>Due:</strong> <%= @task.due_date&.to_date %></p>
+    <p><strong>Priority:</strong> <%= @task.priority.humanize %></p>
+    <p><strong>Assignee:</strong> <%= @task.user&.username || "Unassigned" %></p>
+    <% if @task.github_branch.present? %>
+       <p><strong>Github Branch:</strong> <%= link_to @task.github_branch, "https://github.com/myorg/repo/tree/#{@task.github_branch}", target: "_blank" %></p>
+    <% end %>
+  </div>
+
+  <div class="checklist-section"
+       data-controller="checklist"
+       data-checklist-role-value="<%= Current.user.role_for(@project) %>"
+       data-checklist-request-review-url-value="<%= request_review_project_task_path(@project, @task) %>"
+       data-checklist-mark-complete-url-value="<%= mark_complete_project_task_path(@project, @task) %>">
+    <h2>Checklist</h2>
+    <ul data-checklist-target="list">
+      <% @task.checklist_items.each do |item| %>
+        <li class="checklist-item">
+          <%= form_with(model: [@project, @task, item], method: :patch, local: true, data: { action: "change->checklist#check" }) do |f| %>
+            <%= f.check_box :completed, class: "checklist-checkbox", data: { checklist_target: "item" } %>
+            <%= item.content %>
+            <%= link_to "Delete", project_task_checklist_item_path(@project, @task, item), method: :delete, data: { confirm: "Are you sure?" } %>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+    <% if Current.user.role_for(@project) == 'manager' || @task.user == Current.user %>
+      <%= form_with(model: [@project, @task, @checklist_item], local: true, class: "add-item-form") do |f| %>
+        <%= f.text_field :content, placeholder: "New item..." %>
+        <%= f.submit "Add Item" %>
+      <% end %>
+    <% end %>
+  </div>
+
+  <div class="media-section">
+    <h2>Media</h2>
+    <div class="files">
+      <% if @task.files.attached? %>
+        <% @task.files.each do |file| %>
+          <div class="file">
+            <% if file.image? %>
+              <%= image_tag file, width: 200 %>
+            <% else %>
+               <%= link_to file.filename, rails_blob_path(file, disposition: "attachment") %>
+            <% end %>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+    <% if Current.user.role_for(@project) == 'manager' || @task.user == Current.user %>
+      <%= form_with(model: [@project, @task], local: true) do |f| %>
+        <%= f.label :files, "Upload Media" %>
+        <%= f.file_field :files, multiple: true %>
+        <%= f.submit "Upload" %>
+      <% end %>
+    <% end %>
+  </div>
+
+  <div class="comments-section">
+    <h2>Comments</h2>
+    <% @task.comments.each do |comment| %>
+      <div class="comment">
+        <strong><%= comment.user.username %>:</strong> <%= comment.body %>
+        <% if comment.user == Current.user || Current.user.role_for(@project) == 'manager' %>
+          <%= link_to "Delete", project_task_comment_path(@project, @task, comment), method: :delete %>
+        <% end %>
+      </div>
+    <% end %>
+    
+    <%= form_with(model: [@project, @task, @comment], local: true) do |f| %>
+      <%= f.text_area :body, placeholder: "Add a comment..." %>
+      <%= f.submit "Post Comment" %>
+    <% end %>
+  </div>
+</div>

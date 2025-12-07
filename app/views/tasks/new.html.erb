@@ -1,15 +1,8 @@
-<h1>New Task</h1>
+<h1>New Task for <%= @project.name %></h1>
 
-<% if flash[:notice] %>
-  <div class="notice"><%= flash[:notice] %></div>
-<% end %>
-<% if flash[:alert] %>
-  <div class="alert"><%= flash[:alert] %></div>
-<% end %>
-
-<%= form_with model: [@project, @task], local: true do |form| %>
+<%= form_with(model: [@project, @task], local: true) do |form| %>
   <% if @task.errors.any? %>
-    <div id="error_explanation">
+    <div class="error-messages">
       <h2><%= pluralize(@task.errors.count, "error") %> prohibited this task from being saved:</h2>
       <ul>
         <% @task.errors.full_messages.each do |message| %>
@@ -19,21 +12,39 @@
     </div>
   <% end %>
 
-  <div>
-    <%= form.label :title, "Title" %>
+  <div class="field">
+    <%= form.label :title %>
     <%= form.text_field :title %>
   </div>
 
-  <div>
-    <%= form.label :status, "Status" %>
-    <%= form.select :status, options_for_select([
-      ["To Do", "not_started"],
-      ["In Progress", "in_progress"],
-      ["Done", "done"]
-    ]) %>
+  <div class="field">
+    <%= form.label :description %>
+    <%= form.text_area :description %>
   </div>
 
-  <div>
+  <div class="field">
+    <%= form.label :priority %>
+    <%= form.select :priority, Task.priorities.keys.map { |p| [p.humanize, p] } %>
+  </div>
+
+  <div class="field">
+    <%= form.label :due_date %>
+    <%= form.date_field :due_date %>
+  </div>
+
+  <div class="field">
+    <%= form.label :github_branch %>
+    <%= form.text_field :github_branch, placeholder: "e.g. feature/login-page" %>
+  </div>
+
+  <div class="field">
+    <%= form.label :user_id, "Assignee" %>
+    <%= form.collection_select :user_id, @project.users, :id, :username, include_blank: "Unassigned" %>
+  </div>
+
+  <div class="actions">
     <%= form.submit "Create Task" %>
   </div>
 <% end %>
+
+<%= link_to "Back to Project", project_path(@project) %>

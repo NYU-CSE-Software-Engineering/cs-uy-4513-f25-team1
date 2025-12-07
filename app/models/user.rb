@@ -15,4 +15,8 @@ class User < ApplicationRecord
   def developer_projects
     Project.joins(:collaborators).where(collaborators: { user_id: id, role: "developer" }).order(updated_at: :desc)
   end
+
+  def role_for(project)
+    collaborators.find_by(project: project)&.role
+  end
 end

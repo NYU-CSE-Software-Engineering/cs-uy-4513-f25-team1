@@ -6,15 +6,18 @@ class TasksController < ApplicationController
     @task = @project.tasks.build
   end
 
+  def show
+    @checklist_item = ChecklistItem.new
+    @comment = Comment.new
+  end
+
   def create
     @task = @project.tasks.build(task_params)
+    @task.status = @task.user.present? ? :in_progress : :todo
 
     if @task.save
-      redirect_to new_project_task_path(@project),
-                  notice: "Task was successfully created.",
-                  status: :see_other
+      redirect_to project_path(@project), notice: "Task created successfully."
     else
-      flash.now[:alert] = "Task could not be created."
       render :new, status: :unprocessable_entity
     end
   end
@@ -24,13 +27,20 @@ class TasksController < ApplicationController
 
   def update
     if @task.update(task_params)
-      redirect_to edit_project_task_path(@project, @task),
-                  notice: "Task updated.",
-                  status: :see_other
+      redirect_to project_task_path(@project, @task), notice: "Task updated."
     else
-      flash.now[:alert] = "Task could not be updated."
       render :edit, status: :unprocessable_entity
     end
+  end
+
+  def request_review
+    @task.review!
+    redirect_to project_task_path(@project, @task), notice: "Review requested."
+  end
+
+  def mark_complete
+    @task.done!
+    redirect_to project_task_path(@project, @task), notice: "Task marked as complete."
   end
 
   private
@@ -44,6 +54,6 @@ class TasksController < ApplicationController
   end
 
   def task_params
-    params.require(:task).permit(:title, :status)
+    params.require(:task).permit(:title, :description, :status, :priority, :due_date, :github_branch, :user_id, files: [])
   end
 end

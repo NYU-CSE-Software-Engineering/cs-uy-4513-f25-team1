@@ -1,37 +1,59 @@
-<h1><%= @project.name %></h1>
+<div class="project-dashboard">
+  <header class="project-header">
+    <h1><%= @project.name %></h1>
+    <p class="description"><%= @project.description %></p>
+    <div class="collaborators">
+      <strong>Collaborators:</strong>
+      <% @collaborators.each do |collab| %>
+        <span class="collaborator"><%= collab.user.username %> (<%= collab.role %>)</span>
+      <% end %>
+    </div>
+  </header>
 
-<p><strong>In Progress :</strong>
-  <%= @project.tasks.where(status: "in_progress").count %>
-</p>
-
-<% if flash[:notice] %>
-  <div class="notice"><%= flash[:notice] %></div>
-<% end %>
-<% if flash[:alert] %>
-  <div class="alert"><%= flash[:alert] %></div>
-<% end %>
-
-<hr>
-
-<h2>Tasks</h2>
-
-<h3>To Do</h3>
-<ul>
-  <% @project.tasks.where(status: "not_started").each do |t| %>
-    <li><%= t.title %></li>
+  <% if Current.user.role_for(@project) == 'manager' %>
+    <div class="manager-actions">
+      <%= link_to "Create Task", new_project_task_path(@project), class: "button primary" %>
+    </div>
   <% end %>
-</ul>
 
-<h3>In Progress</h3>
-<ul>
-  <% @project.tasks.where(status: "in_progress").each do |t| %>
-    <li><%= t.title %></li>
+  <% if Current.user.role_for(@project) == 'developer' %>
+    <div class="my-tasks">
+      <h2>My Tasks</h2>
+      <% my_tasks = @tasks.where(user: Current.user) %>
+      <% if my_tasks.any? %>
+        <% my_tasks.each do |task| %>
+          <%= render "task_list", task: task %>
+        <% end %>
+      <% else %>
+        <p>No tasks assigned to you.</p>
+      <% end %>
+    </div>
   <% end %>
-</ul>
 
-<h3>Done</h3>
-<ul>
-  <% @project.tasks.where(status: "done").each do |t| %>
-    <li><%= t.title %></li>
-  <% end %>
-</ul>
+  <div class="tasks-section">
+    <div class="task-controls">
+      <div class="filters">
+        Sort by:
+        <%= link_to "Due Date", project_path(@project, sort: "due_date", layout: params[:layout]) %> |
+        <%= link_to "Urgency", project_path(@project, sort: "urgency", layout: params[:layout]) %>
+      </div>
+      <div class="layout-toggle">
+        View:
+        <%= link_to "List", project_path(@project, layout: "list", sort: params[:sort]) %> |
+        <%= link_to "Card", project_path(@project, layout: "card", sort: params[:sort]) %>
+      </div>
+    </div>
+
+    <div class="tasks-container <%= params[:layout] == 'card' ? 'card-view' : 'list-view' %>">
+      <% if params[:layout] == 'card' %>
+        <% @tasks.each do |task| %>
+          <%= render "task_card", task: task %>
+        <% end %>
+      <% else %>
+        <% @tasks.each do |task| %>
+          <%= render "task_list", task: task %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</div>
