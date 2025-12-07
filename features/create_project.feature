@@ -18,9 +18,8 @@ Feature: Create a new project
     And I am on the new project page
     When I press "Create Project"
     Then I should see "Name can't be blank"
-    And I should see "Key can't be blank"
 
-  Scenario: Fail to create project with duplicate key
+  Scenario: Fail to create project with duplicate name
     Given I am a logged in user
     And an existing project with name "Lira" already exists
     And I am on the new project page
