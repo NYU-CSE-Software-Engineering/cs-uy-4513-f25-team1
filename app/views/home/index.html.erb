@@ -1,20 +1,58 @@
+<nav class="home-navbar">
+  <div class="navbar-brand">
+    <div class="logo-placeholder">JL</div>
+    <span class="navbar-title">Jira Lite</span>
+  </div>
+  <div class="navbar-actions">
+    <a href="/session/new" class="btn btn-primary">Login</a>
+  </div>
+</nav>
+
 <div class="home-container">
+  <% if flash[:notice] %>
+    <div class="flash-notice" style="color: green;"><%= flash[:notice] %></div>
+  <% end %>
+
   <div class="hero-section">
-    <% if flash[:notice] %>
-      <div class="flash-notice" style="color: green;"><%= flash[:notice] %></div>
-    <% end %>
     <h1 class="app-title">Jira Lite</h1>
     <p class="app-subtitle">Streamline your workflow with our powerful project management tool.</p>
-    <div class="cta-buttons">
-      <a href="/session/new" class="btn btn-primary">Login</a>
-      <a href="/features" class="btn btn-secondary">Features</a>
-      <% if session[:user_id].present? %>
-        <%= button_to "Log out",
-              session_path,
-              method: :delete,
-              class: "btn btn-danger",
-              form: { style: "display:inline;" } %>
-      <% end %>
+  </div>
+
+  <div class="features-section">
+    <div class="features-content">
+      <h1 class="features-title">Features</h1>
+      <p class="features-intro">Discover what makes Jira Lite the perfect tool for your team.</p>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <h3>Project Management</h3>
+          <p>Organize your work into distinct projects. Keep everything structured and accessible in one place.</p>
+        </div>
+
+        <div class="feature-card">
+          <h3>Kanban Boards</h3>
+          <p>Visualize your workflow with intuitive Kanban boards. Drag and drop tasks to update their status instantly.</p>
+        </div>
+
+        <div class="feature-card">
+          <h3>Task Tracking</h3>
+          <p>Create, edit, and prioritize tasks. Assign them to team members and track progress effortlessly.</p>
+        </div>
+
+        <div class="feature-card">
+          <h3>Workflow Control</h3>
+          <p>Set Work-In-Progress (WIP) limits to prevent bottlenecks and ensure a smooth flow of tasks.</p>
+        </div>
+
+        <div class="feature-card">
+          <h3>Collaboration</h3>
+          <p>Work together seamlessly. Add collaborators to projects and keep everyone on the same page.</p>
+        </div>
+      </div>
     </div>
+  </div>
+
+  <div class="cta-section">
+    <a href="/session/new" class="btn btn-primary btn-large">Login</a>
   </div>
 </div>

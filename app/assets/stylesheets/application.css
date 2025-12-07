@@ -463,37 +463,6 @@ input[type="submit"].btn-primary:hover {
     text-align: center;
 }
 
-/* Home Page Overrides - Ensure centered card layout */
-body > .home-container {
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    min-height: 100vh !important;
-    width: 100vw !important;
-    padding: 2rem !important;
-    margin: 0 !important;
-    position: relative !important;
-    overflow: hidden !important;
-    box-sizing: border-box !important;
-}
-
-body > .home-container > .hero-section {
-    background: #ffffff !important;
-    border-radius: 24px !important;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3) !important;
-    padding: 3rem 2.5rem !important;
-    max-width: 550px !important;
-    width: 100% !important;
-    text-align: center !important;
-    margin: 0 auto !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    gap: 1.5rem !important;
-    position: relative !important;
-    z-index: 1 !important;
-}
-
 /* Features Page Card Styles - Ensure cards are visible */
 .features-grid {
     display: grid;
