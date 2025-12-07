@@ -20,9 +20,11 @@ class ProjectsController < ApplicationController
       if @project.errors[:wip_limit] then
         flash[:wip_limit_error] = "WIP limit must be 0 or greater"
       end
+      redirect_to new_project_path
     else
       collaborator = Collaborator.new(user_id: session[:user_id], project_id: @project.id, role: "owner")
       collaborator.save!
+      flash[:created] = "Project was successfully created."
     end
     redirect_to project_path(@project.id)
   end
