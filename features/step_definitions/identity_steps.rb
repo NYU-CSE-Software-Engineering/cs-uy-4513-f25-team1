@@ -75,8 +75,8 @@ Given('I am a logged in user') do
   expect(page).to have_content('Log out')
 end
 
-Then('I should be on the home page') do
-  expect(page).to have_current_path("/")
+Then('I should be on the projects page') do
+  expect(page).to have_current_path("/projects")
 end
 
 When('I go to my projects page') do
