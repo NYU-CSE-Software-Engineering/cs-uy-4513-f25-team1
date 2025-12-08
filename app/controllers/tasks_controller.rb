@@ -8,8 +8,12 @@ class TasksController < ApplicationController
 
   def create
     @task = @project.tasks.build(task_params)
+    @task.user = Current.user
 
-    if @task.save
+    if moving_to_in_progress?(task_params[:status]) && wip_reached_for_create?
+      flash.now[:alert] = "WIP limit has been reached for this project."
+      render :new, status: :unprocessable_entity
+    elsif @task.save
       redirect_to new_project_task_path(@project),
                   notice: "Task was successfully created.",
                   status: :see_other
@@ -60,16 +64,23 @@ class TasksController < ApplicationController
   end
 
   def moving_to_in_progress?(target_status)
-    target_status == "in_progress"
+    target_status == "In Progress"
   end
 
   def wip_reached?
     limit = project_wip_limit.to_i
     return false if limit <= 0
     current_in_progress = @project.tasks
-                                  .where(status: "in_progress")
+                                  .where(status: "In Progress")
                                   .where.not(id: @task.id)
                                   .count
+    current_in_progress >= limit
+  end
+
+  def wip_reached_for_create?
+    limit = project_wip_limit.to_i
+    return false if limit <= 0
+    current_in_progress = @project.tasks.where(status: "In Progress").count
     current_in_progress >= limit
   end
 end
