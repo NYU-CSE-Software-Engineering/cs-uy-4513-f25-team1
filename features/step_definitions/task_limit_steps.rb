@@ -95,12 +95,12 @@ Then('{string} should remain in {string}') do |task_title, expected_status|
   # UI State Check - Verify the task is still in the old column
   visit project_path(current_project)
   column_id = case expected_status
-              when "In Progress" then "in-progress-column"
-              when "To Do" then "to-do-column"
-              when "In Review" then "in-review-column"
-              when "Completed" then "completed-column"
-              else expected_status.parameterize + "-column"
-              end
+  when "In Progress" then "in-progress-column"
+  when "To Do" then "to-do-column"
+  when "In Review" then "in-review-column"
+  when "Completed" then "completed-column"
+  else expected_status.parameterize + "-column"
+  end
 
   within("##{column_id}") do
     expect(page).to have_content(task_title)
