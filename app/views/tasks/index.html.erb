@@ -1,10 +1,46 @@
 <h1>Tasks for <%= @project.name %></h1>
 
-<%= link_to "New Task", new_project_task_path(@project), class: "button" %>
+<% if flash[:notice] %>
+  <div class="notice"><%= flash[:notice] %></div>
+<% end %>
+<% if flash[:alert] %>
+  <div class="alert"><%= flash[:alert] %></div>
+<% end %>
 
-<ul>
-  <% @tasks.each do |task| %>
-    <li><%= task.title %></li>
-  <% end %>
-</ul>
+<% if @is_manager %>
+  <%= link_to "New Task", new_project_task_path(@project), class: "button" %>
+<% end %>
+
+<table>
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Description</th>
+      <th>Status</th>
+      <th>Priority</th>
+      <th>Assignee</th>
+      <th>Due At</th>
+      <th>Branch Link</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @tasks.each do |task| %>
+      <tr>
+        <td><%= task.title %></td>
+        <td><%= task.description %></td>
+        <td><%= task.status %></td>
+        <td><%= task.priority %></td>
+        <td><%= task.collaborator&.user&.username || "Unassigned" %></td>
+        <td><%= task.due_at&.strftime("%b %d, %Y %I:%M %p") || "No due date" %></td>
+        <td>
+          <% if task.branch_link.present? %>
+            <%= link_to task.branch_link, task.branch_link, target: "_blank" %>
+          <% else %>
+            No branch link
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
 

@@ -25,12 +25,34 @@
   </div>
 
   <div>
-    <%= form.label :status, "Status" %>
-    <%= form.select :status, options_for_select([
-      ["To Do", "not_started"],
-      ["In Progress", "in_progress"],
-      ["Done", "done"]
-    ]) %>
+    <%= form.label :description, "Description" %>
+    <%= form.text_area :description %>
+  </div>
+
+  <div>
+    <%= form.label :due_at, "Due At" %>
+    <%= form.datetime_local_field :due_at %>
+  </div>
+
+  <div>
+    <%= form.label :priority, "Priority" %>
+    <%= form.select :priority, options_for_select([
+      ["No Priority", "No Priority"],
+      ["Low", "Low"],
+      ["Medium", "Medium"],
+      ["High", "High"],
+      ["Urgent", "Urgent"]
+    ], @task.priority || "No Priority") %>
+  </div>
+
+  <div>
+    <%= form.label :assignee, "Assignee" %>
+    <%= form.select :assignee, options_for_select(@collaborators.map { |c| ["#{c.user.username} (#{c.role})", c.id] }, @task.assignee), { include_blank: "Unassigned" } %>
+  </div>
+
+  <div>
+    <%= form.label :branch_link, "Branch Link" %>
+    <%= form.url_field :branch_link %>
   </div>
 
   <div>
