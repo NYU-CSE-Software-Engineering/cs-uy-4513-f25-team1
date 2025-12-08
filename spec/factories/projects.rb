@@ -2,7 +2,6 @@ FactoryBot.define do
   factory :project do
     name { Faker::App.name }
     description { Faker::Lorem.paragraph }
-    key { Faker::Alphanumeric.alpha(number: 3).upcase }
     wip_limit { 2 }
 
     trait :with_tasks do
