@@ -10,7 +10,7 @@ class SessionsController < ApplicationController
       reset_session
       start_new_session_for user
       session[:user_id] = user.id
-      redirect_to "/"
+      redirect_to projects_path
     else
       redirect_to new_session_path, alert: "Try another email address or password."
     end

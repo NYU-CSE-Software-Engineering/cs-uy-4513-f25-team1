@@ -1,3 +1,7 @@
+<% if flash[:created] %>
+  <p> <%= flash[:created] %> </p>
+<% end %>
+
 <h1><%= @project.name %></h1>
 <%= link_to "New Task", new_project_task_path(@project), class: "btn btn-primary" %>
 

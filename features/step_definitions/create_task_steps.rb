@@ -15,11 +15,6 @@ And('I am on the {string} project\'s tasks page') do |project_name|
   visit project_tasks_path(@project)
 end
 
-# WHEN: Standard Capybara action to fill in a text field.
-When('I fill in {string} with {string}') do |field, value|
-  fill_in field, with: value
-end
-
 # WHEN: Standard Capybara action to select an option from a dropdown.
 When('I select {string} from {string}') do |value, field|
   select value, from: field

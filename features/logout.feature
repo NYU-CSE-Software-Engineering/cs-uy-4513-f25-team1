@@ -13,5 +13,5 @@ Feature:Log out of an account
 		Given I am a logged in user
 		When I click "Log out"
 		And I go to my projects page
-		Then I should see an error page
+		Then I should be on the login page
 
