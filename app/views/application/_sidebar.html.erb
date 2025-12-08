@@ -1,17 +1,15 @@
-<% if @developer_projects || @manager_projects %>
-  <h1>Sidebar</h1>
-  <div>
-    <%= content_tag(:p, "Manager Projects") %>
+<h1>Sidebar</h1>
+<% if @manager_projects %>
+    <%= content_tag :h2, "Manager Projects" %>
     <% @manager_projects.each do |p| %>
       <p> <%= link_to p.project.name, project_path(p.project_id) %> </p>
     <% end %>
-  </div>
-  <div>
-    <%= content_tag(:p, "Developer Projects") %>
+<% end%>
+<% if @developer_projects %>
+    <%= content_tag :h2, "Developer Projects" %>
     <% @developer_projects.each do |p| %>
       <p> <%= link_to p.project.name, project_path(p.project_id) %> </p>
     <% end %>
-  </div>
 <% end %>
-
+<%= link_to "User Settings", edit_user_path(session[:user_id]) %>
 <%= render "application/logout" %>
