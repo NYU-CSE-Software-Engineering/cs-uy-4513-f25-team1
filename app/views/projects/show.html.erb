@@ -9,7 +9,7 @@
 </p>
 
 <p><strong>In Progress :</strong>
-  <%= @project.tasks.where(status: "in_progress").count %>
+  <%= @project.tasks.where(status: "In Progress").count %>
 </p>
 
 <% if flash[:notice] %>
@@ -23,23 +23,30 @@
 
 <h2>Tasks</h2>
 
-<h3>To Do</h3>
+<h3>Todo</h3>
 <ul>
-  <% @project.tasks.where(status: "not_started").each do |t| %>
+  <% @project.tasks.where(status: "Todo").each do |t| %>
     <li><%= t.title %></li>
   <% end %>
 </ul>
 
 <h3>In Progress</h3>
 <ul>
-  <% @project.tasks.where(status: "in_progress").each do |t| %>
+  <% @project.tasks.where(status: "In Progress").each do |t| %>
     <li><%= t.title %></li>
   <% end %>
 </ul>
 
-<h3>Done</h3>
+<h3>In Review</h3>
 <ul>
-  <% @project.tasks.where(status: "done").each do |t| %>
+  <% @project.tasks.where(status: "In Review").each do |t| %>
+    <li><%= t.title %></li>
+  <% end %>
+</ul>
+
+<h3>Completed</h3>
+<ul>
+  <% @project.tasks.where(status: "Completed").each do |t| %>
     <li><%= t.title %></li>
   <% end %>
 </ul>
