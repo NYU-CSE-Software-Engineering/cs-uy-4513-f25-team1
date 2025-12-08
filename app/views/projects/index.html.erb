@@ -1,5 +1,7 @@
 <h1>Projects</h1>
 
+<%= render "application/sidebar" %>
+
 <% @projects.each do |p| %>
   <p><%= link_to p.name, project_path(p.id) %><p>
 <% end %>
