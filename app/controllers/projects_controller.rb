@@ -36,6 +36,35 @@ class ProjectsController < ApplicationController
   end
 
   def show
+    @tasks = @project.tasks
+
+    # Filter by type if specified
+    if params[:type].present? && %w[Feature Bug Backlog].include?(params[:type])
+      @tasks = @tasks.where(type: params[:type])
+    end
+
+    # Filter by status if specified
+    valid_statuses = ["To Do", "In Progress", "In Review", "Completed"]
+    if params[:status].present? && valid_statuses.include?(params[:status])
+      @tasks = @tasks.where(status: params[:status])
+    end
+
+    # Determine sort direction (default: asc = early to late)
+    sort_direction = params[:direction] == "desc" ? :desc : :asc
+
+    # Sort tasks based on filter parameter
+    case params[:filter]
+    when "date_modified"
+      @tasks = @tasks.order(updated_at: sort_direction)
+    else
+      # Default: sort by date created
+      @tasks = @tasks.order(created_at: sort_direction)
+    end
+
+    @current_filter = params[:filter] || "date_created"
+    @current_direction = params[:direction] || "asc"
+    @current_type = params[:type]
+    @current_status = params[:status]
   end
 
   private

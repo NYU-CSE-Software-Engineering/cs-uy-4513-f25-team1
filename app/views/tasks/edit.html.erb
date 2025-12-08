@@ -25,6 +25,15 @@
   </div>
 
   <div>
+    <%= form.label :type, "Type" %>
+    <%= form.select :type, options_for_select([
+      ["Feature", "Feature"],
+      ["Bug", "Bug"],
+      ["Backlog", "Backlog"]
+    ], @task.type) %>
+  </div>
+
+  <div>
     <%= form.label :status, "Task Status" %>
     <%= form.select :status, options_for_select([
       ["To Do", "To Do"],

@@ -56,7 +56,7 @@ class TasksController < ApplicationController
   end
 
   def task_params
-    params.require(:task).permit(:title, :status)
+    params.require(:task).permit(:title, :status, :type)
   end
 
   def project_wip_limit

@@ -25,11 +25,80 @@
 
 <%= link_to "New Task", new_project_task_path(@project), class: "button" %>
 
+<!-- Filter Form -->
+<div class="filters">
+  <%= form_with url: project_path(@project), method: :get, local: true do |form| %>
+    <div>
+      <%= form.label :filter, "Sort by" %>
+      <%= form.select :filter, options_for_select([
+        ["Date Created", "date_created"],
+        ["Date Modified", "date_modified"]
+      ], @current_filter), {}, { id: "filter" } %>
+    </div>
+
+    <div>
+      <%= form.label :direction, "Order" %>
+      <%= form.select :direction, options_for_select([
+        ["Early → Late", "asc"],
+        ["Late → Early", "desc"]
+      ], @current_direction), {}, { id: "direction" } %>
+    </div>
+
+    <div>
+      <%= form.label :type, "Filter by Type" %>
+      <%= form.select :type, options_for_select([
+        ["All Types", ""],
+        ["Feature", "Feature"],
+        ["Bug", "Bug"],
+        ["Backlog", "Backlog"]
+      ], @current_type), {}, { id: "type_filter" } %>
+    </div>
+
+    <div>
+      <%= form.label :status, "Filter by Status" %>
+      <%= form.select :status, options_for_select([
+        ["All Statuses", ""],
+        ["To Do", "To Do"],
+        ["In Progress", "In Progress"],
+        ["In Review", "In Review"],
+        ["Completed", "Completed"]
+      ], @current_status), {}, { id: "status_filter" } %>
+    </div>
+
+    <%= form.submit "Apply filters" %>
+  <% end %>
+</div>
+
+<hr>
+
+<!-- Filtered/Sorted Task List -->
+<div id="task-list">
+  <h3>All Tasks (Filtered)</h3>
+  <ul>
+    <% @tasks.each do |t| %>
+      <li class="task-item" data-type="<%= t.type %>" data-title="<%= t.title %>">
+        <strong><%= t.title %></strong>
+        <% if t.type.present? %>
+          <span class="task-type">[<%= t.type %>]</span>
+        <% end %>
+        <span class="task-status">- <%= t.status %></span>
+        <%= link_to "Edit", edit_project_task_path(@project, t) %>
+      </li>
+    <% end %>
+  </ul>
+</div>
+
+<hr>
+
+<!-- Board View (by Status) -->
+<h2>Board View</h2>
+
 <h3>To Do</h3>
 <ul id="to-do-column">
   <% @project.tasks.where(status: "To Do").each do |t| %>
     <li>
       <%= t.title %>
+      <% if t.type.present? %>[<%= t.type %>]<% end %>
       <%= link_to "Edit", edit_project_task_path(@project, t) %>
     </li>
   <% end %>
@@ -40,6 +109,7 @@
   <% @project.tasks.where(status: "In Progress").each do |t| %>
     <li>
       <%= t.title %>
+      <% if t.type.present? %>[<%= t.type %>]<% end %>
       <%= link_to "Edit", edit_project_task_path(@project, t) %>
     </li>
   <% end %>
@@ -50,6 +120,7 @@
   <% @project.tasks.where(status: "In Review").each do |t| %>
     <li>
       <%= t.title %>
+      <% if t.type.present? %>[<%= t.type %>]<% end %>
       <%= link_to "Edit", edit_project_task_path(@project, t) %>
     </li>
   <% end %>
@@ -60,6 +131,7 @@
   <% @project.tasks.where(status: "Completed").each do |t| %>
     <li>
       <%= t.title %>
+      <% if t.type.present? %>[<%= t.type %>]<% end %>
       <%= link_to "Edit", edit_project_task_path(@project, t) %>
     </li>
   <% end %>
