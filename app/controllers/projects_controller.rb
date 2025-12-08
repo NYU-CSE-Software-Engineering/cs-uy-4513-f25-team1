@@ -44,7 +44,7 @@ class ProjectsController < ApplicationController
     end
 
     # Filter by status if specified
-    valid_statuses = ["To Do", "In Progress", "In Review", "Completed"]
+    valid_statuses = [ "To Do", "In Progress", "In Review", "Completed" ]
     if params[:status].present? && valid_statuses.include?(params[:status])
       @tasks = @tasks.where(status: params[:status])
     end
