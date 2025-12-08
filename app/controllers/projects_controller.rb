@@ -28,7 +28,7 @@ class ProjectsController < ApplicationController
       redirect_to new_project_path
       return
     else
-      collaborator = Collaborator.new(user_id: session[:user_id], project_id: @project.id, role: "owner")
+      collaborator = Collaborator.new(user_id: session[:user_id], project_id: @project.id, role: "manager")
       collaborator.save!
       flash[:created] = "Project was successfully created."
     end
