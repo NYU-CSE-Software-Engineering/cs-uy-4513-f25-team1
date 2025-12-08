@@ -1,3 +1,5 @@
+<%= render "application/sidebar" %>
+
 <h1>Projects</h1>
 
 <% @projects.each do |p| %>
@@ -5,5 +7,3 @@
 <% end %>
 
 <%= link_to "New project", new_project_path %>
-
-<%= render "application/logout" %>

@@ -16,7 +16,7 @@ Rails.application.routes.draw do
   end
 
   # Registration routes
-  resources :users, only: [ :new, :create ]
+  resources :users, only: [ :new, :create, :edit, :update ]
 
   # Defines the root path route ("/")
   get "features" => "home#features"
