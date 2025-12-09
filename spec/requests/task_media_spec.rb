@@ -122,7 +122,7 @@ RSpec.describe "Task Media", type: :request do
       expect {
         patch project_task_path(project, task), params: {
           task: {
-            remove_media_file_ids: [attachment.id]
+            remove_media_file_ids: [ attachment.id ]
           },
           redirect_to_show: "1"
         }
@@ -141,7 +141,7 @@ RSpec.describe "Task Media", type: :request do
       expect {
         patch project_task_path(project, task), params: {
           task: {
-            remove_media_file_ids: [other_task.media_files.first.id]
+            remove_media_file_ids: [ other_task.media_files.first.id ]
           },
           redirect_to_show: "1"
         }
@@ -154,7 +154,7 @@ RSpec.describe "Task Media", type: :request do
     it "handles non-existent attachment ID gracefully" do
       patch project_task_path(project, task), params: {
         task: {
-          remove_media_file_ids: [99999]
+          remove_media_file_ids: [ 99999 ]
         },
         redirect_to_show: "1"
       }
@@ -226,7 +226,7 @@ RSpec.describe "Task Media", type: :request do
       expect {
         patch project_task_path(project, other_task), params: {
           task: {
-            remove_media_file_ids: [attachment.id]
+            remove_media_file_ids: [ attachment.id ]
           },
           redirect_to_show: "1"
         }
