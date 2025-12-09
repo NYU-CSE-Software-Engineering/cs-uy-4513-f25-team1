@@ -17,11 +17,6 @@ def sign_in_filter_user
   click_button 'Sign in'
 end
 
-Given('I am a signed in user') do
-  filter_test_user
-  sign_in_filter_user
-end
-
 Given('I am on the Projects page') do
   visit projects_path
 end

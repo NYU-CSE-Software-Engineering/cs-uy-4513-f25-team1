@@ -4,7 +4,7 @@ Feature: Board column management
   So I can tailor workflow stages
 
   Background:
-    Given I am a signed-in user
+    Given I am a logged in user
     And I am a Project Admin of "My Project"
     And the project has a board with columns:
       | To Do       |

@@ -4,7 +4,7 @@ Feature: Filter tasks
   So that I can view relevant tasks
 
   Background:
-    Given I am a signed in user
+    Given I am a logged in user
     And a project named "Test" exists with sample tasks
 
   Scenario: Default view shows tasks sorted by date created

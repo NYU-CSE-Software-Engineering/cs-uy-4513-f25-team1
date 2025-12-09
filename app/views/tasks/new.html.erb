@@ -7,7 +7,7 @@
   <div class="alert"><%= flash[:alert] %></div>
 <% end %>
 
-<%= form_with model: [@project, @task], local: true do |form| %>
+<%= form_with model: [@project, @task], local: true, multipart: true do |form| %>
   <% if @task.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(@task.errors.count, "error") %> prohibited this task from being saved:</h2>
@@ -41,6 +41,12 @@
       ["In Review", "In Review"],
       ["Completed", "Completed"]
     ]) %>
+  </div>
+
+  <div>
+    <%= form.label :media_files, "Media Files (optional)" %>
+    <%= form.file_field :media_files, multiple: true, accept: "image/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" %>
+    <p class="help-text">Maximum 10 files, 10MB per file. Allowed: images, PDFs, Word, Excel</p>
   </div>
 
   <div>

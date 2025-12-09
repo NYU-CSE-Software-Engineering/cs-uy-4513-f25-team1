@@ -1,4 +1,6 @@
 class TasksController < ApplicationController
+  class TaskNotFoundError < StandardError; end
+
   before_action :set_project
   before_action :set_task, only: [ :edit, :update ]
   before_action :authorize_project_edit
@@ -13,35 +15,70 @@ class TasksController < ApplicationController
 
     if moving_to_in_progress?(task_params[:status]) && wip_reached_for_create?
       flash.now[:alert] = "WIP limit has been reached for this project."
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     elsif @task.save
       redirect_to new_project_task_path(@project),
                   notice: "Task was successfully created.",
                   status: :see_other
     else
       flash.now[:alert] = "Task could not be created."
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
+  end
+
+  def show
   end
 
   def edit
   end
 
   def update
-    target_status = task_params[:status]
+    params_hash = params[:task] || {}
+    remove_media_file_ids = Array(params_hash[:remove_media_file_ids]).reject(&:blank?)
 
-    if moving_to_in_progress?(target_status) && wip_reached?
-      redirect_to edit_project_task_path(@project, @task),
+    if remove_media_file_ids.any?
+      remove_media_file_ids.each do |attachment_id|
+        attachment = ActiveStorage::Attachment.find_by(id: attachment_id)
+        if attachment && attachment.record == @task
+          attachment.purge
+        end
+      end
+    end
+
+    target_status = task_params[:status]
+    redirect_to_show = params[:redirect_to_show] == "1"
+
+    if target_status.present? && moving_to_in_progress?(target_status) && wip_reached?
+      redirect_path = redirect_to_show ? project_task_path(@project, @task) : edit_project_task_path(@project, @task)
+      redirect_to redirect_path,
                   alert: "WIP limit has been reached for this project.",
                   status: :see_other
     else
-      if @task.update(task_params)
-        redirect_to edit_project_task_path(@project, @task),
-                    notice: "Task updated.",
+      update_params = task_params.except(:remove_media_file_ids)
+      update_successful = @task.update(update_params)
+
+      if update_successful
+        redirect_path = redirect_to_show ? project_task_path(@project, @task) : edit_project_task_path(@project, @task)
+        notice_message = if remove_media_file_ids.any?
+          "Media file removed."
+        elsif redirect_to_show
+          "Media files uploaded."
+        else
+          "Task updated."
+        end
+        redirect_to redirect_path,
+                    notice: notice_message,
                     status: :see_other
       else
-        flash.now[:alert] = "Task could not be updated."
-        render :edit, status: :unprocessable_entity
+        if redirect_to_show
+          error_message = @task.errors.full_messages.join(", ").presence || "Media files could not be uploaded."
+          redirect_to project_task_path(@project, @task),
+                      alert: error_message,
+                      status: :see_other
+        else
+          flash.now[:alert] = "Task could not be updated."
+          render :edit, status: :unprocessable_content
+        end
       end
     end
   end
@@ -53,11 +90,12 @@ class TasksController < ApplicationController
   end
 
   def set_task
-    @task = @project.tasks.find(params[:id])
+    @task = Task.find(params[:id])
+    raise TaskNotFoundError unless @task.project_id == @project.id
   end
 
   def task_params
-    params.require(:task).permit(:title, :status, :type)
+    params.require(:task).permit(:title, :status, :type, media_files: [], remove_media_file_ids: [])
   end
 
   def project_wip_limit
