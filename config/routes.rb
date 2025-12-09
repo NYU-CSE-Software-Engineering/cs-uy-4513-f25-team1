@@ -12,11 +12,7 @@ Rails.application.routes.draw do
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
   resources :projects do
-    resources :tasks, only: [ :new, :create, :edit, :update, :show ] do
-      member do
-        delete :destroy_media
-      end
-    end
+    resources :tasks, only: [ :new, :create, :edit, :update, :show ]
   end
 
   # Registration routes

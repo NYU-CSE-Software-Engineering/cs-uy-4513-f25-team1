@@ -44,7 +44,11 @@
           <p class="media-size"><%= number_to_human_size(file.byte_size) %></p>
           <div class="media-actions">
             <%= link_to "View", rails_blob_path(file, disposition: "inline"), target: "_blank", class: "btn btn-secondary" %>
-            <%= button_to "Remove", destroy_media_project_task_path(@project, @task, attachment_id: file.id), method: :delete, class: "btn btn-danger", data: { confirm: "Are you sure you want to remove this file?" } %>
+            <%= form_with model: [@project, @task], url: project_task_path(@project, @task), method: :patch, local: true, class: "inline-form" do |form| %>
+              <%= hidden_field_tag "task[remove_media_file_ids][]", file.id %>
+              <%= hidden_field_tag :redirect_to_show, "1" %>
+              <%= form.submit "Remove", class: "btn btn-danger", data: { confirm: "Are you sure you want to remove this file?" } %>
+            <% end %>
           </div>
         </div>
       </div>

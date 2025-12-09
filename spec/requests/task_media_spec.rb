@@ -111,7 +111,7 @@ RSpec.describe "Task Media", type: :request do
     end
   end
 
-  describe "DELETE /projects/:project_id/tasks/:id/destroy_media" do
+  describe "PATCH /projects/:project_id/tasks/:id (remove media)" do
     let!(:attachment) do
       task.media_files.attach(create_test_image)
       task.save!
@@ -120,7 +120,12 @@ RSpec.describe "Task Media", type: :request do
 
     it "removes a media file from the task" do
       expect {
-        delete destroy_media_project_task_path(project, task, attachment_id: attachment.id)
+        patch project_task_path(project, task), params: {
+          task: {
+            remove_media_file_ids: [attachment.id]
+          },
+          redirect_to_show: "1"
+        }
       }.to change { task.reload.media_files.count }.by(-1)
 
       expect(response).to have_http_status(:see_other)
@@ -134,18 +139,28 @@ RSpec.describe "Task Media", type: :request do
       other_task.save!
 
       expect {
-        delete destroy_media_project_task_path(project, task, attachment_id: other_task.media_files.first.id)
+        patch project_task_path(project, task), params: {
+          task: {
+            remove_media_file_ids: [other_task.media_files.first.id]
+          },
+          redirect_to_show: "1"
+        }
       }.not_to change { task.reload.media_files.count }
 
       expect(response).to have_http_status(:see_other)
-      expect(flash[:alert]).to include("not found or access denied")
+      expect(task.reload.media_files.count).to eq(1)
     end
 
     it "handles non-existent attachment ID gracefully" do
-      delete destroy_media_project_task_path(project, task, attachment_id: 99999)
+      patch project_task_path(project, task), params: {
+        task: {
+          remove_media_file_ids: [99999]
+        },
+        redirect_to_show: "1"
+      }
 
       expect(response).to have_http_status(:see_other)
-      expect(flash[:alert]).to include("not found or access denied")
+      expect(task.reload.media_files.count).to eq(1)
     end
   end
 
@@ -207,9 +222,14 @@ RSpec.describe "Task Media", type: :request do
 
       # Try to delete via wrong project context
       # This should fail because other_task belongs to other_project, not project
-      # The set_task before_action should raise RecordNotFound
+      # The set_task before_action should raise TaskNotFoundError
       expect {
-        delete destroy_media_project_task_path(project, other_task, attachment_id: attachment.id)
+        patch project_task_path(project, other_task), params: {
+          task: {
+            remove_media_file_ids: [attachment.id]
+          },
+          redirect_to_show: "1"
+        }
       }.to raise_error(TasksController::TaskNotFoundError)
     end
   end

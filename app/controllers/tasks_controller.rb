@@ -2,7 +2,7 @@ class TasksController < ApplicationController
   class TaskNotFoundError < StandardError; end
 
   before_action :set_project
-  before_action :set_task, only: [ :show, :edit, :update, :destroy_media ]
+  before_action :set_task, only: [ :show, :edit, :update ]
 
   def new
     @task = @project.tasks.build
@@ -32,6 +32,18 @@ class TasksController < ApplicationController
   end
 
   def update
+    params_hash = params[:task] || {}
+    remove_media_file_ids = Array(params_hash[:remove_media_file_ids]).reject(&:blank?)
+
+    if remove_media_file_ids.any?
+      remove_media_file_ids.each do |attachment_id|
+        attachment = ActiveStorage::Attachment.find_by(id: attachment_id)
+        if attachment && attachment.record == @task
+          attachment.purge
+        end
+      end
+    end
+
     target_status = task_params[:status]
     redirect_to_show = params[:redirect_to_show] == "1"
 
@@ -41,9 +53,18 @@ class TasksController < ApplicationController
                   alert: "WIP limit has been reached for this project.",
                   status: :see_other
     else
-      if @task.update(task_params)
+      update_params = task_params.except(:remove_media_file_ids)
+      update_successful = @task.update(update_params)
+
+      if update_successful
         redirect_path = redirect_to_show ? project_task_path(@project, @task) : edit_project_task_path(@project, @task)
-        notice_message = redirect_to_show ? "Media files uploaded." : "Task updated."
+        notice_message = if remove_media_file_ids.any?
+          "Media file removed."
+        elsif redirect_to_show
+          "Media files uploaded."
+        else
+          "Task updated."
+        end
         redirect_to redirect_path,
                     notice: notice_message,
                     status: :see_other
@@ -61,21 +82,6 @@ class TasksController < ApplicationController
     end
   end
 
-  def destroy_media
-    attachment = ActiveStorage::Attachment.find_by(id: params[:attachment_id])
-
-    if attachment && attachment.record == @task
-      attachment.purge
-      redirect_to project_task_path(@project, @task),
-                  notice: "Media file removed.",
-                  status: :see_other
-    else
-      redirect_to project_task_path(@project, @task),
-                  alert: "Media file not found or access denied.",
-                  status: :see_other
-    end
-  end
-
   private
 
   def set_project
@@ -88,7 +94,7 @@ class TasksController < ApplicationController
   end
 
   def task_params
-    params.require(:task).permit(:title, :status, :type, media_files: [])
+    params.require(:task).permit(:title, :status, :type, media_files: [], remove_media_file_ids: [])
   end
 
   def project_wip_limit
