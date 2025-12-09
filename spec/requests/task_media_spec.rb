@@ -197,7 +197,7 @@ RSpec.describe "Task Media", type: :request do
       # The set_task before_action should raise RecordNotFound
       expect {
         get project_task_path(project, other_task)
-      }.to raise_error(ActiveRecord::RecordNotFound)
+      }.to raise_error(TasksController::TaskNotFoundError)
     end
 
     it "prevents deleting media from a task in a different project" do
@@ -210,7 +210,7 @@ RSpec.describe "Task Media", type: :request do
       # The set_task before_action should raise RecordNotFound
       expect {
         delete destroy_media_project_task_path(project, other_task, attachment_id: attachment.id)
-      }.to raise_error(ActiveRecord::RecordNotFound)
+      }.to raise_error(TasksController::TaskNotFoundError)
     end
   end
 end

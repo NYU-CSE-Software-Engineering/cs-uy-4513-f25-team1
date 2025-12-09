@@ -1,4 +1,6 @@
 class TasksController < ApplicationController
+  class TaskNotFoundError < StandardError; end
+
   before_action :set_project
   before_action :set_task, only: [ :show, :edit, :update, :destroy_media ]
 
@@ -81,7 +83,8 @@ class TasksController < ApplicationController
   end
 
   def set_task
-    @task = @project.tasks.find(params[:id])
+    @task = Task.find(params[:id])
+    raise TaskNotFoundError unless @task.project_id == @project.id
   end
 
   def task_params
