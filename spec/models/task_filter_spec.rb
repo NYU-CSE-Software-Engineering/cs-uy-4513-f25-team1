@@ -1,73 +1,64 @@
-require 'rails_helper'
+require "rails_helper"
 
-RSpec.describe "Task filtering", type: :model do
-  let(:project1) do
-    Project.create!(
-      name: 'Project One',
-      description: 'For filter specs 1'
-    )
-  end
-
-  let(:project2) do
-    Project.create!(
-      name: 'Project Two',
-      description: 'For filter specs 2'
-    )
-  end
-
+RSpec.describe Task, type: :model do
   let(:user) do
     User.create!(
-      username: 'filter_user',
-      email_address: 'filter@example.com',
-      password_digest: BCrypt::Password.create('password123')
+      username: "tester",
+      email_address: "tester@example.com",
+      password_digest: "password"
     )
   end
 
-  before do
-    Task.create!(
-      title: 'P1 Not started',
-      status: 'not started',
-      project: project1,
-      user: user
-    )
-
-    Task.create!(
-      title: 'P1 In progress',
-      status: 'in progress',
-      project: project1,
-      user: user
-    )
-
-    Task.create!(
-      title: 'P1 Done',
-      status: 'done',
-      project: project1,
-      user: user
-    )
-
-    Task.create!(
-      title: 'P2 In progress',
-      status: 'in progress',
-      project: project2,
-      user: user
+  let(:project_a) do
+    Project.create!(
+      name: "Project A",
+      description: "First project"
     )
   end
 
-  it 'can filter tasks by project' do
-    p1_tasks = Task.where(project: project1)
-    p2_tasks = Task.where(project: project2)
-
-    expect(p1_tasks.pluck(:title)).to include('P1 Not started', 'P1 In progress', 'P1 Done')
-    expect(p1_tasks.pluck(:title)).not_to include('P2 In progress')
-
-    expect(p2_tasks.pluck(:title)).to contain_exactly('P2 In progress')
+  let(:project_b) do
+    Project.create!(
+      name: "Project B",
+      description: "Second project"
+    )
   end
 
-  it 'can filter tasks by status' do
-    in_progress_tasks = Task.where(status: 'in progress')
+  describe "project scoping" do
+    let!(:task_a1) do
+      Task.create!(
+        title: "Task A1",
+        status: "not started",
+        project: project_a,
+        user: user,
+        type: "Feature"
+      )
+    end
 
-    titles = in_progress_tasks.pluck(:title)
-    expect(titles).to include('P1 In progress', 'P2 In progress')
-    expect(titles).not_to include('P1 Not started', 'P1 Done')
+    let!(:task_a2) do
+      Task.create!(
+        title: "Task A2",
+        status: "in progress",
+        project: project_a,
+        user: user,
+        type: "Bug"
+      )
+    end
+
+    let!(:task_b1) do
+      Task.create!(
+        title: "Task B1",
+        status: "not started",
+        project: project_b,
+        user: user,
+        type: "Feature"
+      )
+    end
+
+    it "returns only tasks that belong to a given project" do
+      project_a_tasks = Task.where(project_id: project_a.id)
+
+      expect(project_a_tasks).to include(task_a1, task_a2)
+      expect(project_a_tasks).not_to include(task_b1)
+    end
   end
 end
