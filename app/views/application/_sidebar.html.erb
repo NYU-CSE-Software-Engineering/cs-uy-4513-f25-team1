@@ -16,8 +16,8 @@
     <% @invited_projects.each do |invite| %>
       <div class="invite-item">
         <%= link_to invite.project.name, project_path(invite.project), class: "invite-project-link" %>
-        <%= button_to "Accept", collaborator_path(invite), method: :patch, class: "btn btn-primary btn-sm" %>
-        <%= button_to "Reject", collaborator_path(invite), method: :delete, class: "btn btn-danger btn-sm" %>
+        <%= button_to "Accept", project_collaborator_path(invite.project, invite), method: :patch, class: "btn btn-primary btn-sm" %>
+        <%= button_to "Reject", project_collaborator_path(invite.project, invite), method: :delete, class: "btn btn-danger btn-sm" %>
       </div>
     <% end %>
 <% end %>
