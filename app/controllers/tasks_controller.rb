@@ -12,14 +12,14 @@ class TasksController < ApplicationController
 
     if moving_to_in_progress?(task_params[:status]) && wip_reached_for_create?
       flash.now[:alert] = "WIP limit has been reached for this project."
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     elsif @task.save
       redirect_to new_project_task_path(@project),
                   notice: "Task was successfully created.",
                   status: :see_other
     else
       flash.now[:alert] = "Task could not be created."
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 
@@ -47,12 +47,13 @@ class TasksController < ApplicationController
                     status: :see_other
       else
         if redirect_to_show
+          error_message = @task.errors.full_messages.join(", ").presence || "Media files could not be uploaded."
           redirect_to project_task_path(@project, @task),
-                      alert: "Media files could not be uploaded.",
+                      alert: error_message,
                       status: :see_other
         else
           flash.now[:alert] = "Task could not be updated."
-          render :edit, status: :unprocessable_entity
+          render :edit, status: :unprocessable_content
         end
       end
     end
