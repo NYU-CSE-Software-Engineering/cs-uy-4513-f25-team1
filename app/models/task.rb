@@ -7,8 +7,6 @@ class Task < ApplicationRecord
 
   validates :title, presence: true
   validates :status, presence: true
-  # Only checks tasks that are in progress follow the limit
-  validate :follows_WIPLimit, if: -> { status == "In Progress" }
   validate :validate_media_files
 
   private
@@ -21,14 +19,6 @@ class Task < ApplicationRecord
     application/msword application/vnd.openxmlformats-officedocument.wordprocessingml.document
     application/vnd.ms-excel application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
   ].freeze
-
-  def follows_WIPLimit
-    in_progress_count = project.tasks.where(status: "In Progress").where.not(id: id).count
-
-    if in_progress_count >= project.wip_limit
-      errors.add(:base, "WIP limit reached for In Progress")
-    end
-  end
 
   def validate_media_files
     return unless media_files.attached?
