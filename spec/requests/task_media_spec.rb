@@ -24,7 +24,7 @@ RSpec.describe "Task Media", type: :request do
   describe "GET /projects/:project_id/tasks/:id" do
     it "displays the task show page with media section" do
       get project_task_path(project, task)
-      
+
       expect(response).to have_http_status(:ok)
       expect(response.body).to include(task.title)
       expect(response.body).to include("Media Files")
@@ -32,16 +32,16 @@ RSpec.describe "Task Media", type: :request do
 
     it "displays attached media files" do
       task.media_files.attach(create_test_image)
-      
+
       get project_task_path(project, task)
-      
+
       expect(response).to have_http_status(:ok)
       expect(response.body).to include("test_image.png")
     end
 
     it "shows message when no media files are attached" do
       get project_task_path(project, task)
-      
+
       expect(response).to have_http_status(:ok)
       expect(response.body).to include("No media files attached")
     end
@@ -53,12 +53,12 @@ RSpec.describe "Task Media", type: :request do
         expect {
           patch project_task_path(project, task), params: {
             task: {
-              media_files: [create_test_image]
+              media_files: [ create_test_image ]
             },
             redirect_to_show: "1"
           }
         }.to change { task.media_files.count }.by(1)
-        
+
         expect(response).to have_http_status(:see_other)
         expect(response).to redirect_to(project_task_path(project, task))
       end
@@ -67,7 +67,7 @@ RSpec.describe "Task Media", type: :request do
         expect {
           patch project_task_path(project, task), params: {
             task: {
-              media_files: [create_test_image, create_test_pdf]
+              media_files: [ create_test_image, create_test_pdf ]
             },
             redirect_to_show: "1"
           }
@@ -77,11 +77,11 @@ RSpec.describe "Task Media", type: :request do
       it "redirects to show page when uploading from show page" do
         patch project_task_path(project, task), params: {
           task: {
-            media_files: [create_test_image]
+            media_files: [ create_test_image ]
           },
           redirect_to_show: "1"
         }
-        
+
         expect(response).to redirect_to(project_task_path(project, task))
         expect(flash[:notice]).to include("Media files uploaded")
       end
@@ -95,15 +95,15 @@ RSpec.describe "Task Media", type: :request do
         end
         task.save!
         initial_count = task.media_files.count
-        
+
         # Try to attach an 11th file by appending (not replacing)
         new_file = create_test_image
         task.media_files.attach(new_file)
-        
+
         # Validation should prevent saving
         expect(task.save).to be false
         expect(task.errors[:media_files]).to be_present
-        
+
         # Reload to ensure nothing was persisted
         task.reload
         expect(task.media_files.count).to eq(initial_count)
@@ -122,7 +122,7 @@ RSpec.describe "Task Media", type: :request do
       expect {
         delete destroy_media_project_task_path(project, task, attachment_id: attachment.id)
       }.to change { task.reload.media_files.count }.by(-1)
-      
+
       expect(response).to have_http_status(:see_other)
       expect(response).to redirect_to(project_task_path(project, task))
       expect(flash[:notice]).to include("Media file removed")
@@ -132,18 +132,18 @@ RSpec.describe "Task Media", type: :request do
       other_task = create(:task, project: project, user: user)
       other_attachment = other_task.media_files.attach(create_test_image)
       other_task.save!
-      
+
       expect {
         delete destroy_media_project_task_path(project, task, attachment_id: other_task.media_files.first.id)
       }.not_to change { task.reload.media_files.count }
-      
+
       expect(response).to have_http_status(:see_other)
       expect(flash[:alert]).to include("not found or access denied")
     end
 
     it "handles non-existent attachment ID gracefully" do
       delete destroy_media_project_task_path(project, task, attachment_id: 99999)
-      
+
       expect(response).to have_http_status(:see_other)
       expect(flash[:alert]).to include("not found or access denied")
     end
@@ -157,11 +157,11 @@ RSpec.describe "Task Media", type: :request do
             title: "New Task with Media",
             status: "To Do",
             type: "Feature",
-            media_files: [create_test_image]
+            media_files: [ create_test_image ]
           }
         }
       }.to change(Task, :count).by(1)
-      
+
       new_task = Task.last
       expect(new_task.media_files.count).to eq(1)
     end
@@ -174,10 +174,10 @@ RSpec.describe "Task Media", type: :request do
           title: "Updated Title",
           status: task.status,
           type: task.type,
-          media_files: [create_test_image]
+          media_files: [ create_test_image ]
         }
       }
-      
+
       task.reload
       expect(task.title).to eq("Updated Title")
       expect(task.media_files.count).to eq(1)
@@ -191,7 +191,7 @@ RSpec.describe "Task Media", type: :request do
     it "prevents accessing media from a task in a different project" do
       other_task.media_files.attach(create_test_image)
       other_task.save!
-      
+
       # Try to access the other task's media via wrong project
       # This should fail because other_task belongs to other_project, not project
       # The set_task before_action should raise RecordNotFound
@@ -204,7 +204,7 @@ RSpec.describe "Task Media", type: :request do
       other_task.media_files.attach(create_test_image)
       other_task.save!
       attachment = other_task.media_files.first
-      
+
       # Try to delete via wrong project context
       # This should fail because other_task belongs to other_project, not project
       # The set_task before_action should raise RecordNotFound

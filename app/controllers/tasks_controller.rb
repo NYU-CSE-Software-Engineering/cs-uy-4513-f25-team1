@@ -61,7 +61,7 @@ class TasksController < ApplicationController
 
   def destroy_media
     attachment = ActiveStorage::Attachment.find_by(id: params[:attachment_id])
-    
+
     if attachment && attachment.record == @task
       attachment.purge
       redirect_to project_task_path(@project, @task),

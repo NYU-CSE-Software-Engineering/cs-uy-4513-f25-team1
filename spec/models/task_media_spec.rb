@@ -16,7 +16,7 @@ RSpec.describe Task, type: :model do
         image_file = create_test_file('test_image.png', 'image/png')
         task.media_files.attach(image_file)
         task.save
-        
+
         expect(task).to be_valid
         expect(task.media_files.count).to eq(1)
       end
@@ -25,7 +25,7 @@ RSpec.describe Task, type: :model do
         pdf_file = create_test_file('test_document.pdf', 'application/pdf')
         task.media_files.attach(pdf_file)
         task.save
-        
+
         expect(task).to be_valid
         expect(task.media_files.count).to eq(1)
       end
@@ -36,7 +36,7 @@ RSpec.describe Task, type: :model do
           task.media_files.attach(file)
         end
         task.save
-        
+
         expect(task).to be_valid
         expect(task.media_files.count).to eq(10)
       end
@@ -49,14 +49,14 @@ RSpec.describe Task, type: :model do
           task.media_files.attach(file)
         end
         task.save
-        
+
         expect(task).to be_valid
-        
+
         # Try to attach an 11th file
         extra_file = create_test_file('test_image.png', 'image/png')
         task.media_files.attach(extra_file)
         task.save
-        
+
         expect(task).not_to be_valid
         expect(task.errors[:media_files]).to include("cannot exceed 10 files")
       end
@@ -67,12 +67,12 @@ RSpec.describe Task, type: :model do
         # Create a file that's too large by mocking the byte_size
         large_file = create_test_file('test_document.pdf', 'application/pdf')
         task.media_files.attach(large_file)
-        
+
         # Mock the byte_size to be over the limit
         allow_any_instance_of(ActiveStorage::Blob).to receive(:byte_size).and_return(11.megabytes)
-        
+
         task.save
-        
+
         expect(task).not_to be_valid
         expect(task.errors[:media_files].any? { |msg| msg.include?("exceeds the maximum file size") }).to be true
       end
@@ -83,12 +83,12 @@ RSpec.describe Task, type: :model do
         # Create a file and mock its content_type
         executable_file = create_test_file('test_document.pdf', 'application/pdf')
         task.media_files.attach(executable_file)
-        
+
         # Mock the content_type to be invalid
         allow_any_instance_of(ActiveStorage::Blob).to receive(:content_type).and_return("application/x-msdownload")
-        
+
         task.save
-        
+
         expect(task).not_to be_valid
         expect(task.errors[:media_files].any? { |msg| msg.include?("invalid file type") }).to be true
       end
@@ -96,12 +96,12 @@ RSpec.describe Task, type: :model do
       it "rejects script files" do
         script_file = create_test_file('test_document.pdf', 'application/pdf')
         task.media_files.attach(script_file)
-        
+
         # Mock the content_type to be invalid
         allow_any_instance_of(ActiveStorage::Blob).to receive(:content_type).and_return("application/x-sh")
-        
+
         task.save
-        
+
         expect(task).not_to be_valid
         expect(task.errors[:media_files].any? { |msg| msg.include?("invalid file type") }).to be true
       end
@@ -112,7 +112,7 @@ RSpec.describe Task, type: :model do
         jpeg_file = create_test_file('test_image.jpg', 'image/jpeg')
         task.media_files.attach(jpeg_file)
         task.save
-        
+
         expect(task).to be_valid
       end
 
@@ -120,7 +120,7 @@ RSpec.describe Task, type: :model do
         png_file = create_test_file('test_image.png', 'image/png')
         task.media_files.attach(png_file)
         task.save
-        
+
         expect(task).to be_valid
       end
 
@@ -128,7 +128,7 @@ RSpec.describe Task, type: :model do
         gif_file = create_test_file('test_image.gif', 'image/gif')
         task.media_files.attach(gif_file)
         task.save
-        
+
         expect(task).to be_valid
       end
 
@@ -136,7 +136,7 @@ RSpec.describe Task, type: :model do
         svg_file = create_test_file('test_image.svg', 'image/svg+xml')
         task.media_files.attach(svg_file)
         task.save
-        
+
         expect(task).to be_valid
       end
 
@@ -144,7 +144,7 @@ RSpec.describe Task, type: :model do
         pdf_file = create_test_file('test_document.pdf', 'application/pdf')
         task.media_files.attach(pdf_file)
         task.save
-        
+
         expect(task).to be_valid
       end
     end
@@ -159,12 +159,12 @@ RSpec.describe Task, type: :model do
     it "scopes media files to the specific task" do
       file1 = create_test_file('test_image.png', 'image/png')
       file2 = create_test_file('test_image.png', 'image/png')
-      
+
       task1.media_files.attach(file1)
       task2.media_files.attach(file2)
       task1.save
       task2.save
-      
+
       expect(task1.media_files.count).to eq(1)
       expect(task2.media_files.count).to eq(1)
       expect(task1.media_files.first.id).not_to eq(task2.media_files.first.id)
