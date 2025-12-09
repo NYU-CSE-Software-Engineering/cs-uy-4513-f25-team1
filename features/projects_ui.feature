@@ -4,7 +4,7 @@ Feature: Projects UI
   So I can manage work on boards
 
   Background:
-    Given I am a signed-in user
+    Given I am a logged in user
 
   Scenario: Create a project successfully
     When I go to the projects page
