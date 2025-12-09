@@ -84,7 +84,8 @@
           <span class="task-type">[<%= t.type %>]</span>
         <% end %>
         <span class="task-status">- <%= t.status %></span>
-        <%= link_to "Edit", edit_project_task_path(@project, t) %>
+        <%= link_to "View", project_task_path(@project, t), class: "btn btn-secondary" %>
+        <%= link_to "Edit", edit_project_task_path(@project, t), class: "btn btn-secondary" %>
       </li>
     <% end %>
   </ul>
@@ -101,7 +102,8 @@
     <li>
       <%= t.title %>
       <% if t.type.present? %>[<%= t.type %>]<% end %>
-      <%= link_to "Edit", edit_project_task_path(@project, t) %>
+      <%= link_to "View", project_task_path(@project, t), class: "btn btn-secondary" %>
+      <%= link_to "Edit", edit_project_task_path(@project, t), class: "btn btn-secondary" %>
     </li>
   <% end %>
 </ul>
@@ -112,7 +114,8 @@
     <li>
       <%= t.title %>
       <% if t.type.present? %>[<%= t.type %>]<% end %>
-      <%= link_to "Edit", edit_project_task_path(@project, t) %>
+      <%= link_to "View", project_task_path(@project, t), class: "btn btn-secondary" %>
+      <%= link_to "Edit", edit_project_task_path(@project, t), class: "btn btn-secondary" %>
     </li>
   <% end %>
 </ul>
@@ -123,7 +126,8 @@
     <li>
       <%= t.title %>
       <% if t.type.present? %>[<%= t.type %>]<% end %>
-      <%= link_to "Edit", edit_project_task_path(@project, t) %>
+      <%= link_to "View", project_task_path(@project, t), class: "btn btn-secondary" %>
+      <%= link_to "Edit", edit_project_task_path(@project, t), class: "btn btn-secondary" %>
     </li>
   <% end %>
 </ul>
@@ -134,7 +138,8 @@
     <li>
       <%= t.title %>
       <% if t.type.present? %>[<%= t.type %>]<% end %>
-      <%= link_to "Edit", edit_project_task_path(@project, t) %>
+      <%= link_to "View", project_task_path(@project, t), class: "btn btn-secondary" %>
+      <%= link_to "Edit", edit_project_task_path(@project, t), class: "btn btn-secondary" %>
     </li>
   <% end %>
 </ul>

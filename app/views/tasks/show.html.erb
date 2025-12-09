@@ -1,4 +1,4 @@
-<h1>Edit Task</h1>
+<h1>Task Details</h1>
 
 <% if flash[:notice] %>
   <div class="notice"><%= flash[:notice] %></div>
@@ -7,46 +7,20 @@
   <div class="alert"><%= flash[:alert] %></div>
 <% end %>
 
-<%= form_with model: [@project, @task], local: true do |form| %>
-  <% if @task.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@task.errors.count, "error") %> prohibited this task from being saved:</h2>
-      <ul>
-        <% @task.errors.full_messages.each do |message| %>
-          <li><%= message %></li>
-        <% end %>
-      </ul>
-    </div>
-  <% end %>
-
-  <div>
-    <%= form.label :title, "Title" %>
-    <%= form.text_field :title %>
+<div class="task-details">
+  <div class="task-info">
+    <p><strong>Title:</strong> <%= @task.title %></p>
+    <p><strong>Type:</strong> <%= @task.type %></p>
+    <p><strong>Status:</strong> <%= @task.status %></p>
+    <p><strong>Project:</strong> <%= @project.name %></p>
+    <p><strong>Created by:</strong> <%= @task.user.username %></p>
   </div>
 
-  <div>
-    <%= form.label :type, "Type" %>
-    <%= form.select :type, options_for_select([
-      ["Feature", "Feature"],
-      ["Bug", "Bug"],
-      ["Backlog", "Backlog"]
-    ], @task.type) %>
+  <div class="task-actions">
+    <%= link_to "Edit Task", edit_project_task_path(@project, @task), class: "btn btn-secondary" %>
+    <%= link_to "Back to Project", project_path(@project), class: "btn btn-secondary" %>
   </div>
-
-  <div>
-    <%= form.label :status, "Task Status" %>
-    <%= form.select :status, options_for_select([
-      ["To Do", "To Do"],
-      ["In Progress", "In Progress"],
-      ["In Review", "In Review"],
-      ["Completed", "Completed"]
-    ], @task.status) %>
-  </div>
-
-  <div>
-    <%= form.submit "Update Task" %>
-  </div>
-<% end %>
+</div>
 
 <hr>
 
@@ -72,6 +46,7 @@
             <%= link_to "View", rails_blob_path(file, disposition: "inline"), target: "_blank", class: "btn btn-secondary" %>
             <%= form_with model: [@project, @task], url: project_task_path(@project, @task), method: :patch, local: true, class: "inline-form" do |form| %>
               <%= hidden_field_tag "task[remove_media_file_ids][]", file.id %>
+              <%= hidden_field_tag :redirect_to_show, "1" %>
               <%= form.submit "Remove", class: "btn btn-danger", data: { confirm: "Are you sure you want to remove this file?" } %>
             <% end %>
           </div>
@@ -85,7 +60,19 @@
 
 <div class="media-upload-section">
   <h3>Add Media Files</h3>
-  <%= form_with model: [@project, @task], local: true, multipart: true do |form| %>
+  <%= form_with model: [@project, @task], url: project_task_path(@project, @task), method: :patch, local: true, multipart: true do |form| %>
+    <%= hidden_field_tag :redirect_to_show, "1" %>
+    <% if @task.errors.any? %>
+      <div id="error_explanation">
+        <h2><%= pluralize(@task.errors.count, "error") %> prohibited media from being saved:</h2>
+        <ul>
+          <% @task.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
     <div>
       <%= form.label :media_files, "Select files to upload" %>
       <%= form.file_field :media_files, multiple: true, accept: "image/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" %>
@@ -97,6 +84,3 @@
     </div>
   <% end %>
 </div>
-
-<%= link_to "View Task", project_task_path(@project, @task), class: "btn btn-secondary" %>
-<%= link_to "Back to Project", project_path(@project), class: "btn btn-secondary" %>
