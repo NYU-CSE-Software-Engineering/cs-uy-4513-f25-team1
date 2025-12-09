@@ -24,7 +24,6 @@ end
 Given('a project named {string} exists with sample tasks') do |name|
   filter_test_user
   @project = Project.find_or_create_by!(name: name) do |p|
-    p.wip_limit = 5
     p.description = 'Test project for filter'
   end
 

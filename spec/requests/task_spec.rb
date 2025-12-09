@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe "Tasks", type: :request do
   let!(:user) { User.create!(email_address: 'test@example.com', username: 'tester', password: 'SecurePassword123') }
   let!(:invited_user) { User.create!(email_address: 'invited@example.com', username: 'invited', password: 'SecurePassword123') }
-  let!(:project) { Project.create!(name: "Test Project") }
+  let!(:project) { Project.create!(name: "Test Project", description: "Test description") }
 
   def sign_in(user)
     post "/session", params: { email_address: user.email_address, password: 'SecurePassword123' }
