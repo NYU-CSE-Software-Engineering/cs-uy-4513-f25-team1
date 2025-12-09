@@ -1,7 +1,7 @@
 class CollaboratorsController < ApplicationController
   before_action :set_collaborator
 
-  def accept
+  def update
     if @collaborator.invited?
       @collaborator.developer!
       flash[:notice] = "You have joined #{@collaborator.project.name} as a developer."
@@ -11,7 +11,7 @@ class CollaboratorsController < ApplicationController
     redirect_back fallback_location: projects_path
   end
 
-  def reject
+  def destroy
     project_name = @collaborator.project.name
     @collaborator.destroy
     flash[:notice] = "You have declined the invitation to #{project_name}."

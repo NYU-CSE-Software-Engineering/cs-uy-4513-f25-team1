@@ -14,7 +14,7 @@ RSpec.describe "Collaborators", type: :request do
     post "/session", params: { email_address: user.email_address, password: 'SecurePassword123' }
   end
 
-  describe "PATCH /collaborators/:id/accept" do
+  describe "PATCH /collaborators/:id" do
     context "when user is the invited collaborator" do
       let!(:invite) { Collaborator.create!(user: invited_user, project: project, role: :invited) }
 
@@ -22,19 +22,19 @@ RSpec.describe "Collaborators", type: :request do
 
       it "changes role from invited to developer" do
         expect {
-          patch accept_collaborator_path(invite)
+          patch collaborator_path(invite)
         }.to change { invite.reload.role }.from("invited").to("developer")
       end
 
       it "redirects with success notice" do
-        patch accept_collaborator_path(invite)
+        patch collaborator_path(invite)
         expect(response).to redirect_to(projects_path)
         expect(flash[:notice]).to eq("You have joined #{project.name} as a developer.")
       end
 
       it "does not destroy the collaborator record" do
         expect {
-          patch accept_collaborator_path(invite)
+          patch collaborator_path(invite)
         }.not_to change(Collaborator, :count)
       end
     end
@@ -46,12 +46,12 @@ RSpec.describe "Collaborators", type: :request do
 
       it "does not change the role" do
         expect {
-          patch accept_collaborator_path(developer_collab)
+          patch collaborator_path(developer_collab)
         }.not_to change { developer_collab.reload.role }
       end
 
       it "sets an alert flash message" do
-        patch accept_collaborator_path(developer_collab)
+        patch collaborator_path(developer_collab)
         expect(flash[:alert]).to eq("This invitation is no longer valid.")
       end
     end
@@ -62,20 +62,20 @@ RSpec.describe "Collaborators", type: :request do
       before { sign_in(other_user) }
 
       it "redirects with authorization error" do
-        patch accept_collaborator_path(invite)
+        patch collaborator_path(invite)
         expect(response).to redirect_to(projects_path)
         expect(flash[:alert]).to eq("You are not authorized to perform this action.")
       end
 
       it "does not change the invite status" do
         expect {
-          patch accept_collaborator_path(invite)
+          patch collaborator_path(invite)
         }.not_to change { invite.reload.role }
       end
     end
   end
 
-  describe "PATCH /collaborators/:id/reject" do
+  describe "DELETE /collaborators/:id" do
     context "when user is the invited collaborator" do
       let!(:invite) { Collaborator.create!(user: invited_user, project: project, role: :invited) }
 
@@ -83,18 +83,18 @@ RSpec.describe "Collaborators", type: :request do
 
       it "destroys the collaborator record" do
         expect {
-          patch reject_collaborator_path(invite)
+          delete collaborator_path(invite)
         }.to change(Collaborator, :count).by(-1)
       end
 
       it "redirects with success notice" do
-        patch reject_collaborator_path(invite)
+        delete collaborator_path(invite)
         expect(response).to redirect_to(projects_path)
         expect(flash[:notice]).to eq("You have declined the invitation to #{project.name}.")
       end
 
       it "removes the user from the project collaborators" do
-        patch reject_collaborator_path(invite)
+        delete collaborator_path(invite)
         expect(Collaborator.find_by(user: invited_user, project: project)).to be_nil
       end
     end
@@ -105,14 +105,14 @@ RSpec.describe "Collaborators", type: :request do
       before { sign_in(other_user) }
 
       it "redirects with authorization error" do
-        patch reject_collaborator_path(invite)
+        delete collaborator_path(invite)
         expect(response).to redirect_to(projects_path)
         expect(flash[:alert]).to eq("You are not authorized to perform this action.")
       end
 
       it "does not destroy the collaborator record" do
         expect {
-          patch reject_collaborator_path(invite)
+          delete collaborator_path(invite)
         }.not_to change(Collaborator, :count)
       end
     end
@@ -122,13 +122,13 @@ RSpec.describe "Collaborators", type: :request do
     let!(:invite) { Collaborator.create!(user: invited_user, project: project, role: :invited) }
 
     context "when not signed in" do
-      it "redirects to login for accept" do
-        patch accept_collaborator_path(invite)
+      it "redirects to login for update" do
+        patch collaborator_path(invite)
         expect(response).to redirect_to(new_session_path)
       end
 
-      it "redirects to login for reject" do
-        patch reject_collaborator_path(invite)
+      it "redirects to login for destroy" do
+        delete collaborator_path(invite)
         expect(response).to redirect_to(new_session_path)
       end
     end

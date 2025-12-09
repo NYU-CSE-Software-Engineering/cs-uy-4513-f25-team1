@@ -15,12 +15,7 @@ Rails.application.routes.draw do
     resources :tasks, only: [ :new, :create, :edit, :update, :show ]
   end
 
-  resources :collaborators, only: [] do
-    member do
-      patch :accept
-      patch :reject
-    end
-  end
+  resources :collaborators, only: [ :update, :destroy ]
 
   # Registration routes
   resources :users, only: [ :new, :create, :edit, :update ]
