@@ -13,6 +13,7 @@ Rails.application.routes.draw do
 
   resources :projects do
     resources :tasks, only: [ :new, :create, :edit, :update, :show ]
+    resources :collaborators, only: [ :update, :destroy ]
   end
 
   # Registration routes

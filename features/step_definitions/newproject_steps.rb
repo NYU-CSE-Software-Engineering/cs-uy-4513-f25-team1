@@ -18,7 +18,7 @@ Given('an existing project with name {string} already exists') do |name|
   Collaborator.create!(
     project_id: proj.id,
     user_id: @user.id,
-    role: "manager"
+    role: :manager
   )
 end
 

@@ -25,7 +25,9 @@
 
 <h2>Tasks</h2>
 
-<%= link_to "New Task", new_project_task_path(@project), class: "button" %>
+<% if can_edit_project? %>
+  <%= link_to "New Task", new_project_task_path(@project), class: "button" %>
+<% end %>
 
 <!-- Filter Form -->
 <div class="filters">
@@ -84,8 +86,9 @@
           <span class="task-type">[<%= t.type %>]</span>
         <% end %>
         <span class="task-status">- <%= t.status %></span>
-        <%= link_to "View", project_task_path(@project, t), class: "btn btn-secondary" %>
-        <%= link_to "Edit", edit_project_task_path(@project, t), class: "btn btn-secondary" %>
+        <% if can_edit_project? %>
+          <%= link_to "Edit", edit_project_task_path(@project, t) %>
+        <% end %>
       </li>
     <% end %>
   </ul>
@@ -102,8 +105,7 @@
     <li>
       <%= t.title %>
       <% if t.type.present? %>[<%= t.type %>]<% end %>
-      <%= link_to "View", project_task_path(@project, t), class: "btn btn-secondary" %>
-      <%= link_to "Edit", edit_project_task_path(@project, t), class: "btn btn-secondary" %>
+      <% if can_edit_project? %><%= link_to "Edit", edit_project_task_path(@project, t) %><% end %>
     </li>
   <% end %>
 </ul>
@@ -114,8 +116,7 @@
     <li>
       <%= t.title %>
       <% if t.type.present? %>[<%= t.type %>]<% end %>
-      <%= link_to "View", project_task_path(@project, t), class: "btn btn-secondary" %>
-      <%= link_to "Edit", edit_project_task_path(@project, t), class: "btn btn-secondary" %>
+      <% if can_edit_project? %><%= link_to "Edit", edit_project_task_path(@project, t) %><% end %>
     </li>
   <% end %>
 </ul>
@@ -126,8 +127,7 @@
     <li>
       <%= t.title %>
       <% if t.type.present? %>[<%= t.type %>]<% end %>
-      <%= link_to "View", project_task_path(@project, t), class: "btn btn-secondary" %>
-      <%= link_to "Edit", edit_project_task_path(@project, t), class: "btn btn-secondary" %>
+      <% if can_edit_project? %><%= link_to "Edit", edit_project_task_path(@project, t) %><% end %>
     </li>
   <% end %>
 </ul>
@@ -138,8 +138,7 @@
     <li>
       <%= t.title %>
       <% if t.type.present? %>[<%= t.type %>]<% end %>
-      <%= link_to "View", project_task_path(@project, t), class: "btn btn-secondary" %>
-      <%= link_to "Edit", edit_project_task_path(@project, t), class: "btn btn-secondary" %>
+      <% if can_edit_project? %><%= link_to "Edit", edit_project_task_path(@project, t) %><% end %>
     </li>
   <% end %>
 </ul>

@@ -1,6 +1,8 @@
 class ProjectsController < ApplicationController
   before_action :set_project, only: :show
   before_action :set_user
+  before_action :set_user_role, only: :show
+  helper_method :can_edit_project?
 
   def index
     @projects = Project.all
@@ -14,7 +16,7 @@ class ProjectsController < ApplicationController
     @project = Project.new(name: params[:project][:name], wip_limit: params[:project][:wip_limit], description: params[:project][:description])
     valid = @project.save
     # if name is duplicate of another project owned by the user then valid is false as well
-    duplicate_project = Collaborator.where(user_id: @user, role: "manager").joins(:project).where(projects: { name: @project.name }).exists?
+    duplicate_project = Collaborator.where(user_id: @user, role: :manager).joins(:project).where(projects: { name: @project.name }).exists?
     if !valid or duplicate_project then
       if @project.errors[:name] then
         flash[:name_error] = "Name can't be blank"
@@ -28,7 +30,7 @@ class ProjectsController < ApplicationController
       redirect_to new_project_path
       return
     else
-      collaborator = Collaborator.new(user_id: session[:user_id], project_id: @project.id, role: "manager")
+      collaborator = Collaborator.new(user_id: session[:user_id], project_id: @project.id, role: :manager)
       collaborator.save!
       flash[:created] = "Project was successfully created."
     end
@@ -75,5 +77,14 @@ class ProjectsController < ApplicationController
 
   def set_user
     @user = session[:user_id]
+  end
+
+  def set_user_role
+    @collaborator = Collaborator.find_by(user_id: Current.session&.user_id, project_id: @project.id)
+    @user_role = @collaborator&.role
+  end
+
+  def can_edit_project?
+    @user_role.present? && @user_role != "invited"
   end
 end
