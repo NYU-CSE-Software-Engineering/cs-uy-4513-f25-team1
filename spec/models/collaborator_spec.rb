@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe Collaborator, type: :model do
   let(:user) { User.create!(email_address: 'user@example.com', username: 'testuser', password: 'SecurePassword123') }
   let(:other_user) { User.create!(email_address: 'other@example.com', username: 'otheruser', password: 'SecurePassword123') }
-  let(:project) { Project.create!(name: 'Test Project', wip_limit: 3) }
+  let(:project) { Project.create!(name: 'Test Project', description: 'Test description') }
 
   describe 'validations' do
     it 'is valid with valid attributes' do
@@ -27,7 +27,7 @@ RSpec.describe Collaborator, type: :model do
       end
 
       it 'allows same user on different projects' do
-        other_project = Project.create!(name: 'Other Project', wip_limit: 3)
+        other_project = Project.create!(name: 'Other Project', description: 'Other description')
         Collaborator.create!(user: user, project: project, role: :manager)
         collaborator = Collaborator.new(user: user, project: other_project, role: :manager)
 
