@@ -4,7 +4,7 @@ Feature: Board views
   So I can understand workflow at a glance
 
   Background:
-    Given I am a signed-in user
+    Given I am a logged in user
     And a project exists with:
       | name | BoardProj |
     And issues exist:

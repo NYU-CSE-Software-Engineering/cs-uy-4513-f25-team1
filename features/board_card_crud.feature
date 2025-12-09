@@ -4,7 +4,7 @@ Feature: Card CRUD on a board
   So I can track work items
 
   Background:
-    Given I am a signed-in user
+    Given I am a logged in user
     And I am a Project Member (not admin) of "My Project"
     And the project has a board with columns:
       | To Do       |
