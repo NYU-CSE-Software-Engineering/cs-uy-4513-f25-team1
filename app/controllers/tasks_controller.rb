@@ -122,7 +122,7 @@ class TasksController < ApplicationController
     current_in_progress = @project.tasks.where(status: "In Progress").count
     current_in_progress >= limit
   end
-
+  #Random comment for the hell of it :) 
   def authorize_project_edit
     collaborator = Collaborator.find_by(user_id: Current.session&.user_id, project_id: @project.id)
     unless collaborator && collaborator.role != "invited"
