@@ -1,6 +1,8 @@
 class ProjectsController < ApplicationController
   before_action :set_project, only: :show
   before_action :set_user
+  before_action :set_user_role, only: :show
+  helper_method :can_edit_project?
 
   def index
     @projects = Project.all
@@ -75,5 +77,14 @@ class ProjectsController < ApplicationController
 
   def set_user
     @user = session[:user_id]
+  end
+
+  def set_user_role
+    @collaborator = Collaborator.find_by(user_id: Current.session&.user_id, project_id: @project.id)
+    @user_role = @collaborator&.role
+  end
+
+  def can_edit_project?
+    @user_role.present? && @user_role != "invited"
   end
 end

@@ -1,6 +1,7 @@
 class TasksController < ApplicationController
   before_action :set_project
   before_action :set_task, only: [ :edit, :update ]
+  before_action :authorize_project_edit
 
   def new
     @task = @project.tasks.build
@@ -82,5 +83,13 @@ class TasksController < ApplicationController
     return false if limit <= 0
     current_in_progress = @project.tasks.where(status: "In Progress").count
     current_in_progress >= limit
+  end
+
+  def authorize_project_edit
+    collaborator = Collaborator.find_by(user_id: Current.session&.user_id, project_id: @project.id)
+    unless collaborator && collaborator.role != "invited"
+      flash[:alert] = "You do not have permission to edit this project."
+      redirect_to project_path(@project)
+    end
   end
 end

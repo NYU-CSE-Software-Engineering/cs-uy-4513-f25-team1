@@ -167,3 +167,33 @@ label {
     margin-bottom: 0.375rem;
     color: var(--text-primary);
 }
+
+/* Small Button Variant */
+.btn-sm {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.8rem;
+}
+
+/* Invite Item Styles */
+.invite-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) 0;
+    flex-wrap: wrap;
+}
+
+.invite-project-link {
+    color: var(--secondary-color);
+    font-weight: 500;
+    margin-right: auto;
+}
+
+.invite-project-link:hover {
+    color: var(--secondary-hover);
+    text-decoration: underline;
+}
+
+.invite-item .button_to {
+    display: inline;
+}
