@@ -1,5 +1,5 @@
 Given("I am a signed-in user") do
-  sign_in_test_user
+  step "I am a logged in user"
 end
 
 When("I go to the new project page") do
