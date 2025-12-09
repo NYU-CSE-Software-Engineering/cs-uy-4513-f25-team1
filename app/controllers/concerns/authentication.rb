@@ -24,8 +24,9 @@ module Authentication
     def resume_session
       Current.session ||= find_session_by_cookie
       if Current.session
-        @manager_projects = Collaborator.joins(:project).where(collaborators: { user_id: Current.session[:user_id], role: "manager" })
-        @developer_projects = Collaborator.joins(:project).where(collaborators: { user_id: Current.session[:user_id], role: "developer" })
+        @manager_projects = Collaborator.joins(:project).where(collaborators: { user_id: Current.session.user_id, role: :manager })
+        @developer_projects = Collaborator.joins(:project).where(collaborators: { user_id: Current.session.user_id, role: :developer })
+        @invited_projects = Collaborator.joins(:project).where(collaborators: { user_id: Current.session.user_id, role: :invited })
       end
     end
 
