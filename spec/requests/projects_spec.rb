@@ -55,7 +55,7 @@ RSpec.describe "Projects", type: :request do
             project: {
               name: "Test Project",
               description: "Test description",
-              invites: ["nonexistent@example.com"]
+              invites: [ "nonexistent@example.com" ]
             }
           }
         }.not_to change(Project, :count)
@@ -70,7 +70,7 @@ RSpec.describe "Projects", type: :request do
             project: {
               name: "Test Project",
               description: "Test description",
-              invites: ["nonexistent_user"]
+              invites: [ "nonexistent_user" ]
             }
           }
         }.not_to change(Project, :count)
@@ -85,7 +85,7 @@ RSpec.describe "Projects", type: :request do
             project: {
               name: "Test Project",
               description: "Test description",
-              invites: [other_user.email_address]
+              invites: [ other_user.email_address ]
             }
           }
         }.to change(Project, :count).by(1)
@@ -105,7 +105,7 @@ RSpec.describe "Projects", type: :request do
             project: {
               name: "Test Project",
               description: "Test description",
-              invites: [other_user.username]
+              invites: [ other_user.username ]
             }
           }
         }.to change(Project, :count).by(1)
@@ -159,7 +159,7 @@ RSpec.describe "Projects", type: :request do
             project: {
               name: "My Project",
               description: "My project description",
-              invites: [other_user.email_address]
+              invites: [ other_user.email_address ]
             }
           }
         }.to change(Project, :count).by(1)
@@ -173,7 +173,7 @@ RSpec.describe "Projects", type: :request do
               name: "Full Project",
               description: "Full description",
               repo: "https://github.com/user/repo",
-              invites: [other_user.email_address]
+              invites: [ other_user.email_address ]
             }
           }
         }.to change(Project, :count).by(1)
@@ -204,7 +204,7 @@ RSpec.describe "Projects", type: :request do
           project: {
             name: "My Project",
             description: "My project description",
-            invites: [other_user.email_address]
+            invites: [ other_user.email_address ]
           }
         }
 
@@ -222,7 +222,7 @@ RSpec.describe "Projects", type: :request do
             project: {
               name: "My Project",
               description: "My project description",
-              invites: [user.email_address]
+              invites: [ user.email_address ]
             }
           }
         }.not_to change(Project, :count)
