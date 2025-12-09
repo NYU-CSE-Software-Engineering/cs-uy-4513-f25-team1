@@ -197,3 +197,62 @@ label {
 .invite-item .button_to {
     display: inline;
 }
+
+/* Invite Input Section Styles */
+#invite-input-container {
+    display: flex;
+    gap: var(--spacing-sm);
+    align-items: center;
+}
+
+#invite-input-container #invite-input {
+    flex: 1;
+}
+
+#add-invite-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    background-color: var(--secondary-color);
+    color: white;
+    border-radius: var(--radius-md);
+    font-size: 1.25rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+#add-invite-btn:hover {
+    background-color: var(--secondary-hover);
+    transform: translateY(-1px);
+}
+
+#invite-list {
+    margin-top: var(--spacing-sm);
+}
+
+#invite-list li {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background-color: #e0f2fe;
+    border-radius: var(--radius-md);
+    margin-bottom: var(--spacing-xs);
+    font-size: 0.9rem;
+}
+
+#invite-list .remove-invite {
+    margin-left: auto;
+    color: var(--danger-color);
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-md);
+    transition: background-color 0.2s;
+}
+
+#invite-list .remove-invite:hover {
+    background-color: #fecaca;
+}
