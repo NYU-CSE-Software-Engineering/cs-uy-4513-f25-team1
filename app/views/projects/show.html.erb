@@ -6,13 +6,13 @@
 
 <h1><%= @project.name %></h1>
 
-<p><strong>WIP limit (In Progress):</strong>
-  <%= @project.wip_limit || "None" %>
-</p>
+<% if @project.description.present? %>
+  <p><%= @project.description %></p>
+<% end %>
 
-<p><strong>In Progress :</strong>
-  <%= @project.tasks.where(status: "In Progress").count %>
-</p>
+<% if @project.repo.present? %>
+  <p><strong>Repository:</strong> <%= link_to @project.repo, @project.repo, target: "_blank" %></p>
+<% end %>
 
 <% if flash[:notice] %>
   <div class="notice"><%= flash[:notice] %></div>
