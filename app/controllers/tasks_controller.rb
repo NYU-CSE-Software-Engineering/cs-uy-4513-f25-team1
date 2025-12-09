@@ -2,7 +2,7 @@ class TasksController < ApplicationController
   class TaskNotFoundError < StandardError; end
 
   before_action :set_project
-  before_action :set_task, only: [ :edit, :update ]
+  before_action :set_task, only: [ :show, :edit, :update ]
   before_action :authorize_project_edit
 
   def new

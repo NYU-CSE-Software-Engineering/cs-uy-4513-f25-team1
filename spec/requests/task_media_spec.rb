@@ -18,6 +18,7 @@ RSpec.describe "Task Media", type: :request do
   end
 
   before do
+    Collaborator.create!(user: user, project: project, role: :manager)
     sign_in(user)
   end
 
