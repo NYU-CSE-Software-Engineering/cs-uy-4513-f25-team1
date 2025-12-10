@@ -1,144 +1,148 @@
-<%= render "application/sidebar" %>
+<div class="dashboard-layout">
+  <%= render "application/sidebar" %>
 
-<% if flash[:created] %>
-  <p> <%= flash[:created] %> </p>
-<% end %>
-
-<h1><%= @project.name %></h1>
-
-<p><strong>WIP limit (In Progress):</strong>
-  <%= @project.wip_limit || "None" %>
-</p>
-
-<p><strong>In Progress :</strong>
-  <%= @project.tasks.where(status: "In Progress").count %>
-</p>
-
-<% if flash[:notice] %>
-  <div class="notice"><%= flash[:notice] %></div>
-<% end %>
-<% if flash[:alert] %>
-  <div class="alert"><%= flash[:alert] %></div>
-<% end %>
-
-<hr>
-
-<h2>Tasks</h2>
-
-<% if can_edit_project? %>
-  <%= link_to "New Task", new_project_task_path(@project), class: "button" %>
-<% end %>
-
-<!-- Filter Form -->
-<div class="filters">
-  <%= form_with url: project_path(@project), method: :get, local: true do |form| %>
-    <div>
-      <%= form.label :filter, "Sort by" %>
-      <%= form.select :filter, options_for_select([
-        ["Date Created", "date_created"],
-        ["Date Modified", "date_modified"]
-      ], @current_filter), {}, { id: "filter" } %>
-    </div>
-
-    <div>
-      <%= form.label :direction, "Order" %>
-      <%= form.select :direction, options_for_select([
-        ["Early → Late", "asc"],
-        ["Late → Early", "desc"]
-      ], @current_direction), {}, { id: "direction" } %>
-    </div>
-
-    <div>
-      <%= form.label :type, "Filter by Type" %>
-      <%= form.select :type, options_for_select([
-        ["All Types", ""],
-        ["Feature", "Feature"],
-        ["Bug", "Bug"],
-        ["Backlog", "Backlog"]
-      ], @current_type), {}, { id: "type_filter" } %>
-    </div>
-
-    <div>
-      <%= form.label :status, "Filter by Status" %>
-      <%= form.select :status, options_for_select([
-        ["All Statuses", ""],
-        ["To Do", "To Do"],
-        ["In Progress", "In Progress"],
-        ["In Review", "In Review"],
-        ["Completed", "Completed"]
-      ], @current_status), {}, { id: "status_filter" } %>
-    </div>
-
-    <%= form.submit "Apply filters" %>
-  <% end %>
-</div>
-
-<hr>
-
-<!-- Filtered/Sorted Task List -->
-<div id="task-list">
-  <h3>All Tasks (Filtered)</h3>
-  <ul>
-    <% @tasks.each do |t| %>
-      <li class="task-item" data-type="<%= t.type %>" data-title="<%= t.title %>">
-        <strong><%= t.title %></strong>
-        <% if t.type.present? %>
-          <span class="task-type">[<%= t.type %>]</span>
-        <% end %>
-        <span class="task-status">- <%= t.status %></span>
-        <% if can_edit_project? %>
-          <%= link_to "Edit", edit_project_task_path(@project, t) %>
-        <% end %>
-      </li>
+  <div class="main-content">
+    <% if flash[:created] %>
+      <p> <%= flash[:created] %> </p>
     <% end %>
-  </ul>
+
+    <h1><%= @project.name %></h1>
+
+    <p><strong>WIP limit (In Progress):</strong>
+      <%= @project.wip_limit || "None" %>
+    </p>
+
+    <p><strong>In Progress :</strong>
+      <%= @project.tasks.where(status: "In Progress").count %>
+    </p>
+
+    <% if flash[:notice] %>
+      <div class="notice"><%= flash[:notice] %></div>
+    <% end %>
+    <% if flash[:alert] %>
+      <div class="alert"><%= flash[:alert] %></div>
+    <% end %>
+
+    <hr>
+
+    <h2>Tasks</h2>
+
+    <% if can_edit_project? %>
+      <%= link_to "New Task", new_project_task_path(@project), class: "button" %>
+    <% end %>
+
+    <!-- Filter Form -->
+    <div class="filters">
+      <%= form_with url: project_path(@project), method: :get, local: true do |form| %>
+        <div>
+          <%= form.label :filter, "Sort by" %>
+          <%= form.select :filter, options_for_select([
+            ["Date Created", "date_created"],
+            ["Date Modified", "date_modified"]
+          ], @current_filter), {}, { id: "filter" } %>
+        </div>
+
+        <div>
+          <%= form.label :direction, "Order" %>
+          <%= form.select :direction, options_for_select([
+            ["Early → Late", "asc"],
+            ["Late → Early", "desc"]
+          ], @current_direction), {}, { id: "direction" } %>
+        </div>
+
+        <div>
+          <%= form.label :type, "Filter by Type" %>
+          <%= form.select :type, options_for_select([
+            ["All Types", ""],
+            ["Feature", "Feature"],
+            ["Bug", "Bug"],
+            ["Backlog", "Backlog"]
+          ], @current_type), {}, { id: "type_filter" } %>
+        </div>
+
+        <div>
+          <%= form.label :status, "Filter by Status" %>
+          <%= form.select :status, options_for_select([
+            ["All Statuses", ""],
+            ["To Do", "To Do"],
+            ["In Progress", "In Progress"],
+            ["In Review", "In Review"],
+            ["Completed", "Completed"]
+          ], @current_status), {}, { id: "status_filter" } %>
+        </div>
+
+        <%= form.submit "Apply filters" %>
+      <% end %>
+    </div>
+
+    <hr>
+
+    <!-- Filtered/Sorted Task List -->
+    <div id="task-list">
+      <h3>All Tasks (Filtered)</h3>
+      <ul>
+        <% @tasks.each do |t| %>
+          <li class="task-item" data-type="<%= t.type %>" data-title="<%= t.title %>">
+            <strong><%= t.title %></strong>
+            <% if t.type.present? %>
+              <span class="task-type">[<%= t.type %>]</span>
+            <% end %>
+            <span class="task-status">- <%= t.status %></span>
+            <% if can_edit_project? %>
+              <%= link_to "Edit", edit_project_task_path(@project, t) %>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+
+    <hr>
+
+    <!-- Board View (by Status) -->
+    <h2>Board View</h2>
+
+    <h3>To Do</h3>
+    <ul id="to-do-column">
+      <% @project.tasks.where(status: "To Do").each do |t| %>
+        <li>
+          <%= t.title %>
+          <% if t.type.present? %>[<%= t.type %>]<% end %>
+          <% if can_edit_project? %><%= link_to "Edit", edit_project_task_path(@project, t) %><% end %>
+        </li>
+      <% end %>
+    </ul>
+
+    <h3>In Progress</h3>
+    <ul id="in-progress-column">
+      <% @project.tasks.where(status: "In Progress").each do |t| %>
+        <li>
+          <%= t.title %>
+          <% if t.type.present? %>[<%= t.type %>]<% end %>
+          <% if can_edit_project? %><%= link_to "Edit", edit_project_task_path(@project, t) %><% end %>
+        </li>
+      <% end %>
+    </ul>
+
+    <h3>In Review</h3>
+    <ul id="in-review-column">
+      <% @project.tasks.where(status: "In Review").each do |t| %>
+        <li>
+          <%= t.title %>
+          <% if t.type.present? %>[<%= t.type %>]<% end %>
+          <% if can_edit_project? %><%= link_to "Edit", edit_project_task_path(@project, t) %><% end %>
+        </li>
+      <% end %>
+    </ul>
+
+    <h3>Completed</h3>
+    <ul id="completed-column">
+      <% @project.tasks.where(status: "Completed").each do |t| %>
+        <li>
+          <%= t.title %>
+          <% if t.type.present? %>[<%= t.type %>]<% end %>
+          <% if can_edit_project? %><%= link_to "Edit", edit_project_task_path(@project, t) %><% end %>
+        </li>
+      <% end %>
+    </ul>
+  </div>
 </div>
-
-<hr>
-
-<!-- Board View (by Status) -->
-<h2>Board View</h2>
-
-<h3>To Do</h3>
-<ul id="to-do-column">
-  <% @project.tasks.where(status: "To Do").each do |t| %>
-    <li>
-      <%= t.title %>
-      <% if t.type.present? %>[<%= t.type %>]<% end %>
-      <% if can_edit_project? %><%= link_to "Edit", edit_project_task_path(@project, t) %><% end %>
-    </li>
-  <% end %>
-</ul>
-
-<h3>In Progress</h3>
-<ul id="in-progress-column">
-  <% @project.tasks.where(status: "In Progress").each do |t| %>
-    <li>
-      <%= t.title %>
-      <% if t.type.present? %>[<%= t.type %>]<% end %>
-      <% if can_edit_project? %><%= link_to "Edit", edit_project_task_path(@project, t) %><% end %>
-    </li>
-  <% end %>
-</ul>
-
-<h3>In Review</h3>
-<ul id="in-review-column">
-  <% @project.tasks.where(status: "In Review").each do |t| %>
-    <li>
-      <%= t.title %>
-      <% if t.type.present? %>[<%= t.type %>]<% end %>
-      <% if can_edit_project? %><%= link_to "Edit", edit_project_task_path(@project, t) %><% end %>
-    </li>
-  <% end %>
-</ul>
-
-<h3>Completed</h3>
-<ul id="completed-column">
-  <% @project.tasks.where(status: "Completed").each do |t| %>
-    <li>
-      <%= t.title %>
-      <% if t.type.present? %>[<%= t.type %>]<% end %>
-      <% if can_edit_project? %><%= link_to "Edit", edit_project_task_path(@project, t) %><% end %>
-    </li>
-  <% end %>
-</ul>
