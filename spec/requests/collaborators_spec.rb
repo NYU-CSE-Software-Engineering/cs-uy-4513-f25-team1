@@ -50,9 +50,10 @@ RSpec.describe "Collaborators", type: :request do
         }.not_to change { developer_collab.reload.role }
       end
 
-      it "sets an alert flash message" do
+      it "redirects to collaborators page without changing anything" do
         patch project_collaborator_path(project, developer_collab)
-        expect(flash[:alert]).to eq("This invitation is no longer valid.")
+        expect(response).to redirect_to(project_collaborators_path(project))
+        expect(developer_collab.reload.role).to eq('developer')
       end
     end
 
@@ -118,10 +119,158 @@ RSpec.describe "Collaborators", type: :request do
     end
   end
 
+  describe "GET /projects/:project_id/collaborators" do
+    let!(:developer) { Collaborator.create!(user: other_user, project: project, role: :developer) }
+
+    before { sign_in(manager) }
+
+    it "displays all collaborators for a project" do
+      get project_collaborators_path(project)
+
+      expect(response).to have_http_status(:success)
+      expect(response.body).to include('manager')
+      expect(response.body).to include('other')
+    end
+
+    it "groups collaborators by role" do
+      get project_collaborators_path(project)
+
+      expect(response.body).to include('Managers')
+      expect(response.body).to include('Developers')
+    end
+  end
+
+  describe "GET /projects/:project_id/collaborators/:id" do
+    let!(:developer) { Collaborator.create!(user: other_user, project: project, role: :developer) }
+
+    before do
+      sign_in(manager)
+      # Create some tasks for stats
+      Task.create!(title: 'Task 1', status: 'Completed', project: project, user: other_user)
+      Task.create!(title: 'Task 2', status: 'In Progress', project: project, user: other_user)
+    end
+
+    it "displays individual collaborator details" do
+      get project_collaborator_path(project, developer)
+
+      expect(response).to have_http_status(:success)
+      expect(response.body).to include('other')
+      expect(response.body).to include('Contribution Statistics')
+    end
+
+    it "displays tasks by status" do
+      get project_collaborator_path(project, developer)
+
+      expect(response.body).to include('In Progress')
+      expect(response.body).to include('Task 1')
+      expect(response.body).to include('Task 2')
+    end
+  end
+
+  describe "GET /projects/:project_id/collaborators/:id/edit" do
+    let!(:developer) { Collaborator.create!(user: other_user, project: project, role: :developer) }
+
+    before { sign_in(manager) }
+
+    it "displays edit form for a collaborator" do
+      get edit_project_collaborator_path(project, developer)
+
+      expect(response).to have_http_status(:success)
+      expect(response.body).to include('Edit Collaborator')
+    end
+
+    context "when manager edits a collaborator" do
+      it "shows role change form" do
+        get edit_project_collaborator_path(project, developer)
+
+        expect(response.body).to include('Change Role')
+        expect(response.body).to include('Remove Collaborator')
+      end
+    end
+  end
+
+  describe "PATCH /projects/:project_id/collaborators/:id - role change" do
+    let!(:developer) { Collaborator.create!(user: other_user, project: project, role: :developer) }
+
+    before { sign_in(manager) }
+
+    context "when manager changes a developer to manager" do
+      it "updates the collaborator's role" do
+        patch project_collaborator_path(project, developer), params: {
+          collaborator: { role: 'manager' }
+        }
+
+        expect(response).to redirect_to(project_collaborators_path(project))
+        expect(developer.reload.role).to eq('manager')
+      end
+
+      it "displays success message" do
+        patch project_collaborator_path(project, developer), params: {
+          collaborator: { role: 'manager' }
+        }
+
+        follow_redirect!
+        expect(response.body).to include('Collaborator role updated successfully')
+      end
+    end
+
+    context "when trying to set invalid role" do
+      it "does not update the role" do
+        patch project_collaborator_path(project, developer), params: {
+          collaborator: { role: 'invalid_role' }
+        }
+
+        expect(developer.reload.role).to eq('developer')
+      end
+    end
+  end
+
+  describe "DELETE /projects/:project_id/collaborators/:id - manager removal" do
+    let!(:developer) { Collaborator.create!(user: other_user, project: project, role: :developer) }
+
+    before { sign_in(manager) }
+
+    context "when manager removes a collaborator" do
+      it "destroys the collaborator record" do
+        expect {
+          delete project_collaborator_path(project, developer)
+        }.to change(Collaborator, :count).by(-1)
+      end
+
+      it "redirects to collaborators index" do
+        delete project_collaborator_path(project, developer)
+
+        expect(response).to redirect_to(project_collaborators_path(project))
+      end
+
+      it "displays success message" do
+        delete project_collaborator_path(project, developer)
+
+        follow_redirect!
+        expect(response.body).to include('has been removed from')
+      end
+    end
+  end
+
   describe "authorization" do
     let!(:invite) { Collaborator.create!(user: invited_user, project: project, role: :invited) }
 
     context "when not signed in" do
+      it "redirects to login for index" do
+        get project_collaborators_path(project)
+        expect(response).to redirect_to(new_session_path)
+      end
+
+      it "redirects to login for show" do
+        get project_collaborator_path(project, invite)
+        expect(response).to redirect_to(new_session_path)
+      end
+
+      it "redirects to login for edit" do
+        get edit_project_collaborator_path(project, invite)
+        expect(response).to redirect_to(new_session_path)
+      end
+
       it "redirects to login for update" do
         patch project_collaborator_path(project, invite)
         expect(response).to redirect_to(new_session_path)
