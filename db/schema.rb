@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_09_160907) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_10_021152) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -40,11 +40,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_09_160907) do
   end
 
   create_table "collaborators", force: :cascade do |t|
-    t.string "role"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "project_id", null: false
     t.integer "user_id", null: false
+    t.integer "role", default: 0, null: false
     t.index ["project_id"], name: "index_collaborators_on_project_id"
     t.index ["user_id"], name: "index_collaborators_on_user_id"
   end
@@ -53,8 +53,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_09_160907) do
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "wip_limit"
-    t.string "description"
+    t.string "description", null: false
+    t.string "repo"
   end
 
   create_table "sessions", force: :cascade do |t|
