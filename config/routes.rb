@@ -13,7 +13,7 @@ Rails.application.routes.draw do
 
   resources :projects do
     resources :tasks, only: [ :new, :create, :edit, :update, :show ]
-    resources :collaborators, only: [ :update, :destroy ]
+    resources :collaborators, only: [ :index, :new, :create, :update, :destroy ]
   end
 
   # Registration routes

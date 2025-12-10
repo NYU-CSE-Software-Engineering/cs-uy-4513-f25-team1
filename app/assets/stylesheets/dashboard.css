@@ -186,3 +186,315 @@
     background-color: #ffe3e3;
     text-decoration: none;
 }
+
+/* =========================================
+   Project Show View Specific Styles
+   ========================================= */
+
+/* Header Section */
+.project-header {
+    margin-bottom: 2rem;
+}
+
+.project-info {
+    margin-bottom: 1.5rem;
+}
+
+.project-title {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: #212529;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+}
+
+.project-description {
+    font-size: 1.1rem;
+    color: #6c757d;
+    max-width: 800px;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.project-meta {
+    display: flex;
+    gap: 1.5rem;
+    font-size: 0.9rem;
+    color: #495057;
+}
+
+.meta-item {
+    background-color: #f1f3f5;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-weight: 500;
+}
+
+/* Collaborators */
+.project-collaborators {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.collaborators-list {
+    display: flex;
+    align-items: center;
+    gap: -8px;
+    /* overlap effect */
+}
+
+/* Overlap fix: add margin to items except the first enabled one */
+.collaborator-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #e9ecef;
+    border: 2px solid #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #495057;
+    text-decoration: none;
+    transition: transform 0.2s, z-index 0.2s;
+    margin-left: -8px;
+    position: relative;
+    z-index: 1;
+}
+
+.collaborator-avatar:first-child {
+    margin-left: 0;
+}
+
+.collaborator-avatar:hover {
+    transform: translateY(-2px);
+    z-index: 10;
+    border-color: #dee2e6;
+}
+
+.add-collaborator-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #f8f9fa;
+    border: 1px dashed #adb5bd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+    font-size: 1.25rem;
+    text-decoration: none;
+    margin-left: 8px;
+    /* Separate from the avatar pile */
+    transition: all 0.2s;
+}
+
+.add-collaborator-btn:hover {
+    border-color: #212529;
+    color: #212529;
+    background-color: white;
+}
+
+.view-collaborators-link {
+    font-size: 0.9rem;
+    color: #0d6efd;
+    text-decoration: none;
+}
+
+.view-collaborators-link:hover {
+    text-decoration: underline;
+}
+
+.divider {
+    margin: 2rem 0;
+    border: 0;
+    border-top: 1px solid #e9ecef;
+}
+
+/* Tasks Controls */
+.tasks-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0;
+    color: #343a40;
+}
+
+.new-task-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background-color: #212529;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: background-color 0.2s;
+    border: none;
+}
+
+.new-task-btn:hover {
+    background-color: #000;
+}
+
+/* Task Table */
+.task-list-container {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.task-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.task-table th {
+    background-color: #f8f9fa;
+    padding: 0.75rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.task-table td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #f1f3f5;
+    vertical-align: middle;
+    color: #212529;
+    font-size: 0.95rem;
+}
+
+.task-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.task-row {
+    cursor: pointer;
+    transition: background-color 0.1s;
+}
+
+.task-row:hover {
+    background-color: #f8f9fa;
+}
+
+/* Status Badges */
+.status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.status-to-do {
+    background-color: #e9ecef;
+    color: #495057;
+}
+
+.status-in-progress {
+    background-color: #e7f5ff;
+    color: #1c7ed6;
+}
+
+.status-in-review {
+    background-color: #fff3bf;
+    color: #f08c00;
+}
+
+.status-completed {
+    background-color: #ebfbee;
+    color: #2f9e44;
+}
+
+/* Task Title Cell */
+.task-title-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.task-title {
+    font-weight: 500;
+}
+
+.task-type-badge {
+    font-size: 0.75rem;
+    padding: 1px 6px;
+    border-radius: 4px;
+    background-color: #f1f3f5;
+    color: #868e96;
+    border: 1px solid #dee2e6;
+    text-transform: uppercase;
+}
+
+/* Assignee Cell */
+.assignee-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.user-avatar-sm {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: #ced4da;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.user-name {
+    color: #495057;
+    font-size: 0.9rem;
+}
+
+.text-muted {
+    color: #adb5bd !important;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.btn-link {
+    color: #6c757d;
+    font-size: 0.9rem;
+    text-decoration: none;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.btn-link:hover {
+    color: #212529;
+    background-color: #e9ecef;
+}
+
+.empty-table-state {
+    text-align: center;
+    padding: 3rem !important;
+    color: #adb5bd;
+    font-style: italic;
+}
