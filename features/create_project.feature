@@ -8,7 +8,7 @@ Feature: Create a new project
     And I am on the new project page
     When I fill in "Name" with "Lira"
     And I fill in "Description" with "A lightweight issue tracking app."
-    And I press "Create Project"
+    And I click "Create"
     Then I should be on the project's show page
     And I should see "Project was successfully created."
     And I should see "Lira"
@@ -16,13 +16,13 @@ Feature: Create a new project
   Scenario: Fail to create project with missing fields
     Given I am a logged in user
     And I am on the new project page
-    When I press "Create Project"
-    Then I should see "Name can't be blank"
+    When I click "Create"
+    Then I should be on the page "/projects/new"
 
   Scenario: Fail to create project with duplicate name
     Given I am a logged in user
     And an existing project with name "Lira" already exists
     And I am on the new project page
     When I fill in "Name" with "Lira"
-    And I press "Create Project"
+    And I click "Create"
     Then I should see "Name has already been taken"
