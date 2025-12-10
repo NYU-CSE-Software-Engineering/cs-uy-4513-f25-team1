@@ -132,6 +132,14 @@
     color: #212529;
 }
 
+/* Centered Main Content (Projects Index) */
+.main-content-centered {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
 /* Create Project Card (Index Page) */
 .empty-state-card {
     background-color: white;
@@ -140,7 +148,6 @@
     padding: 3rem;
     text-align: center;
     max-width: 400px;
-    margin-top: 2rem;
     transition: all 0.2s;
     cursor: pointer;
     color: inherit;

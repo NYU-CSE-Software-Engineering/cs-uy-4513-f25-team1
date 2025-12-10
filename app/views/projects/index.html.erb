@@ -1,18 +1,14 @@
 <div class="dashboard-layout">
   <%= render "application/sidebar" %>
 
-  <div class="main-content">
+  <div class="main-content main-content-centered">
     <% if flash[:created] %>
       <div class="alert alert-success"><%= flash[:created] %></div>
     <% end %>
-    
-    <h1>Projects</h1>
 
-    <% if @projects.empty? %>
-      <%= link_to new_project_path, class: "empty-state-card" do %>
-        <span class="empty-icon">+</span>
-        <h3 class="empty-text">Create Project</h3>
-      <% end %>
+    <%= link_to new_project_path, class: "empty-state-card" do %>
+      <span class="empty-icon">+</span>
+      <h3 class="empty-text">Create Project</h3>
     <% end %>
   </div>
 </div>
