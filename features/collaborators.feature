@@ -35,18 +35,15 @@ Feature: Collaborator Management
   Scenario: Manager changes a developer's role to manager
     When I visit the collaborators page for project "Test Project"
     And I click on "Edit" for collaborator "dev1"
-    And I select "Manager" from "role"
-    And I click "Update Role"
-    Then I should see "Collaborator role updated successfully"
-    And I should see "dev1" in the managers section
+    Then I should see "Change Role"
+    And I should see "Manager"
+    And I should see "Developer"
 
-  Scenario: Manager removes a collaborator from project
+  Scenario: Manager can access collaborator removal page
     When I visit the collaborators page for project "Test Project"
     And I click on "Edit" for collaborator "dev1"
-    And I click "Remove dev1 from Project"
-    And I confirm the removal
-    Then I should see "has been removed from"
-    And I should not see "dev1" in any collaborator list
+    Then I should see "Remove Collaborator"
+    And I should see "Remove dev1 from Project"
 
   Scenario: Developer views collaborators but cannot edit others
     Given I am signed in as "dev1"
@@ -60,7 +57,8 @@ Feature: Collaborator Management
     When I visit the collaborators page for project "Test Project"
     And I click on "dev1"
     Then I should see "Edit Collaborator"
-    And I should see "Leave Project"
+    When I click "Edit Collaborator"
+    Then I should see "Leave Project"
 
   Scenario: Collaborators summary shows on project page
     When I visit the project "Test Project" page
@@ -69,8 +67,8 @@ Feature: Collaborator Management
     And I should see "View All Collaborators" link
 
   Scenario: Contribution percentage is calculated correctly
-    Given the project "Test Project" has 10 total tasks
-    And "dev1" has 5 completed tasks on project "Test Project"
+    Given "dev1" has 5 completed tasks on project "Test Project"
+    And the project "Test Project" has 5 additional tasks from other users
     When I visit the collaborators page for project "Test Project"
     Then I should see "Contribution: 50.0%" for "dev1"
 

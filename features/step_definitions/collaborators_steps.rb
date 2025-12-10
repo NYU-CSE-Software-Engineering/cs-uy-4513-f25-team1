@@ -34,8 +34,8 @@ end
 Given('I am signed in as {string}') do |username|
   user = User.find_by(username: username)
   visit '/session/new'
-  fill_in 'Email address', with: user.email_address
-  fill_in 'Password', with: 'password'
+  fill_in 'email_address', with: user.email_address
+  fill_in 'password', with: 'password'
   click_button 'Sign in'
 end
 
@@ -61,6 +61,20 @@ Given('the project {string} has {int} total tasks') do |project_name, count|
       status: 'To Do',
       project: project,
       user: users.sample
+    )
+  end
+end
+
+Given('the project {string} has {int} additional tasks from other users') do |project_name, count|
+  project = Project.find_by(name: project_name)
+  # Get users that are not dev1
+  other_users = project.users.where.not(username: 'dev1')
+  count.times do |i|
+    Task.create!(
+      title: "Other Task #{i + 1}",
+      status: 'To Do',
+      project: project,
+      user: other_users.sample
     )
   end
 end
@@ -101,20 +115,14 @@ When('I visit the profile page for {string} on project {string}') do |username, 
 end
 
 When('I click on {string} for collaborator {string}') do |action, username|
-  user = User.find_by(username: username)
-  # Find the collaborator card/row for this user and click the action link
-  within(:xpath, "//h3[contains(text(), '#{username}')]/ancestor::div[@class='collaborator-card']") do
+  # Find the link containing the username text, then find its parent collaborator card
+  # and click the action link within that card
+  within(:css, ".collaborator-card", text: username) do
     click_link action
   end
 end
 
-When('I select {string} from {string}') do |value, field|
-  select value, from: field
-end
-
-When('I click {string}') do |button_text|
-  click_button button_text
-end
+# Removed duplicate step definitions - these are already in common_steps.rb and other files
 
 When('I confirm the removal') do
   # Capybara automatically handles JavaScript confirm dialogs in tests
@@ -137,12 +145,8 @@ Then('I should see {string} in the developers section') do |username|
   end
 end
 
-Then('I should see {string}') do |text|
-  expect(page).to have_content(text)
-end
-
 Then('I should not see an {string} link for {string}') do |link_text, username|
-  within(:xpath, "//h3[contains(text(), '#{username}')]/ancestor::div[@class='collaborator-card']") do
+  within(:css, ".collaborator-card", text: username) do
     expect(page).not_to have_link(link_text)
   end
 rescue Capybara::ElementNotFound
@@ -156,10 +160,6 @@ Then('I should not see {string} in any collaborator list') do |username|
   end
 end
 
-Then('I should see {string}') do |text|
-  expect(page).to have_content(text)
-end
-
 Then('I should see collaborator badges') do
   expect(page).to have_css('.collaborator-badge')
 end
@@ -169,7 +169,7 @@ Then('I should see {string} link') do |link_text|
 end
 
 Then('I should see {string} for {string}') do |text, username|
-  within(:xpath, "//h3[contains(text(), '#{username}')]/ancestor::div[@class='collaborator-card']") do
+  within(:css, ".collaborator-card", text: username) do
     expect(page).to have_content(text)
   end
 end
