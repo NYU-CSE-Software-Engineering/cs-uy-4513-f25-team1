@@ -13,7 +13,7 @@ Feature: Create task
     And I select "To Do" from "Status"
     And I click "Create Task"
     Then I should see "Implement WIP limit"
-    And I should see the task in the list for project "Alpha"
+    And I should see the task "Implement WIP limit" in the list for project "Alpha"
 
   Scenario: Task creation fails without title
     When I click "New Task"
