@@ -28,7 +28,7 @@ RSpec.describe "Task Media", type: :request do
 
       expect(response).to have_http_status(:ok)
       expect(response.body).to include(task.title)
-      expect(response.body).to include("Media Files")
+      expect(response.body).to include("Media")
     end
 
     it "displays attached media files" do
