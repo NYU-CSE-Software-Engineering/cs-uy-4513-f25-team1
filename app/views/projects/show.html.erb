@@ -1,16 +1,51 @@
 <div class="dashboard-layout">
   <%= render "application/sidebar" %>
 
-  <div class="main-content project-show-view">
-    <% if flash[:created] %>
-      <div class="alert alert-success"><%= flash[:created] %></div>
-    <% end %>
-    <% if flash[:notice] %>
-      <div class="notice"><%= flash[:notice] %></div>
-    <% end %>
-    <% if flash[:alert] %>
-      <div class="alert"><%= flash[:alert] %></div>
-    <% end %>
+<% if flash[:created] %>
+  <p> <%= flash[:created] %> </p>
+<% end %>
+
+<h1><%= @project.name %></h1>
+
+<p><%= @project.description %></p>
+
+<% if @project.repo.present? %>
+  <p><strong>Repository:</strong> <%= link_to @project.repo, @project.repo, target: "_blank" %></p>
+<% end %>
+
+<% if flash[:notice] %>
+  <div class="notice"><%= flash[:notice] %></div>
+<% end %>
+<% if flash[:alert] %>
+  <div class="alert"><%= flash[:alert] %></div>
+<% end %>
+
+<hr>
+
+<h2>Tasks</h2>
+
+<% if can_edit_project? %>
+  <%= link_to "New Task", new_project_task_path(@project), class: "button" %>
+<% end %>
+
+<!-- Filter Form -->
+<div class="filters">
+  <%= form_with url: project_path(@project), method: :get, local: true do |form| %>
+    <div>
+      <%= form.label :filter, "Sort by" %>
+      <%= form.select :filter, options_for_select([
+        ["Date Created", "date_created"],
+        ["Date Modified", "date_modified"]
+      ], @current_filter), {}, { id: "filter" } %>
+    </div>
+
+    <div>
+      <%= form.label :direction, "Order" %>
+      <%= form.select :direction, options_for_select([
+        ["Early → Late", "asc"],
+        ["Late → Early", "desc"]
+      ], @current_direction), {}, { id: "direction" } %>
+    </div>
 
     <!-- Header Section -->
     <header class="project-header">
