@@ -114,7 +114,7 @@ RSpec.describe Collaborator, type: :model do
       end
 
       it 'returns 0 when project has no tasks' do
-        empty_project = Project.create!(name: 'Empty Project', wip_limit: 3)
+        empty_project = Project.create!(name: 'Empty Project', description: 'Empty Project Description')
         empty_collaborator = Collaborator.create!(user: user, project: empty_project, role: :developer)
 
         expect(empty_collaborator.contribution_percentage).to eq(0)
