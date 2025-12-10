@@ -18,10 +18,6 @@ When('I input valid inputs for fields email username password repeated_password'
   fill_in 'Repeat password', with: 'securePassword'
 end
 
-Then('I should be on the page {string}') do |page_path|
-  expect(page).to have_current_path(page_path)
-end
-
 Then('my account should be in the Users table') do
   @user = User.find_by(email: "example@gmail.com")
   expect(@user).not_to be_nil
@@ -68,7 +64,7 @@ Given('I am a logged in user') do
     password: 'SecurePassword'
   )
   visit '/session/new'
-  fill_in 'Email', with: 'taken@gmail.com'
+  fill_in 'email_address', with: 'taken@gmail.com'
   fill_in 'password', with: 'SecurePassword'
   click_button 'Sign in'
   expect(page).to have_content('Log out')
