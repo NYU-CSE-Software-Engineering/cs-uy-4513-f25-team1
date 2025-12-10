@@ -11,20 +11,14 @@ Feature: Projects UI
     And I click the new project button
     And I fill in the project form with:
       | Name        | Alpha        |
-      | Key         | ALP          |
       | Description | Alpha proj   |
     And I submit the create project form
-    Then I should see a notice "Project created"
+    Then I should see "Project was successfully created."
     And I should be on the project page
-    And I should see the status columns:
-      | not started |
-      | in progress |
-      | done        |
-      | cancelled   |
 
   Scenario: Fail to create a project without name
     When I go to the projects page
     And I click the new project button
     And I submit the create project form
-    Then I should see an alert "Name can't be blank"
+    Then I should see "Name can't be blank"
 

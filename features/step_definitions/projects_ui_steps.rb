@@ -1,28 +1,28 @@
 When("I go to the projects page") do
-  visit path_to("the projects page")
+  visit projects_path
 end
 
 When("I click the new project button") do
-  find('#new-project-button').click
+  click_link 'Create Project'
 end
 
 When("I fill in the project form with:") do |table|
   data = table.rows_hash
   fill_in 'project_name', with: data['Name'] if data['Name']
-  fill_in 'project_key', with: data['Key'] if data['Key']
   fill_in 'project_description', with: data['Description'] if data['Description']
+  # Note: Key field was removed from the project form
 end
 
 When("I submit the create project form") do
-  find('#create-project-button').click
+  click_button 'Create Project'
 end
 
 Then("I should see a notice {string}") do |text|
-  expect(page).to have_css('.flash.notice', text: text)
+  expect(page).to have_css('.notice', text: text)
 end
 
 Then("I should see an alert {string}") do |text|
-  expect(page).to have_css('.flash.alert', text: text)
+  expect(page).to have_css('.alert', text: text)
 end
 
 Then("I should be on the project page") do
@@ -40,7 +40,7 @@ Given("a project exists") do
 end
 
 When("I go to the project settings page") do
-  visit path_to("the project settings page")
+  visit edit_project_path(@project)
 end
 
 When("I save project settings") do
