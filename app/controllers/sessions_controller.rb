@@ -13,7 +13,7 @@ class SessionsController < ApplicationController
 
       most_recent_project = Project
         .joins(:collaborators)
-        .where(collaborators: { user_id: user.id, role: [:manager, :developer] })
+        .where(collaborators: { user_id: user.id, role: [ :manager, :developer ] })
         .order(updated_at: :desc)
         .first
 
