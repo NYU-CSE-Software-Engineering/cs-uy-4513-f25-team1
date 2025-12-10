@@ -859,3 +859,297 @@
     background-color: #ebfbee;
     color: #2f9e44;
 }
+
+/* =========================================
+   Form Page Styles (Create/Edit Project)
+   ========================================= */
+
+.form-page-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+}
+
+.form-card {
+    width: 100%;
+    max-width: 540px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+    padding: 2.5rem;
+}
+
+.form-card-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.form-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    border-radius: 14px;
+    color: white;
+    margin-bottom: 1.25rem;
+    box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
+}
+
+.form-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 0.5rem 0;
+    letter-spacing: -0.02em;
+}
+
+.form-subtitle {
+    font-size: 0.95rem;
+    color: #64748b;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.form-error-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem;
+    background-color: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+    color: #dc2626;
+}
+
+.form-error-banner svg {
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.error-messages p {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.error-messages p + p {
+    margin-top: 0.25rem;
+}
+
+.project-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-group {
+    position: relative;
+}
+
+.form-label {
+    display: inline-block;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+}
+
+.form-label-hint {
+    font-weight: 400;
+    font-size: 0.85rem;
+    color: #94a3b8;
+    margin-left: 0.25rem;
+}
+
+.form-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    background-color: #f8fafc;
+    color: #1e293b;
+    transition: all 0.2s ease;
+}
+
+.form-input::placeholder {
+    color: #94a3b8;
+}
+
+.form-input:hover {
+    border-color: #cbd5e1;
+    background-color: #fff;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    background-color: #fff;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+.form-textarea {
+    resize: vertical;
+    min-height: 100px;
+    line-height: 1.6;
+}
+
+.input-with-icon {
+    position: relative;
+}
+
+.input-icon {
+    position: absolute;
+    left: 0.875rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #64748b;
+    pointer-events: none;
+}
+
+.input-with-icon-field {
+    padding-left: 3rem;
+}
+
+.input-with-icon .form-input {
+    padding-left: 3rem;
+}
+
+/* Invite Section Overrides */
+#invites-section #invite-input-container {
+    display: flex;
+    gap: 0.75rem;
+    align-items: stretch;
+}
+
+#invites-section #invite-input {
+    flex: 1;
+}
+
+#invites-section #add-invite-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: auto;
+    min-height: 44px;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    border-radius: 10px;
+    font-size: 1.25rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+#invites-section #add-invite-btn:hover {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+#invites-section #invite-list {
+    margin-top: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+#invites-section #invite-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.625rem 1rem;
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    border: 1px solid #bfdbfe;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    color: #1e40af;
+    font-weight: 500;
+}
+
+#invites-section #invite-list .remove-invite {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    color: #64748b;
+    font-weight: 600;
+    padding: 0;
+    border-radius: 6px;
+    transition: all 0.2s;
+    font-size: 0.85rem;
+}
+
+#invites-section #invite-list .remove-invite:hover {
+    background-color: #fecaca;
+    color: #dc2626;
+}
+
+/* Form Actions */
+.project-form .form-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e2e8f0;
+}
+
+.btn-form-submit {
+    flex: 1;
+    padding: 0.875rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.2);
+}
+
+.btn-form-submit:hover {
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.3);
+}
+
+.project-form .btn-secondary {
+    padding: 0.875rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    border-radius: 10px;
+}
+
+@media (max-width: 480px) {
+    .form-page-container {
+        padding: 1rem;
+        align-items: flex-start;
+        padding-top: 2rem;
+    }
+    
+    .form-card {
+        padding: 1.5rem;
+        border-radius: 12px;
+    }
+    
+    .form-title {
+        font-size: 1.5rem;
+    }
+    
+    .project-form .form-actions {
+        flex-direction: column;
+    }
+    
+    .btn-form-submit,
+    .project-form .btn-secondary {
+        width: 100%;
+        justify-content: center;
+    }
+}
