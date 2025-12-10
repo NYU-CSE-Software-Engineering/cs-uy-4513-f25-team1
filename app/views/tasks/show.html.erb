@@ -20,8 +20,8 @@
     <p><strong>Priority:</strong> <%= @task.priority&.titleize || "No Priority" %></p>
     <p><strong>Project:</strong> <%= @project.name %></p>
     <p><strong>Assignee:</strong> <%= @task.assignee&.user&.username || "Unassigned" %></p>
-    <% if @task.branch_link.present? %>
-      <p><strong>Branch Link:</strong> <%= link_to @task.branch_link, @task.branch_link, target: "_blank" %></p>
+    <% if @task.branch_link.present? && safe_url(@task.branch_link) %>
+      <p><strong>Branch Link:</strong> <%= link_to @task.branch_link, safe_url(@task.branch_link), target: "_blank", rel: "noopener noreferrer" %></p>
     <% end %>
     <% if @task.due_at.present? %>
       <p><strong>Due Date:</strong> <%= @task.due_at.strftime("%B %d, %Y at %I:%M %p") %></p>

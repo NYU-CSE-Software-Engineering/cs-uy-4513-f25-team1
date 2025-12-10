@@ -15,6 +15,7 @@ class Task < ApplicationRecord
   validate :validate_media_files
   validate :assignee_cannot_be_manager
   validate :completed_task_cannot_be_modified, on: :update
+  validate :validate_branch_link_protocol
 
   before_save :set_completed_at_timestamp
 
@@ -68,5 +69,18 @@ class Task < ApplicationRecord
     if status_changed? && completed? && completed_at.blank?
       self.completed_at = Time.current
     end
+  end
+
+  SAFE_URL_PROTOCOLS = %w[http https].freeze
+
+  def validate_branch_link_protocol
+    return if branch_link.blank?
+
+    uri = URI.parse(branch_link)
+    unless uri.scheme.present? && SAFE_URL_PROTOCOLS.include?(uri.scheme.downcase)
+      errors.add(:branch_link, "must be a valid HTTP or HTTPS URL")
+    end
+  rescue URI::InvalidURIError
+    errors.add(:branch_link, "must be a valid URL")
   end
 end
