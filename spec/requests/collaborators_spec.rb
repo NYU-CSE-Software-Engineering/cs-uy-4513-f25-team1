@@ -126,7 +126,7 @@ RSpec.describe "Collaborators", type: :request do
 
     it "displays all collaborators for a project" do
       get project_collaborators_path(project)
-      
+
       expect(response).to have_http_status(:success)
       expect(response.body).to include('manager')
       expect(response.body).to include('other')
@@ -134,7 +134,7 @@ RSpec.describe "Collaborators", type: :request do
 
     it "groups collaborators by role" do
       get project_collaborators_path(project)
-      
+
       expect(response.body).to include('Managers')
       expect(response.body).to include('Developers')
     end
@@ -152,7 +152,7 @@ RSpec.describe "Collaborators", type: :request do
 
     it "displays individual collaborator details" do
       get project_collaborator_path(project, developer)
-      
+
       expect(response).to have_http_status(:success)
       expect(response.body).to include('other')
       expect(response.body).to include('Contribution Statistics')
@@ -160,7 +160,7 @@ RSpec.describe "Collaborators", type: :request do
 
     it "displays tasks by status" do
       get project_collaborator_path(project, developer)
-      
+
       expect(response.body).to include('In Progress')
       expect(response.body).to include('Task 1')
       expect(response.body).to include('Task 2')
@@ -174,7 +174,7 @@ RSpec.describe "Collaborators", type: :request do
 
     it "displays edit form for a collaborator" do
       get edit_project_collaborator_path(project, developer)
-      
+
       expect(response).to have_http_status(:success)
       expect(response.body).to include('Edit Collaborator')
     end
@@ -182,7 +182,7 @@ RSpec.describe "Collaborators", type: :request do
     context "when manager edits a collaborator" do
       it "shows role change form" do
         get edit_project_collaborator_path(project, developer)
-        
+
         expect(response.body).to include('Change Role')
         expect(response.body).to include('Remove Collaborator')
       end
@@ -199,7 +199,7 @@ RSpec.describe "Collaborators", type: :request do
         patch project_collaborator_path(project, developer), params: {
           collaborator: { role: 'manager' }
         }
-        
+
         expect(response).to redirect_to(project_collaborators_path(project))
         expect(developer.reload.role).to eq('manager')
       end
@@ -208,7 +208,7 @@ RSpec.describe "Collaborators", type: :request do
         patch project_collaborator_path(project, developer), params: {
           collaborator: { role: 'manager' }
         }
-        
+
         follow_redirect!
         expect(response.body).to include('Collaborator role updated successfully')
       end
@@ -219,7 +219,7 @@ RSpec.describe "Collaborators", type: :request do
         patch project_collaborator_path(project, developer), params: {
           collaborator: { role: 'invalid_role' }
         }
-        
+
         expect(developer.reload.role).to eq('developer')
       end
     end
@@ -239,13 +239,13 @@ RSpec.describe "Collaborators", type: :request do
 
       it "redirects to collaborators index" do
         delete project_collaborator_path(project, developer)
-        
+
         expect(response).to redirect_to(project_collaborators_path(project))
       end
 
       it "displays success message" do
         delete project_collaborator_path(project, developer)
-        
+
         follow_redirect!
         expect(response.body).to include('has been removed from')
       end

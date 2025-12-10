@@ -87,7 +87,7 @@ RSpec.describe Collaborator, type: :model do
       Task.create!(title: 'Task 1', status: 'Completed', project: project, user: user)
       Task.create!(title: 'Task 2', status: 'In Progress', project: project, user: user)
       Task.create!(title: 'Task 3', status: 'Completed', project: project, user: user)
-      
+
       # Create tasks for other user
       Task.create!(title: 'Other Task 1', status: 'To Do', project: project, user: other_user)
       Task.create!(title: 'Other Task 2', status: 'Completed', project: project, user: other_user)
@@ -116,7 +116,7 @@ RSpec.describe Collaborator, type: :model do
       it 'returns 0 when project has no tasks' do
         empty_project = Project.create!(name: 'Empty Project', wip_limit: 3)
         empty_collaborator = Collaborator.create!(user: user, project: empty_project, role: :developer)
-        
+
         expect(empty_collaborator.contribution_percentage).to eq(0)
       end
 

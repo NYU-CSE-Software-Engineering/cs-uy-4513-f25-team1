@@ -68,7 +68,7 @@ end
 Given('{string} has the following tasks on project {string}:') do |username, project_name, table|
   user = User.find_by(username: username)
   project = Project.find_by(name: project_name)
-  
+
   table.hashes.each do |row|
     Task.create!(
       title: row['title'],
