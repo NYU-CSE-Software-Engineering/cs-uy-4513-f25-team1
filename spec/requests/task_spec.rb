@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe "Tasks", type: :request do
-  let!(:user) { User.create!(email_address: 'test@example.com', username: 'tester', password: 'SecurePassword123') }
+  let!(:user) { User.create!(email_address: 'tasktest@example.com', username: 'tasktester', password: 'SecurePassword123') }
   let!(:invited_user) { User.create!(email_address: 'invited@example.com', username: 'invited', password: 'SecurePassword123') }
   let!(:project) { Project.create!(name: "Test Project", description: "Test description") }
 

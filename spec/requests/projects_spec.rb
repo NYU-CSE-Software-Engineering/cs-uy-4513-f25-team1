@@ -1,7 +1,7 @@
 require 'rails_helper'
 # Just adding a comment so that the new tests get pushed to the repo :)
 RSpec.describe "Projects", type: :request do
-  let!(:user) { User.create!(email_address: 'test@example.com', username: 'tester', password: 'SecurePassword123') }
+  let!(:user) { User.create!(email_address: 'projecttest@example.com', username: 'projecttester', password: 'SecurePassword123') }
   let!(:other_user) { User.create!(email_address: 'other@example.com', username: 'otheruser', password: 'SecurePassword123') }
 
   def sign_in(user)
