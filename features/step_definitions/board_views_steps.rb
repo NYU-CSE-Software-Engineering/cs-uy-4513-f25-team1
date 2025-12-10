@@ -15,13 +15,3 @@ end
 Then("I should not see a card of type {string}") do |type|
   expect(page).to have_no_css('.card[data-issue-type="' + type + '"]')
 end
-
-Given("project settings set WIP limit for {string} to {int}") do |status, limit|
-  # Placeholder to set WIP limit setting for project
-end
-
-Then("the column {string} should indicate over WIP") do |status|
-  within(find('.board-column', text: status)) do
-    expect(page).to have_css('.wip-over')
-  end
-end
