@@ -10,11 +10,10 @@ class UsersController < ApplicationController
 
   def update
     @user = User.find(session[:user_id])
-    @user.update(user_params)
-    if @user.save
-      redirect_to projects_path
+    if @user.update(user_params)
+      redirect_to projects_path, status: :see_other
     else
-      render :edit
+      render :edit, status: :bad_request
     end
   end
 
