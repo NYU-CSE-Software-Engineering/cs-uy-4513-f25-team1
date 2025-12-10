@@ -21,6 +21,35 @@
 
 <hr>
 
+<!-- Collaborators Summary Section -->
+<div class="collaborators-summary">
+  <h2>Collaborators (<%= @project.collaborators.count %>)</h2>
+  
+  <div class="collaborators-preview">
+    <% @project.collaborators.includes(:user).limit(5).each do |collaborator| %>
+      <div class="collaborator-badge" title="<%= collaborator.user.username %> - <%= collaborator.role.titleize %>">
+        <%= link_to project_collaborator_path(@project, collaborator) do %>
+          <span class="collaborator-initial"><%= collaborator.user.username[0].upcase %></span>
+          <span class="collaborator-name"><%= collaborator.user.username %></span>
+        <% end %>
+      </div>
+    <% end %>
+    
+    <% if @project.collaborators.count > 5 %>
+      <div class="collaborator-badge more">
+        <%= link_to project_collaborators_path(@project) do %>
+          <span class="collaborator-initial">+<%= @project.collaborators.count - 5 %></span>
+          <span class="collaborator-name">more</span>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+  
+  <%= link_to "View All Collaborators", project_collaborators_path(@project), class: "button" %>
+</div>
+
+<hr>
+
 <h2>Tasks</h2>
 
 <% if can_edit_project? %>
@@ -140,3 +169,74 @@
     </li>
   <% end %>
 </ul>
+
+<style>
+  .project-description {
+    font-size: 16px;
+    color: #555;
+    margin: 10px 0 20px 0;
+  }
+  
+  .collaborators-summary {
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    padding: 20px;
+    border-radius: 5px;
+    margin: 20px 0;
+  }
+  
+  .collaborators-summary h2 {
+    margin-top: 0;
+  }
+  
+  .collaborators-preview {
+    display: flex;
+    gap: 15px;
+    margin: 15px 0;
+    flex-wrap: wrap;
+  }
+  
+  .collaborator-badge {
+    display: inline-block;
+  }
+  
+  .collaborator-badge a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: #333;
+  }
+  
+  .collaborator-badge a:hover .collaborator-initial {
+    background-color: #0056b3;
+  }
+  
+  .collaborator-initial {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #007bff;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    transition: background-color 0.3s;
+  }
+  
+  .collaborator-badge.more .collaborator-initial {
+    background-color: #6c757d;
+  }
+  
+  .collaborator-badge.more a:hover .collaborator-initial {
+    background-color: #5a6268;
+  }
+  
+  .collaborator-name {
+    font-size: 12px;
+    text-align: center;
+  }
+</style>
