@@ -1,4 +1,4 @@
-<% if session[:user_id].present? %>
+<% cookies.signed[:session_id] && if Session.find_by(id: cookies.signed[:session_id]) %>
   <%= button_to "Log out",
         session_path,
         method: :delete,
