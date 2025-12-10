@@ -15,7 +15,7 @@ Given('the following project exists:') do |table|
   row = table.hashes.first
   Project.create!(
     name: row['name'],
-    wip_limit: row['wip_limit'].to_i
+    description: row['description']
   )
 end
 

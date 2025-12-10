@@ -10,8 +10,8 @@ Feature: Collaborator Management
       | dev1     | dev1@test.com      | password |
       | dev2     | dev2@test.com      | password |
     And the following project exists:
-      | name         | wip_limit |
-      | Test Project | 5         |
+      | name         | description      |
+      | Test Project | Test Description |
     And "manager" is a manager on project "Test Project"
     And "dev1" is a developer on project "Test Project"
     And I am signed in as "manager"
