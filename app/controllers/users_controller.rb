@@ -12,7 +12,7 @@ class UsersController < ApplicationController
     @user = User.find(session[:user_id])
     @user.update(user_params)
     if @user.save
-      redirect_to "/"
+      redirect_to projects_path
     else
       render :edit
     end
