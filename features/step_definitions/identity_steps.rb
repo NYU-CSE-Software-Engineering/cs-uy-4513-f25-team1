@@ -7,15 +7,19 @@ Given('I am on the login page') do
   visit "/session/new"
 end
 
-When('I input valid inputs for fields email username password repeated_password') do
-  fill_in 'email_address', with: "example@gmail.com"
-  fill_in 'Username', with: "exampleUser"
-  fill_in 'password', with: 'securePassword'
-  fill_in 'Repeated password', with: 'securePassword'
+Given('I am on the page {string}') do |page_path|
+  visit page_path
 end
 
-Then('I should be on the page login\/signin') do
-  expect(page).to have_current_path(sign_in_path)
+When('I input valid inputs for fields email username password repeated_password') do
+  fill_in 'Email', with: "example@gmail.com"
+  fill_in 'Username', with: "exampleUser"
+  fill_in 'Password', with: 'securePassword'
+  fill_in 'Repeat password', with: 'securePassword'
+end
+
+Then('I should be on the page {string}') do |page_path|
+  expect(page).to have_current_path(page_path)
 end
 
 Then('my account should be in the Users table') do
@@ -25,41 +29,36 @@ Then('my account should be in the Users table') do
 end
 
 When('I input an invalid email with other valid fields') do
-  fill_in 'email_address', with: "Invalid"
+  fill_in 'Email', with: "Invalid"
   fill_in 'Username', with: "exampleUser"
-  fill_in 'password', with: 'securePassword'
-  fill_in 'Repeated Password', with: 'securePassword'
+  fill_in 'Password', with: 'securePassword'
+  fill_in 'Repeat password', with: 'securePassword'
 end
-
-Then('I should be on the page login\/create') do
-  expect(page).to have_current_path(create_account_path)
-end
-
 
 When('I input a taken email with other valid fields') do
   @user = User.create!(
-    email = 'taken@gmail.com',
-    username = 'user',
-    password = 'password'
+    email_address: 'taken@gmail.com',
+    username: 'user',
+    password_digest: 'securePassword'
   )
-  fill_in 'email_address', with: "taken@gmail.com"
+  fill_in 'Email', with: "taken@gmail.com"
   fill_in 'Username', with: "user"
   fill_in 'password', with: "password"
-  fill_in 'Repeated Password', with: "password"
+  fill_in 'Repeat password', with: "password"
 end
 
 When('I input an invalid password with other valid fields') do
-  fill_in 'email_address', with: "taken@gmail.com"
+  fill_in 'Email', with: "taken@gmail.com"
   fill_in 'Username', with: "user"
   fill_in 'password', with: "pass"
-  fill_in 'Repeated Password', with: "password"
+  fill_in 'Repeat password', with: "password"
 end
 
 When('I input an invalid repeated_password with other valid fields') do
-  fill_in 'email_address', with: "taken@gmail.com"
+  fill_in 'Email', with: "taken@gmail.com"
   fill_in 'Username', with: "user"
   fill_in 'password', with: "password"
-  fill_in 'Repeated Password', with: "pass"
+  fill_in 'Repeat password', with: "pass"
 end
 
 Given('I am a logged in user') do
@@ -69,7 +68,7 @@ Given('I am a logged in user') do
     password: 'SecurePassword'
   )
   visit '/session/new'
-  fill_in 'email_address', with: 'taken@gmail.com'
+  fill_in 'Email', with: 'taken@gmail.com'
   fill_in 'password', with: 'SecurePassword'
   click_button 'Sign in'
   expect(page).to have_content('Log out')
@@ -97,12 +96,12 @@ When('I input valid email and password') do
     username: 'user',
     password: 'SecurePassword'
   )
-  fill_in 'email_address', with: 'taken@gmail.com'
+  fill_in 'Email', with: 'taken@gmail.com'
   fill_in 'password', with: 'SecurePassword'
 end
 
 When('I input invalid email and password') do
-  fill_in 'email_address', with: 'lol'
+  fill_in 'Email', with: 'lol'
   fill_in 'password', with: 'password'
 end
 
@@ -112,7 +111,7 @@ When('I input wrong password with email') do
     username: 'user',
     password: 'SecurePassword'
   )
-  fill_in 'email_address', with: 'taken@gmail.com'
+  fill_in 'Email', with: 'taken@gmail.com'
   fill_in 'password', with: 'wrongPassword'
 end
 
