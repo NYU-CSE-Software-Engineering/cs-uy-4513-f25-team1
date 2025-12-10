@@ -1,25 +1,54 @@
-<h1>Sidebar</h1>
-<%= content_tag :h2, "Manager Projects" %>
-<% if @manager_projects.present? %>
+<% 
+  # Self-initialize variables if they aren't set (e.g., if byassed/testing), matching Authentication concern
+  @manager_projects ||= Collaborator.joins(:project).where(collaborators: { user_id: session[:user_id], role: :manager })
+  @developer_projects ||= Collaborator.joins(:project).where(collaborators: { user_id: session[:user_id], role: :developer })
+  @invited_projects ||= Collaborator.joins(:project).where(collaborators: { user_id: session[:user_id], role: :invited })
+%>
+
+<div class="sidebar">
+  <h1>Sidebar</h1>
+
+  <h2>
+    Manager Projects
+    <%= link_to "+", new_project_path, class: "add-project-btn", title: "New Project" %>
+  </h2>
+  <% if @manager_projects.empty? %>
+    <p class="text-muted small px-2">No managed projects</p>
+  <% else %>
     <% @manager_projects.each do |p| %>
-      <p> <%= link_to p.project.name, project_path(p.project_id) %> </p>
+      <%= link_to p.project.name, project_path(p.project_id) %>
     <% end %>
-<% end %>
-<%= content_tag :h2, "Developer Projects" %>
-<% if @developer_projects.present? %>
+  <% end %>
+
+  <h2>Developer Projects</h2>
+  <% if @developer_projects.empty? %>
+    <p class="text-muted small px-2">No developer projects</p>
+  <% else %>
     <% @developer_projects.each do |p| %>
-      <p> <%= link_to p.project.name, project_path(p.project_id) %> </p>
+      <%= link_to p.project.name, project_path(p.project_id) %>
     <% end %>
-<% end %>
-<%= content_tag :h2, "Invites" %>
-<% if @invited_projects.present? %>
+  <% end %>
+
+  <h2>Invites</h2>
+  <% if @invited_projects.present? %>
     <% @invited_projects.each do |invite| %>
       <div class="invite-item">
         <%= link_to invite.project.name, project_path(invite.project), class: "invite-project-link" %>
-        <%= button_to "Accept", project_collaborator_path(invite.project, invite), method: :patch, class: "btn btn-primary btn-sm" %>
-        <%= button_to "Reject", project_collaborator_path(invite.project, invite), method: :delete, class: "btn btn-danger btn-sm" %>
+        <div class="invite-actions">
+          <%= button_to "Accept", project_collaborator_path(invite.project, invite), method: :patch, class: "btn-sm btn-primary" %>
+          <%= button_to "Reject", project_collaborator_path(invite.project, invite), method: :delete, class: "btn-sm btn-danger" %>
+        </div>
       </div>
     <% end %>
-<% end %>
-<%= link_to "User Settings", edit_user_path(session[:user_id]) %>
-<%= render "application/logout" %>
+  <% else %>
+    <p class="text-muted small px-2">No pending invites</p>
+  <% end %>
+
+  <div class="sidebar-footer">
+    <%= link_to "User Settings", edit_user_path(session[:user_id]) %> <!-- Assuming this route works or will work -->
+    <div class="logout-btn-container">
+      <%= button_to "Log out", session_path, method: :delete %>
+    </div>
+  </div>
+</div>
+

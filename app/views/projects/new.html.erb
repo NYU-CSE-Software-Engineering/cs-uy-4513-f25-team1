@@ -1,46 +1,77 @@
-<h1>Create New Project</h1>
-
-<% if flash[:name_duplicate_error] %>
-  <p class="error"><%= flash[:name_duplicate_error] %></p>
-<% end %>
-<% if flash[:name_error] %>
-  <p class="error"><%= flash[:name_error] %></p>
-<% end %>
-<% if flash[:description_error] %>
-  <p class="error"><%= flash[:description_error] %></p>
-<% end %>
-<% if flash[:invite_error] %>
-  <p class="error"><%= flash[:invite_error] %></p>
-<% end %>
-
-<%= form_with model: @project do |form| %>
-  <div>
-    <%= form.label :name %>
-    <%= form.text_field :name, required: true %>
-  </div>
-  <div>
-    <%= form.label :description %>
-    <%= form.text_area :description, required: true %>
-  </div>
-  <div>
-    <%= form.label :repo, "GitHub Repository Link (optional)" %>
-    <%= form.text_field :repo, placeholder: "https://github.com/username/repo" %>
-  </div>
-
-  <div id="invites-section">
-    <label>Invite Developers (optional)</label>
-    <div id="invite-input-container">
-      <input type="text" id="invite-input" placeholder="Enter email or username">
-      <button type="button" id="add-invite-btn">+</button>
+<div class="form-page-container">
+  <div class="form-card">
+    <div class="form-card-header">
+      <div class="form-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+          <line x1="12" y1="11" x2="12" y2="17"></line>
+          <line x1="9" y1="14" x2="15" y2="14"></line>
+        </svg>
+      </div>
+      <h1 class="form-title">Create New Project</h1>
+      <p class="form-subtitle">Set up a new project and invite your team to collaborate</p>
     </div>
-    <ul id="invite-list"></ul>
-  </div>
 
-  <div class="form-actions">
-    <%= form.submit "Create" %>
-    <%= link_to "Cancel", projects_path, class: "cancel-btn" %>
+    <% if flash[:name_duplicate_error] || flash[:name_error] || flash[:description_error] || flash[:invite_error] %>
+      <div class="form-error-banner">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <div class="error-messages">
+          <% if flash[:name_duplicate_error] %><p><%= flash[:name_duplicate_error] %></p><% end %>
+          <% if flash[:name_error] %><p><%= flash[:name_error] %></p><% end %>
+          <% if flash[:description_error] %><p><%= flash[:description_error] %></p><% end %>
+          <% if flash[:invite_error] %><p><%= flash[:invite_error] %></p><% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <%= form_with model: @project, class: "project-form" do |form| %>
+      <div class="form-group">
+        <%= form.label :name, class: "form-label" %>
+        <%= form.text_field :name, required: true, class: "form-input", placeholder: "Enter project name" %>
+      </div>
+
+      <div class="form-group">
+        <%= form.label :description, class: "form-label" %>
+        <%= form.text_area :description, required: true, class: "form-input form-textarea", placeholder: "Describe your project...", rows: 4 %>
+      </div>
+
+      <div class="form-group">
+        <%= form.label :repo, "GitHub Repository Link", class: "form-label" %>
+        <span class="form-label-hint">(optional)</span>
+        <div class="input-with-icon">
+          <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+          </svg>
+          <%= form.text_field :repo, class: "form-input input-with-icon-field", placeholder: "https://github.com/username/repo" %>
+        </div>
+      </div>
+
+      <div class="form-group" id="invites-section">
+        <label class="form-label">Invite Team Members</label>
+        <span class="form-label-hint">(optional)</span>
+        <div id="invite-input-container">
+          <input type="text" id="invite-input" class="form-input" placeholder="Enter email or username">
+          <button type="button" id="add-invite-btn" aria-label="Add invite">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+          </button>
+        </div>
+        <ul id="invite-list"></ul>
+      </div>
+
+      <div class="form-actions">
+        <%= form.submit "Create Project", class: "btn btn-primary btn-form-submit" %>
+        <%= link_to "Cancel", projects_path, class: "btn btn-secondary" %>
+      </div>
+    <% end %>
   </div>
-<% end %>
+</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
