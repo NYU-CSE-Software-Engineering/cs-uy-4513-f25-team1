@@ -3,7 +3,9 @@ class TasksController < ApplicationController
 
   before_action :set_project
   before_action :set_task, only: [ :show, :edit, :update ]
-  before_action :authorize_project_edit
+  before_action :authorize_manager, only: [ :new, :create ]
+  before_action :authorize_project_edit, only: [ :show, :edit, :update ]
+  before_action :set_assignable_collaborators, only: [ :new, :create, :edit, :update ]
 
   def new
     @task = @project.tasks.build
@@ -11,10 +13,10 @@ class TasksController < ApplicationController
 
   def create
     @task = @project.tasks.build(task_params)
-    @task.user = Current.user
+    set_status_based_on_assignee
 
     if @task.save
-      redirect_to new_project_task_path(@project),
+      redirect_to project_task_path(@project, @task),
                   notice: "Task was successfully created.",
                   status: :see_other
     else
@@ -82,8 +84,35 @@ class TasksController < ApplicationController
     raise TaskNotFoundError unless @task.project_id == @project.id
   end
 
+  def set_assignable_collaborators
+    @collaborators = @project.collaborators.where.not(role: :manager).includes(:user)
+  end
+
   def task_params
-    params.require(:task).permit(:title, :status, :type, media_files: [], remove_media_file_ids: [])
+    params.require(:task).permit(
+      :title,
+      :description,
+      :status,
+      :type,
+      :branch_link,
+      :assignee_id,
+      :priority,
+      :due_at,
+      media_files: [],
+      remove_media_file_ids: []
+    )
+  end
+
+  def set_status_based_on_assignee
+    @task.status = @task.assignee_id.present? ? :in_progress : :todo
+  end
+
+  def authorize_manager
+    collaborator = Collaborator.find_by(user_id: Current.session&.user_id, project_id: @project.id)
+    unless collaborator&.manager?
+      flash[:alert] = "Only managers can create tasks."
+      redirect_to project_path(@project)
+    end
   end
 
   def authorize_project_edit

@@ -10,11 +10,11 @@ class CollaboratorsController < ApplicationController
   end
 
   def show
-    @collaborator_tasks = @project.tasks.where(user_id: @collaborator.user_id)
+    @collaborator_tasks = @project.tasks.where(assignee_id: @collaborator.id)
     @tasks_by_status = {
-      "In Progress" => @collaborator_tasks.where(status: "In Progress"),
-      "In Review" => @collaborator_tasks.where(status: "In Review"),
-      "Completed" => @collaborator_tasks.where(status: "Completed")
+      "In Progress" => @collaborator_tasks.where(status: :in_progress),
+      "In Review" => @collaborator_tasks.where(status: :in_review),
+      "Completed" => @collaborator_tasks.where(status: :completed)
     }
   end
 
