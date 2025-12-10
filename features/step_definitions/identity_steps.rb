@@ -92,12 +92,12 @@ When('I input valid email and password') do
     username: 'user',
     password: 'SecurePassword'
   )
-  fill_in 'Email', with: 'taken@gmail.com'
+  fill_in 'email_address', with: 'taken@gmail.com'
   fill_in 'password', with: 'SecurePassword'
 end
 
 When('I input invalid email and password') do
-  fill_in 'Email', with: 'lol'
+  fill_in 'email_address', with: 'lol'
   fill_in 'password', with: 'password'
 end
 
@@ -107,7 +107,7 @@ When('I input wrong password with email') do
     username: 'user',
     password: 'SecurePassword'
   )
-  fill_in 'Email', with: 'taken@gmail.com'
+  fill_in 'email_address', with: 'taken@gmail.com'
   fill_in 'password', with: 'wrongPassword'
 end
 
