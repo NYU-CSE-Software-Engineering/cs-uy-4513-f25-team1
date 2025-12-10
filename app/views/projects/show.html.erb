@@ -6,9 +6,7 @@
 
 <h1><%= @project.name %></h1>
 
-<% if @project.description.present? %>
-  <p><%= @project.description %></p>
-<% end %>
+<p><%= @project.description %></p>
 
 <% if @project.repo.present? %>
   <p><strong>Repository:</strong> <%= link_to @project.repo, @project.repo, target: "_blank" %></p>
