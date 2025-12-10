@@ -15,7 +15,7 @@ And('I am on the {string} project\'s tasks page') do |project_name|
   visit project_tasks_path(@project)
 end
 
-# Note: 'I select {string} from {string}' and 'I leave {string} blank' 
+# Note: 'I select {string} from {string}' and 'I leave {string} blank'
 # are defined in task_steps.rb to avoid duplication
 
 # THEN: Checks if specific content (success message or error message) is visible.
