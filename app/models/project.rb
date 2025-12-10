@@ -4,10 +4,7 @@ class Project < ApplicationRecord
   has_many :users, through: :collaborators
 
   validates :name, presence: true
-
-  def get_task_limit
-    wip_limit
-  end
+  validates :description, presence: true
 
   def count_tasks
     tasks.count
