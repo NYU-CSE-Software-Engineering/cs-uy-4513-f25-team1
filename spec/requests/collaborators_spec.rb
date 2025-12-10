@@ -4,7 +4,7 @@ RSpec.describe "Collaborators", type: :request do
   let(:manager) { User.create!(email_address: 'manager@example.com', username: 'manager', password: 'SecurePassword123') }
   let(:invited_user) { User.create!(email_address: 'invited@example.com', username: 'invited', password: 'SecurePassword123') }
   let(:other_user) { User.create!(email_address: 'other@example.com', username: 'other', password: 'SecurePassword123') }
-  let(:project) { Project.create!(name: 'Test Project', wip_limit: 3) }
+  let(:project) { Project.create!(name: 'Test Project', description: 'Test description') }
 
   before do
     Collaborator.create!(user: manager, project: project, role: :manager)

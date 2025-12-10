@@ -1,29 +1,94 @@
-<h1>Projects#new</h1>
+<h1>Create New Project</h1>
 
 <% if flash[:name_duplicate_error] %>
-  <p><%= flash[:name_duplicate_error] %></p>
+  <p class="error"><%= flash[:name_duplicate_error] %></p>
 <% end %>
 <% if flash[:name_error] %>
-  <p> <%= flash[:name_error] %> </p>
+  <p class="error"><%= flash[:name_error] %></p>
 <% end %>
-<% if flash[:wip_limit_error] %>
-  <p> <%= flash[:wip_limit_error] %> </p>
+<% if flash[:description_error] %>
+  <p class="error"><%= flash[:description_error] %></p>
+<% end %>
+<% if flash[:invite_error] %>
+  <p class="error"><%= flash[:invite_error] %></p>
 <% end %>
 
 <%= form_with model: @project do |form| %>
   <div>
     <%= form.label :name %>
-    <%= form.text_field :name %>
-  </div>
-  <div>
-    <%= form.label :wip_limit %>
-    <%= form.number_field :wip_limit, min: 0.0, step: 1.0 %>
+    <%= form.text_field :name, required: true %>
   </div>
   <div>
     <%= form.label :description %>
-    <%= form.text_field :description %>
+    <%= form.text_area :description, required: true %>
   </div>
-  <%= form.submit %>
+  <div>
+    <%= form.label :repo, "GitHub Repository Link (optional)" %>
+    <%= form.text_field :repo, placeholder: "https://github.com/username/repo" %>
+  </div>
+
+  <div id="invites-section">
+    <label>Invite Developers (optional)</label>
+    <div id="invite-input-container">
+      <input type="text" id="invite-input" placeholder="Enter email or username">
+      <button type="button" id="add-invite-btn">+</button>
+    </div>
+    <ul id="invite-list"></ul>
+  </div>
+
+  <div class="form-actions">
+    <%= form.submit "Create" %>
+    <%= link_to "Cancel", projects_path, class: "cancel-btn" %>
+  </div>
 <% end %>
 
-<%= link_to "Back to projects", projects_path %>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const inviteInput = document.getElementById('invite-input');
+  const addInviteBtn = document.getElementById('add-invite-btn');
+  const inviteList = document.getElementById('invite-list');
+  const form = document.querySelector('form');
+  const invites = [];
+
+  function addInvite() {
+    const value = inviteInput.value.trim();
+    if (value && !invites.includes(value)) {
+      invites.push(value);
+      renderInviteList();
+      inviteInput.value = '';
+    }
+  }
+
+  function removeInvite(index) {
+    invites.splice(index, 1);
+    renderInviteList();
+  }
+
+  function renderInviteList() {
+    inviteList.innerHTML = '';
+    invites.forEach((invite, index) => {
+      const li = document.createElement('li');
+      li.innerHTML = `
+        ${invite}
+        <input type="hidden" name="project[invites][]" value="${invite}">
+        <button type="button" class="remove-invite" data-index="${index}">x</button>
+      `;
+      inviteList.appendChild(li);
+    });
+
+    document.querySelectorAll('.remove-invite').forEach(btn => {
+      btn.addEventListener('click', function() {
+        removeInvite(parseInt(this.dataset.index));
+      });
+    });
+  }
+
+  addInviteBtn.addEventListener('click', addInvite);
+  inviteInput.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      addInvite();
+    }
+  });
+});
+</script>
