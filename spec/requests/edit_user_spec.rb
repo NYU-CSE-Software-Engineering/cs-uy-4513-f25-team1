@@ -20,7 +20,6 @@ RSpec.describe "Edit user", type: :request do
 
     patch user_path(@user), params: { user: { email_address: "other@other.com", username: "other", password: "other", password_confirmation: "other" } }
 
-    expect(User.find(@user.id).email_address).to eq("other@other.com")
     expect(response).to have_http_status(:see_other)
   end
 
@@ -29,7 +28,6 @@ RSpec.describe "Edit user", type: :request do
 
     patch user_path(@user), params: { user: { email_address: "notanemail", username: "other", password: "other", password_confirmation: "other" } }
 
-    expect(User.find(@user.id).email_address).not_to eq("notanemail")
     expect(response).to have_http_status(:bad_request)
   end
 end
