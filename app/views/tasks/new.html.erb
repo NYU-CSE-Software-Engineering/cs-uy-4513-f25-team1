@@ -21,7 +21,12 @@
 
   <div>
     <%= form.label :title, "Title" %>
-    <%= form.text_field :title %>
+    <%= form.text_field :title, required: true %>
+  </div>
+
+  <div>
+    <%= form.label :description, "Description" %>
+    <%= form.text_area :description, rows: 4, required: true %>
   </div>
 
   <div>
@@ -34,13 +39,32 @@
   </div>
 
   <div>
-    <%= form.label :status, "Status" %>
-    <%= form.select :status, options_for_select([
-      ["To Do", "To Do"],
-      ["In Progress", "In Progress"],
-      ["In Review", "In Review"],
-      ["Completed", "Completed"]
-    ]) %>
+    <%= form.label :branch_link, "Branch Link (optional)" %>
+    <%= form.url_field :branch_link, placeholder: "https://github.com/org/repo/tree/branch-name" %>
+  </div>
+
+  <div>
+    <%= form.label :assignee_id, "Assignee (optional)" %>
+    <%= form.select :assignee_id,
+      options_from_collection_for_select(@collaborators, :id, ->(c) { c.user.username }),
+      { include_blank: "Unassigned" } %>
+    <p class="help-text">If assigned, task status will be set to "In Progress". Otherwise, it will be "To Do".</p>
+  </div>
+
+  <div>
+    <%= form.label :priority, "Priority (optional)" %>
+    <%= form.select :priority, options_for_select([
+      ["No Priority", "no_priority"],
+      ["Low", "low"],
+      ["Medium", "medium"],
+      ["High", "high"],
+      ["Urgent", "urgent"]
+    ]), { include_blank: "Select Priority" } %>
+  </div>
+
+  <div>
+    <%= form.label :due_at, "Due Date (optional)" %>
+    <%= form.datetime_local_field :due_at %>
   </div>
 
   <div>
@@ -49,7 +73,8 @@
     <p class="help-text">Maximum 10 files, 10MB per file. Allowed: images, PDFs, Word, Excel</p>
   </div>
 
-  <div>
-    <%= form.submit "Create Task" %>
+  <div class="form-actions">
+    <%= form.submit "Create Task", class: "btn btn-primary" %>
+    <%= link_to "Cancel", project_path(@project), class: "btn btn-secondary" %>
   </div>
 <% end %>

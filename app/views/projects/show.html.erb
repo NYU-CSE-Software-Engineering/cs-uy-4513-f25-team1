@@ -3,119 +3,182 @@
 
   <div class="main-content">
     <% if flash[:created] %>
-    <div class="notice"><%= flash[:created] %></div>
-  <% end %>
-  <% if flash[:notice] %>
-    <div class="notice"><%= flash[:notice] %></div>
-  <% end %>
-  <% if flash[:alert] %>
-    <div class="alert"><%= flash[:alert] %></div>
-  <% end %>
+      <div class="notice"><%= flash[:created] %></div>
+    <% end %>
+    <% if flash[:notice] %>
+      <div class="notice"><%= flash[:notice] %></div>
+    <% end %>
+    <% if flash[:alert] %>
+      <div class="alert"><%= flash[:alert] %></div>
+    <% end %>
 
-  <!-- Header Section -->
-  <header class="project-header">
-    <div class="project-info">
-      <h1 class="project-title"><%= @project.name %></h1>
-      <p class="project-description"><%= @project.description %></p>
-      
-      <% if @project.repo.present? %>
-        <p><strong>Repository:</strong> <%= link_to @project.repo, @project.repo, target: "_blank" %></p>
-      <% end %>
-
-      <div class="project-meta">
-        <span class="meta-item"><strong>In Progress:</strong> <%= @project.tasks.where(status: "In Progress").count %></span>
-      </div>
-    </div>
-  </header>
-
-  <hr class="divider">
-
-  <!-- Functionality Bar -->
-  <div class="tasks-controls">
-    <h2 class="section-title">Tasks</h2>
-    
-    <div class="controls-right">
-      <!-- Filter Form -->
-      <div class="filters">
-        <%= form_with url: project_path(@project), method: :get, local: true do |form| %>
-          <div>
-            <%= form.label :filter, "Sort by" %>
-            <%= form.select :filter, options_for_select([
-              ["Date Created", "date_created"],
-              ["Date Modified", "date_modified"]
-            ], @current_filter), {}, { id: "filter" } %>
-          </div>
-
-          <div>
-            <%= form.label :direction, "Order" %>
-            <%= form.select :direction, options_for_select([
-              ["Early → Late", "asc"],
-              ["Late → Early", "desc"]
-            ], @current_direction), {}, { id: "direction" } %>
-          </div>
-        <% end %>
-      </div>
-
-      <% if can_edit_project? %>
-        <%= link_to new_project_task_path(@project), class: "btn btn-primary new-task-btn" do %>
-          <span>+</span> New Task
-        <% end %>
-      <% end %>
-    </div>
-  </div>
-
-  <!-- Task List Table -->
-  <div class="task-list-container">
-    <table class="task-table">
-      <thead>
-        <tr>
-          <th>Status</th>
-          <th>Task Name</th>
-          <th>Assignee</th>
-          <th class="text-right">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @tasks.each do |task| %>
-          <tr class="task-row" onclick="window.location='<%= project_task_path(@project, task) %>';">
-            <td>
-              <span class="status-badge status-<%= task.status.to_s.parameterize %>"><%= task.status %></span>
-            </td>
-            <td>
-              <div class="task-title-cell">
-                <span class="task-title"><%= task.title %></span>
-                <% if task.type.present? %>
-                  <span class="task-type-badge"><%= task.type %></span>
-                <% end %>
-              </div>
-            </td>
-            <td>
-              <% if task.user %>
-                <div class="assignee-cell">
-                  <span class="user-avatar-sm"><%= task.user.username[0].upcase %></span>
-                  <span class="user-name"><%= task.user.username %></span>
-                </div>
-              <% else %>
-                <span class="text-muted">-</span>
-              <% end %>
-            </td>
-            <td class="text-right" onclick="event.stopPropagation();">
-              <% if can_edit_project? %>
-                <%= link_to "Edit", edit_project_task_path(@project, task), class: "btn-link" %>
-              <% end %>
-            </td>
-          </tr>
-        <% end %>
+    <!-- Project Summary Section -->
+    <header class="project-header">
+      <div class="project-info">
+        <h1 class="project-title"><%= @project.name %></h1>
+        <p class="project-description"><%= @project.description %></p>
         
-        <% if @tasks.empty? %>
-          <tr>
-            <td colspan="4" class="empty-table-state">
-              No tasks found.
-            </td>
-          </tr>
+        <div class="project-summary-details">
+          <div class="summary-item">
+            <strong>Manager:</strong>
+            <% if @project_manager.present? %>
+              <%= link_to @project_manager.user.username, project_collaborator_path(@project, @project_manager), class: "collaborator-link" %>
+            <% else %>
+              <span class="text-muted">No manager assigned</span>
+            <% end %>
+          </div>
+
+          <% if @project.repo.present? %>
+            <div class="summary-item">
+              <strong>Repository:</strong>
+              <a href="<%= @project.repo %>" target="_blank" rel="noopener noreferrer"><%= @project.repo %></a>
+            </div>
+          <% end %>
+          
+          <div class="summary-item">
+            <strong>Collaborators:</strong>
+            <div class="collaborators-section">
+              <% if @collaborators.any? %>
+                <% @collaborators.each do |collaborator| %>
+                  <%= link_to collaborator.user.username, project_collaborator_path(@project, collaborator), class: "collaborator-link" %>
+                  <% unless collaborator == @collaborators.last %>, <% end %>
+                <% end %>
+              <% else %>
+                <span class="text-muted">No collaborators</span>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <hr class="divider">
+
+    <!-- Tasks Section -->
+    <div class="tasks-section">
+      <div class="tasks-controls">
+        <h2 class="section-title">Tasks</h2>
+        <% if is_manager? %>
+          <%= link_to "New Task", new_project_task_path(@project), class: "button new-task-btn" %>
         <% end %>
-      </tbody>
-    </table>
-  </div>
+      </div>
+
+      <!-- Task Table with Filters -->
+      <div class="task-list-container">
+        <table id="tasks-table" class="task-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Priority</th>
+              <th>Assignee</th>
+              <th>Status</th>
+              <th>Due Date</th>
+            </tr>
+            <tr class="filters-row">
+              <th>
+                <!-- No filter for Name column -->
+              </th>
+              <th>
+                <select id="filter-priority" class="table-filter" aria-label="Filter by priority">
+                  <option value="">All Priorities</option>
+                  <option value="no_priority">No Priority</option>
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                  <option value="urgent">Urgent</option>
+                </select>
+              </th>
+              <th>
+                <select id="filter-assignee" class="table-filter" aria-label="Filter by assignee">
+                  <option value="">All Assignees</option>
+                  <% @collaborators.each do |collaborator| %>
+                    <option value="<%= collaborator.user.username %>"><%= collaborator.user.username %></option>
+                  <% end %>
+                </select>
+              </th>
+              <th>
+                <select id="filter-status" class="table-filter" aria-label="Filter by status">
+                  <option value="">All Statuses</option>
+                  <option value="todo">To Do</option>
+                  <option value="in_progress">In Progress</option>
+                  <option value="in_review">In Review</option>
+                  <option value="completed">Completed</option>
+                </select>
+              </th>
+              <th>
+                <select id="filter-due-date" class="table-filter" aria-label="Filter by due date">
+                  <option value="">All Due Dates</option>
+                  <option value="overdue">Overdue</option>
+                  <option value="due_today">Due Today</option>
+                  <option value="due_this_week">Due This Week</option>
+                  <option value="due_this_month">Due This Month</option>
+                  <option value="no_due_date">No Due Date</option>
+                </select>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if @tasks.any? %>
+              <% @tasks.each do |task| %>
+                <% task_url = project_task_path(@project, task) %>
+                <tr class="task-row" 
+                    data-task-url="<%= task_url %>"
+                    data-status="<%= task.status %>"
+                    data-assignee="<%= task.assignee&.user&.username || '' %>"
+                    data-priority="<%= task.priority || 'no_priority' %>"
+                    data-due-date="<%= task.due_at&.iso8601 || '' %>">
+                  <td class="task-title-cell">
+                    <%= link_to task_url, class: "task-row-link" do %>
+                      <span class="task-title"><%= task.title %></span>
+                      <% if task.type.present? %>
+                        <span class="task-type-badge" data-type="<%= task.type.upcase %>"><%= task.type %></span>
+                      <% end %>
+                    <% end %>
+                  </td>
+                  <td>
+                    <%= link_to task_url, class: "task-row-link" do %>
+                      <% priority_value = task.priority || 'no_priority' %>
+                      <span class="priority-badge priority-<%= priority_value.gsub('_', '-') %>">
+                        <%= priority_value == 'no_priority' ? 'No Priority' : priority_value.titleize %>
+                      </span>
+                    <% end %>
+                  </td>
+                  <td class="assignee-cell">
+                    <%= link_to task_url, class: "task-row-link" do %>
+                      <% if task.assignee.present? %>
+                        <span class="user-name"><%= task.assignee.user.username %></span>
+                      <% else %>
+                        <span class="text-muted">Unassigned</span>
+                      <% end %>
+                    <% end %>
+                  </td>
+                  <td>
+                    <%= link_to task_url, class: "task-row-link" do %>
+                      <span class="status-badge status-<%= task.status.gsub('_', '-') %>">
+                        <%= task.status.titleize %>
+                      </span>
+                    <% end %>
+                  </td>
+                  <td>
+                    <%= link_to task_url, class: "task-row-link" do %>
+                      <% if task.due_at.present? %>
+                        <%= task.due_at.strftime("%B %d, %Y") %>
+                      <% else %>
+                        <span class="text-muted">No due date</span>
+                      <% end %>
+                    <% end %>
+                  </td>
+                </tr>
+              <% end %>
+            <% else %>
+              <tr>
+                <td colspan="5" class="empty-table-state">No tasks found</td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </div>
+
