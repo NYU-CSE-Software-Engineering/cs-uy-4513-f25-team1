@@ -1,242 +1,121 @@
-<%= render "application/sidebar" %>
+<div class="dashboard-layout">
+  <%= render "application/sidebar" %>
 
-<% if flash[:created] %>
-  <p> <%= flash[:created] %> </p>
-<% end %>
+  <div class="main-content">
+    <% if flash[:created] %>
+    <div class="notice"><%= flash[:created] %></div>
+  <% end %>
+  <% if flash[:notice] %>
+    <div class="notice"><%= flash[:notice] %></div>
+  <% end %>
+  <% if flash[:alert] %>
+    <div class="alert"><%= flash[:alert] %></div>
+  <% end %>
 
-<h1><%= @project.name %></h1>
+  <!-- Header Section -->
+  <header class="project-header">
+    <div class="project-info">
+      <h1 class="project-title"><%= @project.name %></h1>
+      <p class="project-description"><%= @project.description %></p>
+      
+      <% if @project.repo.present? %>
+        <p><strong>Repository:</strong> <%= link_to @project.repo, @project.repo, target: "_blank" %></p>
+      <% end %>
 
-<p><%= @project.description %></p>
-
-<% if @project.repo.present? %>
-  <p><strong>Repository:</strong> <%= link_to @project.repo, @project.repo, target: "_blank" %></p>
-<% end %>
-
-<% if flash[:notice] %>
-  <div class="notice"><%= flash[:notice] %></div>
-<% end %>
-<% if flash[:alert] %>
-  <div class="alert"><%= flash[:alert] %></div>
-<% end %>
-
-<hr>
-
-<!-- Collaborators Summary Section -->
-<div class="collaborators-summary">
-  <h2>Collaborators (<%= @project.collaborators.count %>)</h2>
-  
-  <div class="collaborators-preview">
-    <% @project.collaborators.includes(:user).limit(5).each do |collaborator| %>
-      <div class="collaborator-badge" title="<%= collaborator.user.username %> - <%= collaborator.role.titleize %>">
-        <%= link_to project_collaborator_path(@project, collaborator) do %>
-          <span class="collaborator-initial"><%= collaborator.user.username[0].upcase %></span>
-          <span class="collaborator-name"><%= collaborator.user.username %></span>
-        <% end %>
+      <div class="project-meta">
+        <span class="meta-item"><strong>In Progress:</strong> <%= @project.tasks.where(status: "In Progress").count %></span>
       </div>
-    <% end %>
+    </div>
+  </header>
+
+  <hr class="divider">
+
+  <!-- Functionality Bar -->
+  <div class="tasks-controls">
+    <h2 class="section-title">Tasks</h2>
     
-    <% if @project.collaborators.count > 5 %>
-      <div class="collaborator-badge more">
-        <%= link_to project_collaborators_path(@project) do %>
-          <span class="collaborator-initial">+<%= @project.collaborators.count - 5 %></span>
-          <span class="collaborator-name">more</span>
+    <div class="controls-right">
+      <!-- Filter Form -->
+      <div class="filters">
+        <%= form_with url: project_path(@project), method: :get, local: true do |form| %>
+          <div>
+            <%= form.label :filter, "Sort by" %>
+            <%= form.select :filter, options_for_select([
+              ["Date Created", "date_created"],
+              ["Date Modified", "date_modified"]
+            ], @current_filter), {}, { id: "filter" } %>
+          </div>
+
+          <div>
+            <%= form.label :direction, "Order" %>
+            <%= form.select :direction, options_for_select([
+              ["Early → Late", "asc"],
+              ["Late → Early", "desc"]
+            ], @current_direction), {}, { id: "direction" } %>
+          </div>
         <% end %>
       </div>
-    <% end %>
+
+      <% if can_edit_project? %>
+        <%= link_to new_project_task_path(@project), class: "btn btn-primary new-task-btn" do %>
+          <span>+</span> New Task
+        <% end %>
+      <% end %>
+    </div>
   </div>
-  
-  <%= link_to "View All Collaborators", project_collaborators_path(@project), class: "button" %>
-</div>
 
-<hr>
-
-<h2>Tasks</h2>
-
-<% if can_edit_project? %>
-  <%= link_to "New Task", new_project_task_path(@project), class: "button" %>
-<% end %>
-
-<!-- Filter Form -->
-<div class="filters">
-  <%= form_with url: project_path(@project), method: :get, local: true do |form| %>
-    <div>
-      <%= form.label :filter, "Sort by" %>
-      <%= form.select :filter, options_for_select([
-        ["Date Created", "date_created"],
-        ["Date Modified", "date_modified"]
-      ], @current_filter), {}, { id: "filter" } %>
-    </div>
-
-    <div>
-      <%= form.label :direction, "Order" %>
-      <%= form.select :direction, options_for_select([
-        ["Early → Late", "asc"],
-        ["Late → Early", "desc"]
-      ], @current_direction), {}, { id: "direction" } %>
-    </div>
-
-    <div>
-      <%= form.label :type, "Filter by Type" %>
-      <%= form.select :type, options_for_select([
-        ["All Types", ""],
-        ["Feature", "Feature"],
-        ["Bug", "Bug"],
-        ["Backlog", "Backlog"]
-      ], @current_type), {}, { id: "type_filter" } %>
-    </div>
-
-    <div>
-      <%= form.label :status, "Filter by Status" %>
-      <%= form.select :status, options_for_select([
-        ["All Statuses", ""],
-        ["To Do", "To Do"],
-        ["In Progress", "In Progress"],
-        ["In Review", "In Review"],
-        ["Completed", "Completed"]
-      ], @current_status), {}, { id: "status_filter" } %>
-    </div>
-
-    <%= form.submit "Apply filters" %>
-  <% end %>
-</div>
-
-<hr>
-
-<!-- Filtered/Sorted Task List -->
-<div id="task-list">
-  <h3>All Tasks (Filtered)</h3>
-  <ul>
-    <% @tasks.each do |t| %>
-      <li class="task-item" data-type="<%= t.type %>" data-title="<%= t.title %>">
-        <strong><%= t.title %></strong>
-        <% if t.type.present? %>
-          <span class="task-type">[<%= t.type %>]</span>
+  <!-- Task List Table -->
+  <div class="task-list-container">
+    <table class="task-table">
+      <thead>
+        <tr>
+          <th>Status</th>
+          <th>Task Name</th>
+          <th>Assignee</th>
+          <th class="text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @tasks.each do |task| %>
+          <tr class="task-row" onclick="window.location='<%= project_task_path(@project, task) %>';">
+            <td>
+              <span class="status-badge status-<%= task.status.to_s.parameterize %>"><%= task.status %></span>
+            </td>
+            <td>
+              <div class="task-title-cell">
+                <span class="task-title"><%= task.title %></span>
+                <% if task.type.present? %>
+                  <span class="task-type-badge"><%= task.type %></span>
+                <% end %>
+              </div>
+            </td>
+            <td>
+              <% if task.user %>
+                <div class="assignee-cell">
+                  <span class="user-avatar-sm"><%= task.user.username[0].upcase %></span>
+                  <span class="user-name"><%= task.user.username %></span>
+                </div>
+              <% else %>
+                <span class="text-muted">-</span>
+              <% end %>
+            </td>
+            <td class="text-right" onclick="event.stopPropagation();">
+              <% if can_edit_project? %>
+                <%= link_to "Edit", edit_project_task_path(@project, task), class: "btn-link" %>
+              <% end %>
+            </td>
+          </tr>
         <% end %>
-        <span class="task-status">- <%= t.status %></span>
-        <% if can_edit_project? %>
-          <%= link_to "Edit", edit_project_task_path(@project, t) %>
+        
+        <% if @tasks.empty? %>
+          <tr>
+            <td colspan="4" class="empty-table-state">
+              No tasks found.
+            </td>
+          </tr>
         <% end %>
-      </li>
-    <% end %>
-  </ul>
+      </tbody>
+    </table>
+  </div>
+  </div>
 </div>
-
-<hr>
-
-<!-- Board View (by Status) -->
-<h2>Board View</h2>
-
-<h3>To Do</h3>
-<ul id="to-do-column">
-  <% @project.tasks.where(status: "To Do").each do |t| %>
-    <li>
-      <%= t.title %>
-      <% if t.type.present? %>[<%= t.type %>]<% end %>
-      <% if can_edit_project? %><%= link_to "Edit", edit_project_task_path(@project, t) %><% end %>
-    </li>
-  <% end %>
-</ul>
-
-<h3>In Progress</h3>
-<ul id="in-progress-column">
-  <% @project.tasks.where(status: "In Progress").each do |t| %>
-    <li>
-      <%= t.title %>
-      <% if t.type.present? %>[<%= t.type %>]<% end %>
-      <% if can_edit_project? %><%= link_to "Edit", edit_project_task_path(@project, t) %><% end %>
-    </li>
-  <% end %>
-</ul>
-
-<h3>In Review</h3>
-<ul id="in-review-column">
-  <% @project.tasks.where(status: "In Review").each do |t| %>
-    <li>
-      <%= t.title %>
-      <% if t.type.present? %>[<%= t.type %>]<% end %>
-      <% if can_edit_project? %><%= link_to "Edit", edit_project_task_path(@project, t) %><% end %>
-    </li>
-  <% end %>
-</ul>
-
-<h3>Completed</h3>
-<ul id="completed-column">
-  <% @project.tasks.where(status: "Completed").each do |t| %>
-    <li>
-      <%= t.title %>
-      <% if t.type.present? %>[<%= t.type %>]<% end %>
-      <% if can_edit_project? %><%= link_to "Edit", edit_project_task_path(@project, t) %><% end %>
-    </li>
-  <% end %>
-</ul>
-
-<style>
-  .project-description {
-    font-size: 16px;
-    color: #555;
-    margin: 10px 0 20px 0;
-  }
-  
-  .collaborators-summary {
-    background: #f8f9fa;
-    border: 1px solid #ddd;
-    padding: 20px;
-    border-radius: 5px;
-    margin: 20px 0;
-  }
-  
-  .collaborators-summary h2 {
-    margin-top: 0;
-  }
-  
-  .collaborators-preview {
-    display: flex;
-    gap: 15px;
-    margin: 15px 0;
-    flex-wrap: wrap;
-  }
-  
-  .collaborator-badge {
-    display: inline-block;
-  }
-  
-  .collaborator-badge a {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-decoration: none;
-    color: #333;
-  }
-  
-  .collaborator-badge a:hover .collaborator-initial {
-    background-color: #0056b3;
-  }
-  
-  .collaborator-initial {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background-color: #007bff;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    font-weight: bold;
-    margin-bottom: 5px;
-    transition: background-color 0.3s;
-  }
-  
-  .collaborator-badge.more .collaborator-initial {
-    background-color: #6c757d;
-  }
-  
-  .collaborator-badge.more a:hover .collaborator-initial {
-    background-color: #5a6268;
-  }
-  
-  .collaborator-name {
-    font-size: 12px;
-    text-align: center;
-  }
-</style>
