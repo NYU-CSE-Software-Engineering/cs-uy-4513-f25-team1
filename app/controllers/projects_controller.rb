@@ -2,10 +2,22 @@ class ProjectsController < ApplicationController
   before_action :set_project, only: :show
   before_action :set_user
   before_action :set_user_role, only: :show
+  before_action :authorize_project_access, only: :show
   helper_method :can_edit_project?, :is_manager?
 
   def index
-    @projects = Project.all
+    user_projects = Project.joins(:collaborators)
+                           .where(collaborators: { user_id: session[:user_id] })
+                           .where.not(collaborators: { role: :invited })
+                           .order(updated_at: :desc)
+
+    most_recent = user_projects.first
+
+    if most_recent
+      redirect_to project_path(most_recent)
+    else
+      render :index
+    end
   end
 
   def new
@@ -112,6 +124,12 @@ class ProjectsController < ApplicationController
   def set_user_role
     @collaborator = Collaborator.find_by(user_id: Current.session&.user_id, project_id: @project.id)
     @user_role = @collaborator&.role
+  end
+
+  def authorize_project_access
+    unless @collaborator
+      render "projects/access_denied", layout: false
+    end
   end
 
   def can_edit_project?
