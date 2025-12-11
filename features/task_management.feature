@@ -69,19 +69,15 @@ Feature: Task Management
     And I should see "In Progress"
     And I should see "https://github.com/org/repo/pull/123"
 
-  Scenario: Edit task updates all fields
+  Scenario: Update task updates all fields via API
     Given a task "Old Title" exists on project "Alpha" with:
       | description | Old description |
       | priority    | low             |
-    When I visit the project "Alpha" page
-    And I click on the task "Old Title"
-    And I click "Edit Task"
-    And I fill in "Title" with "Updated Title"
-    And I fill in "Description" with "Updated description"
-    And I select "High" from "Priority (optional)"
-    And I click "Update Task"
+    When I update task "Old Title" with:
+      | title       | Updated Title       |
+      | description | Updated description |
+      | priority    | high                |
     Then I should see "Task updated."
-    When I click "View Task"
-    Then I should see "Updated Title"
+    And I should see "Updated Title"
     And I should see "Updated description"
     And I should see "High"

@@ -59,15 +59,11 @@ Feature: Task Priority
     Then I should see "Priority visible task"
     And I should see "High" within the task list
 
-  Scenario: Update task priority
+  Scenario: Update task priority via API
     Given a task "Change priority" exists on project "Alpha" with:
       | description | Priority will change |
       | priority    | low                  |
-    When I visit the project "Alpha" page
-    And I click on the task "Change priority"
-    And I click "Edit Task"
-    And I select "Urgent" from "Priority (optional)"
-    And I click "Update Task"
+    When I update task "Change priority" with priority "urgent"
     Then I should see "Task updated."
     And I should see "Urgent"
 

@@ -186,6 +186,19 @@ RSpec.describe "Tasks", type: :request do
         expect(response.body).to include(task.title)
         expect(response.body).to include(task.description)
       end
+
+      it "shows completion notice for completed tasks" do
+        completed_task = Task.create!(
+          title: "Completed Task",
+          description: "Done",
+          status: :completed,
+          project: project,
+          completed_at: Time.current
+        )
+        get project_task_path(project, completed_task)
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include("cannot be modified")
+      end
     end
 
     context "when user is invited (view-only)" do
@@ -199,50 +212,16 @@ RSpec.describe "Tasks", type: :request do
     end
   end
 
-  describe "GET /projects/:project_id/tasks/:id/edit" do
-    let!(:task) { Task.create!(title: "Test Task", description: "Test description", status: :todo, project: project) }
-
-    context "when user is a manager or developer" do
-      before { sign_in(developer_user) }
-
-      it "responds with 200" do
-        get edit_project_task_path(project, task)
-        expect(response).to have_http_status(:ok)
-      end
-    end
-
-    context "when task is completed" do
-      let!(:completed_task) { Task.create!(title: "Completed Task", description: "Done", status: :completed, project: project, completed_at: Time.current) }
-
-      before { sign_in(developer_user) }
-
-      it "shows a message that task cannot be modified" do
-        get edit_project_task_path(project, completed_task)
-        expect(response).to have_http_status(:ok)
-        expect(response.body).to include("cannot be modified")
-      end
-    end
-
-    context "when user is invited (view-only)" do
-      before { sign_in(invited_user) }
-
-      it "redirects with permission denied" do
-        get edit_project_task_path(project, task)
-        expect(response).to redirect_to(project_path(project))
-        expect(flash[:alert]).to eq("You do not have permission to edit this project.")
-      end
-    end
-  end
-
   describe "PATCH /projects/:project_id/tasks/:id" do
     let!(:task) { Task.create!(title: "Test Task", description: "Test description", status: :todo, project: project) }
 
     context "when user is a manager or developer" do
       before { sign_in(developer_user) }
 
-      it "updates the task title" do
+      it "updates the task title and redirects to show page" do
         patch project_task_path(project, task), params: { task: { title: "Updated Title" } }
         expect(response).to have_http_status(:see_other)
+        expect(response).to redirect_to(project_task_path(project, task))
         expect(task.reload.title).to eq("Updated Title")
       end
 
@@ -273,7 +252,7 @@ RSpec.describe "Tasks", type: :request do
 
       it "does not allow assigning a manager as assignee" do
         patch project_task_path(project, task), params: { task: { assignee_id: manager_collaborator.id } }
-        expect(response).to have_http_status(:unprocessable_content)
+        expect(response).to redirect_to(project_task_path(project, task))
         expect(task.reload.assignee_id).to be_nil
       end
     end
@@ -302,7 +281,7 @@ RSpec.describe "Tasks", type: :request do
 
         patch project_task_path(project, completed_task), params: { task: { title: "Attempted Update" } }
 
-        expect(response).to have_http_status(:unprocessable_content)
+        expect(response).to redirect_to(project_task_path(project, completed_task))
         expect(completed_task.reload.title).to eq(original_title)
       end
     end

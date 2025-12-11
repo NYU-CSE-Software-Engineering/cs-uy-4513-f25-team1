@@ -12,7 +12,8 @@ RSpec.describe Task, type: :model do
     User.create!(
       username: 'test_user',
       email_address: 'test@example.com',
-      password_digest: BCrypt::Password.create('password123')
+      password: 'password123',
+      password_confirmation: 'password123'
     )
   end
 
@@ -24,7 +25,8 @@ RSpec.describe Task, type: :model do
     manager_user = User.create!(
       username: 'manager_user',
       email_address: 'manager@example.com',
-      password_digest: BCrypt::Password.create('password123')
+      password: 'password123',
+      password_confirmation: 'password123'
     )
     Collaborator.create!(user: manager_user, project: project, role: :manager)
   end
