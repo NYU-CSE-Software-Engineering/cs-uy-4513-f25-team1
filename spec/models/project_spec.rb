@@ -72,7 +72,7 @@ RSpec.describe Project, type: :model do
 
   describe 'dependent destroy' do
     let!(:project) { Project.create!(name: 'Test Project', description: 'Test description') }
-    let!(:user) { User.create!(email_address: 'test@example.com', username: 'testuser', password: 'SecurePassword123') }
+    let!(:user) { User.create!(email_address: 'spec_project_user@example.com', username: 'testuser', password: 'SecurePassword123') }
 
     it 'destroys associated tasks when project is destroyed' do
       Task.create!(title: 'Test Task', description: 'Task description', status: :todo, project: project)

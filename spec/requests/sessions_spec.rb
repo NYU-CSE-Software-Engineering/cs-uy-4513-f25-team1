@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe "Sessions", type: :request do
-  let!(:user) { User.create!(email_address: 'test@example.com', username: 'testuser', password: 'SecurePassword123') }
+  let!(:user) { User.create!(email_address: 'spec_session_user@example.com', username: 'testuser', password: 'SecurePassword123') }
 
   describe "GET /session/new" do
     it "renders the login page" do

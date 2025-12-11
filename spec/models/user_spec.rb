@@ -4,7 +4,7 @@ RSpec.describe User, type: :model do
   describe 'validations' do
     it 'is valid with valid attributes' do
       user = User.new(
-        email_address: 'test@example.com',
+        email_address: 'spec_user@example.com',
         username: 'testuser',
         password: 'SecurePassword123'
       )
@@ -36,7 +36,7 @@ RSpec.describe User, type: :model do
 
     it 'is invalid without a password' do
       user = User.new(
-        email_address: 'test@example.com',
+        email_address: 'spec_user@example.com',
         username: 'testuser',
         password: nil
       )
@@ -47,7 +47,7 @@ RSpec.describe User, type: :model do
 
     it 'is invalid with a password under 8 characters' do
       user = User.new(
-        email_address: 'test@example.com',
+        email_address: 'spec_user@example.com',
         username: 'testuser',
         password: 'short'
       )
@@ -58,7 +58,7 @@ RSpec.describe User, type: :model do
 
     it 'is valid with a password of exactly 8 characters' do
       user = User.new(
-        email_address: 'test@example.com',
+        email_address: 'spec_user2@example.com',
         username: 'testuser',
         password: '12345678'
       )
@@ -70,22 +70,22 @@ RSpec.describe User, type: :model do
   describe 'email normalization' do
     it 'strips whitespace from email' do
       user = User.create!(
-        email_address: '  test@example.com  ',
+        email_address: '  spec_user3@example.com  ',
         username: 'testuser',
         password: 'SecurePassword123'
       )
 
-      expect(user.email_address).to eq('test@example.com')
+      expect(user.email_address).to eq('spec_user3@example.com')
     end
 
     it 'lowercases email' do
       user = User.create!(
-        email_address: 'TEST@EXAMPLE.COM',
+        email_address: 'SPEC_USER4@EXAMPLE.COM',
         username: 'testuser',
         password: 'SecurePassword123'
       )
 
-      expect(user.email_address).to eq('test@example.com')
+      expect(user.email_address).to eq('spec_user4@example.com')
     end
   end
 
@@ -108,7 +108,7 @@ RSpec.describe User, type: :model do
   end
 
   describe 'dependent destroy' do
-    let!(:user) { User.create!(email_address: 'test@example.com', username: 'testuser', password: 'SecurePassword123') }
+    let!(:user) { User.create!(email_address: 'spec_user5@example.com', username: 'testuser', password: 'SecurePassword123') }
     let!(:project) { Project.create!(name: 'Test Project', description: 'Test description') }
 
     it 'destroys associated sessions when user is destroyed' do
