@@ -38,14 +38,14 @@ end
 
 When('I input a taken email with other valid fields') do
   @user = User.create!(
-    email = 'taken@gmail.com',
-    username = 'user',
-    password = 'password'
+    email_address: 'taken@gmail.com',
+    username: 'user',
+    password: 'securePassword'
   )
-  fill_in 'email_address', with: "taken@gmail.com"
+  fill_in 'Email', with: "taken@gmail.com"
   fill_in 'Username', with: "user"
-  fill_in 'password', with: "password"
-  fill_in 'Repeated Password', with: "password"
+  fill_in 'Password', with: "longpassword"
+  fill_in 'Repeat password', with: "longpassword"
 end
 
 When('I input an invalid password with other valid fields') do
@@ -158,4 +158,19 @@ end
 
 Then('I should be on the login page') do
   expect(page).to have_current_path("/session/new")
+end
+
+Given('I am on the register page') do
+  visit new_user_path
+end
+
+When('I type for email username password repeat-password {string} {string} {string} {string}') do |email, username, password, repeat_password|
+  fill_in 'user_email_address', with: email
+  fill_in 'user_username', with: username
+  fill_in 'user_password', with: password
+  fill_in 'user_password_confirmation', with: repeat_password
+end
+
+Then('I should be on the same register page') do
+  expect(page).to have_content("Register")
 end
