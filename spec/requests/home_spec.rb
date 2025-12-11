@@ -5,17 +5,15 @@ RSpec.describe "Home", type: :request do
     it "returns http success" do
       get "/"
       expect(response).to have_http_status(:success)
-      expect(response.body).to include("Jira Lite")
+      expect(response.body).to include("Quadratic")
       expect(response.body).to include("Login")
     end
-  end
 
-  describe "GET /features" do
-    it "returns http success" do
-      get "/features"
-      expect(response).to have_http_status(:success)
+    it "includes features section" do
+      get "/"
       expect(response.body).to include("Features")
-      expect(response.body).to include("Kanban Boards")
+      expect(response.body).to include("Project Management")
+      expect(response.body).to include("Task Tracking")
     end
   end
 end
