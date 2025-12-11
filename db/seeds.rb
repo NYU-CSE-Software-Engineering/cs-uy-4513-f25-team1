@@ -489,6 +489,123 @@ Collaborator.create!(user: inviter, project: invite_project, role: :manager)
 Collaborator.create!(user: main_user, project: invite_project, role: :invited)
 
 # =============================================================================
+# 9. Large Team Project - Many collaborators to test carousel scrolling
+# =============================================================================
+puts "  Creating large team project..."
+
+large_team_project = FactoryBot.create(:project,
+  name: "Large Team Project",
+  description: "Project with many team members to test carousel horizontal scrolling",
+  repo: "https://github.com/team/large-team-project"
+)
+
+# Create additional users for the large team
+team_users = []
+team_names = %w[alice bob charlie diana edward fiona george hannah ivan julia]
+team_names.each do |name|
+  team_users << FactoryBot.create(:user,
+    email_address: "#{name}@example.com",
+    username: name,
+    password: "password",
+    password_confirmation: "password"
+  )
+end
+
+# Main user is the manager
+large_team_manager = Collaborator.create!(user: main_user, project: large_team_project, role: :manager)
+
+# Add all team users as developers
+large_team_devs = team_users.map do |user|
+  Collaborator.create!(user: user, project: large_team_project, role: :developer)
+end
+
+# Create various tasks assigned to different team members
+puts "  Creating tasks for large team..."
+
+# Tasks for first few developers with varying completion rates
+FactoryBot.create(:task, :completed, :high_priority, :feature,
+  project: large_team_project, assignee: large_team_devs[0],
+  title: "Alice: User authentication", description: "Implemented OAuth2 login")
+FactoryBot.create(:task, :completed, :medium_priority, :bug,
+  project: large_team_project, assignee: large_team_devs[0],
+  title: "Alice: Fixed login redirect", description: "Fixed redirect after login")
+FactoryBot.create(:task, :in_progress, :high_priority, :feature,
+  project: large_team_project, assignee: large_team_devs[0],
+  title: "Alice: Dashboard widgets", description: "Building dashboard components")
+
+FactoryBot.create(:task, :completed, :urgent_priority, :bug,
+  project: large_team_project, assignee: large_team_devs[1],
+  title: "Bob: Critical security fix", description: "Patched XSS vulnerability")
+FactoryBot.create(:task, :completed, :high_priority, :feature,
+  project: large_team_project, assignee: large_team_devs[1],
+  title: "Bob: API endpoints", description: "Created REST API")
+FactoryBot.create(:task, :completed, :medium_priority, :improvement,
+  project: large_team_project, assignee: large_team_devs[1],
+  title: "Bob: Performance optimization", description: "Reduced load time by 40%")
+FactoryBot.create(:task, :in_review, :medium_priority, :feature,
+  project: large_team_project, assignee: large_team_devs[1],
+  title: "Bob: Search functionality", description: "Full-text search implementation")
+
+FactoryBot.create(:task, :completed, :medium_priority, :documentation,
+  project: large_team_project, assignee: large_team_devs[2],
+  title: "Charlie: API docs", description: "Documented all endpoints")
+FactoryBot.create(:task, :in_progress, :low_priority, :chore,
+  project: large_team_project, assignee: large_team_devs[2],
+  title: "Charlie: Dependency updates", description: "Updating outdated packages")
+
+FactoryBot.create(:task, :completed, :high_priority, :feature,
+  project: large_team_project, assignee: large_team_devs[3],
+  title: "Diana: Email notifications", description: "Transactional email system")
+FactoryBot.create(:task, :completed, :medium_priority, :bug,
+  project: large_team_project, assignee: large_team_devs[3],
+  title: "Diana: Email formatting fix", description: "Fixed HTML rendering")
+FactoryBot.create(:task, :completed, :low_priority, :improvement,
+  project: large_team_project, assignee: large_team_devs[3],
+  title: "Diana: Email templates", description: "Redesigned email templates")
+FactoryBot.create(:task, :completed, :medium_priority, :feature,
+  project: large_team_project, assignee: large_team_devs[3],
+  title: "Diana: Webhook integrations", description: "Slack and Discord webhooks")
+FactoryBot.create(:task, :in_progress, :high_priority, :feature,
+  project: large_team_project, assignee: large_team_devs[3],
+  title: "Diana: Push notifications", description: "Mobile push notification system")
+
+FactoryBot.create(:task, :in_progress, :medium_priority, :feature,
+  project: large_team_project, assignee: large_team_devs[4],
+  title: "Edward: File uploads", description: "Multi-file upload system")
+FactoryBot.create(:task, :todo, :low_priority, :improvement,
+  project: large_team_project, assignee: large_team_devs[4],
+  title: "Edward: Image compression", description: "Auto-compress uploaded images")
+
+FactoryBot.create(:task, :completed, :high_priority, :bug,
+  project: large_team_project, assignee: large_team_devs[5],
+  title: "Fiona: Database migration fix", description: "Fixed migration rollback")
+FactoryBot.create(:task, :completed, :medium_priority, :chore,
+  project: large_team_project, assignee: large_team_devs[5],
+  title: "Fiona: Test coverage", description: "Increased coverage to 85%")
+
+FactoryBot.create(:task, :todo, :medium_priority, :feature,
+  project: large_team_project, assignee: large_team_devs[6],
+  title: "George: Analytics dashboard", description: "Usage analytics visualization")
+
+FactoryBot.create(:task, :completed, :low_priority, :documentation,
+  project: large_team_project, assignee: large_team_devs[7],
+  title: "Hannah: User guide", description: "End-user documentation")
+FactoryBot.create(:task, :in_review, :medium_priority, :documentation,
+  project: large_team_project, assignee: large_team_devs[7],
+  title: "Hannah: Developer guide", description: "Technical documentation")
+
+FactoryBot.create(:task, :in_progress, :high_priority, :feature,
+  project: large_team_project, assignee: large_team_devs[8],
+  title: "Ivan: Payment integration", description: "Stripe payment processing")
+
+FactoryBot.create(:task, :todo, :urgent_priority, :bug,
+  project: large_team_project, assignee: large_team_devs[9],
+  title: "Julia: Memory leak fix", description: "Investigating memory leak in worker")
+FactoryBot.create(:task, :in_progress, :high_priority, :feature,
+  project: large_team_project, assignee: large_team_devs[9],
+  title: "Julia: Background jobs", description: "Sidekiq job processing")
+
+# =============================================================================
 # Summary
 # =============================================================================
 puts ""
@@ -510,6 +627,7 @@ puts "  - Assignee Scenarios (various assignee configs)"
 puts "  - Due Date Scenarios (various due date configs)"
 puts "  - Completed Project (all tasks completed)"
 puts "  - Invite Test Project (invitation testing)"
+puts "  - Large Team Project (11 collaborators for carousel testing)"
 puts ""
 puts "Tasks created: #{Task.count}"
 puts "  By status:"
