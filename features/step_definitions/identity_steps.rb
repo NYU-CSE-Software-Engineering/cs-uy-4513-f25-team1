@@ -62,6 +62,41 @@ When('I input an invalid repeated_password with other valid fields') do
   fill_in 'Repeated Password', with: "pass"
 end
 
+Then('I should be on the edit page') do
+  expect(page).to have_content('Settings')
+end
+
+When('I make an account with email, username, password: {string} {string} {string}') do |email, username, password|
+  visit new_user_path
+  fill_in 'user_email_address', with: email
+  fill_in 'user_username', with: username
+  fill_in 'user_password', with: password
+  fill_in 'user_password_confirmation', with: password
+  click_button 'Create Account'
+end
+
+And('I log into an account with email, username, password: {string} {string} {string}') do |email, username, password|
+  visit new_session_path
+  fill_in 'email_address', with: email
+  fill_in 'password', with: password
+  click_button 'Sign in'
+end
+
+And('I edit my account with email, username, password: {string} {string} {string}') do |email, username, password|
+  visit projects_path
+  click_link 'User Settings'
+  fill_in 'user_email_address', with: email
+  fill_in 'user_username', with: username
+  fill_in 'user_password', with: password
+  fill_in 'user_password_confirmation', with: password
+  click_button 'Update Account'
+end
+
+And('I log out') do
+  visit projects_path
+  click_button 'Log out'
+end
+
 Given('I am a logged in user') do
   @user = User.create!(
     email_address: 'taken@gmail.com',
