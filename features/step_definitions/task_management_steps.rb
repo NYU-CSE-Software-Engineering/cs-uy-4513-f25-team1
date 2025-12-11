@@ -133,6 +133,18 @@ Then('I should not see {string}') do |text|
   expect(page).not_to have_content(text)
 end
 
+Then('I should see the add task button') do
+  expect(page).to have_css('.add-task-btn')
+end
+
+Then('I should not see the add task button') do
+  expect(page).not_to have_css('.add-task-btn')
+end
+
+When('I click the add task button') do
+  find('.add-task-btn').click
+end
+
 # Click on first matching task link
 When('I click on the task {string}') do |task_title|
   first(:link, task_title).click
@@ -162,7 +174,8 @@ Then('I should not see {string} within the task list') do |text|
   end
 end
 
-# Select from status filter dropdown (using element id)
+# Select from status filter dropdown (using custom dropdown component)
+# Note: This step requires JavaScript to actually filter tasks
 When('I filter by status {string}') do |status_value|
   status_map = {
     'Completed' => 'completed',
@@ -170,14 +183,26 @@ When('I filter by status {string}') do |status_value|
     'In Review' => 'in_review',
     'To Do' => 'todo'
   }
-  select status_value, from: 'filter-status'
-  pending 'Status filtering requires JavaScript (add @javascript tag to scenario)' unless Capybara.current_driver == :selenium || Capybara.current_driver == :selenium_chrome || Capybara.current_driver == :selenium_headless
+  data_value = status_map[status_value] || status_value.downcase.gsub(' ', '_')
+
+  # Click the dropdown trigger to open it
+  within('#filter-status') do
+    find('.dropdown-trigger').click
+    # Click the option with the matching data-value
+    find(".dropdown-option[data-value='#{data_value}']").click
+  end
+
+  # Status filtering requires JavaScript - skip if not running with JS driver
+  js_drivers = [ :selenium, :selenium_chrome, :selenium_headless, :cuprite, :apparition ]
+  unless js_drivers.include?(Capybara.current_driver)
+    pending 'Status filtering requires JavaScript (add @javascript tag to scenario)'
+  end
 end
 
 # Form interaction steps
 When('I fill in the due date field with tomorrow\'s date') do
   tomorrow = (Date.today + 1).strftime('%Y-%m-%dT12:00')
-  fill_in 'Due Date (optional)', with: tomorrow
+  fill_in 'task_due_at', with: tomorrow
 end
 
 # Task update steps using form submission (simulating inline edit via standard form)

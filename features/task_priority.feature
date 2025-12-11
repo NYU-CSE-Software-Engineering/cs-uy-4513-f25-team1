@@ -7,7 +7,7 @@ Feature: Task Priority
     Given I am logged in as a manager on project "Alpha"
 
   Scenario: Create task with Low priority
-    When I click "New Task"
+    When I click the add task button
     And I fill in "Title" with "Low priority task"
     And I fill in "Description" with "This is a low priority item"
     And I select "Low" from "Priority (optional)"
@@ -16,7 +16,7 @@ Feature: Task Priority
     And I should see "Low"
 
   Scenario: Create task with Medium priority
-    When I click "New Task"
+    When I click the add task button
     And I fill in "Title" with "Medium priority task"
     And I fill in "Description" with "This is a medium priority item"
     And I select "Medium" from "Priority (optional)"
@@ -25,7 +25,7 @@ Feature: Task Priority
     And I should see "Medium"
 
   Scenario: Create task with High priority
-    When I click "New Task"
+    When I click the add task button
     And I fill in "Title" with "High priority task"
     And I fill in "Description" with "This is a high priority item"
     And I select "High" from "Priority (optional)"
@@ -34,7 +34,7 @@ Feature: Task Priority
     And I should see "High"
 
   Scenario: Create task with Urgent priority
-    When I click "New Task"
+    When I click the add task button
     And I fill in "Title" with "Urgent priority task"
     And I fill in "Description" with "This is an urgent item"
     And I select "Urgent" from "Priority (optional)"
@@ -43,7 +43,7 @@ Feature: Task Priority
     And I should see "Urgent"
 
   Scenario: Create task with No Priority
-    When I click "New Task"
+    When I click the add task button
     And I fill in "Title" with "No priority task"
     And I fill in "Description" with "This has no priority set"
     And I select "No Priority" from "Priority (optional)"

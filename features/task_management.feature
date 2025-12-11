@@ -7,7 +7,7 @@ Feature: Task Management
     Given I am logged in as a manager on project "Alpha"
 
   Scenario: Create a task with all fields
-    When I click "New Task"
+    When I click the add task button
     And I fill in "Title" with "Implement authentication"
     And I fill in "Description" with "Add user login and registration functionality"
     And I select "Feature" from "Type"
@@ -22,14 +22,14 @@ Feature: Task Management
     And I should see "High"
 
   Scenario: Task creation fails without description
-    When I click "New Task"
+    When I click the add task button
     And I fill in "Title" with "Missing description task"
     And I leave "Description" blank
     And I click "Create Task"
     Then I should see "Description can't be blank"
 
   Scenario: Task without assignee defaults to Todo status
-    When I click "New Task"
+    When I click the add task button
     And I fill in "Title" with "Unassigned task"
     And I fill in "Description" with "This task has no assignee"
     And I click "Create Task"
@@ -38,7 +38,7 @@ Feature: Task Management
 
   Scenario: Task with assignee defaults to In Progress status
     Given a developer "dev_user" exists on project "Alpha"
-    When I click "New Task"
+    When I click the add task button
     And I fill in "Title" with "Assigned task"
     And I fill in "Description" with "This task is assigned to a developer"
     And I select "dev_user" from "Assignee (optional)"
@@ -49,7 +49,7 @@ Feature: Task Management
   Scenario: Assignee dropdown excludes managers
     Given a manager "other_manager" exists on project "Alpha"
     Given a developer "dev_user" exists on project "Alpha"
-    When I click "New Task"
+    When I click the add task button
     Then I should see "dev_user" in the assignee dropdown
     And I should not see "other_manager" in the assignee dropdown
 

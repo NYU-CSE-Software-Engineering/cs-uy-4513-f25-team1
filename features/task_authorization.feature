@@ -6,14 +6,14 @@ Feature: Task Authorization
   Scenario: Manager can create a new task
     Given I am logged in as a manager on project "Alpha"
     When I visit the project "Alpha" page
-    Then I should see "New Task"
-    When I click "New Task"
+    Then I should see the add task button
+    When I click the add task button
     Then I should be on the new task page for project "Alpha"
 
   Scenario: Developer cannot create a new task
     Given I am logged in as a developer on project "Alpha"
     When I visit the project "Alpha" page
-    Then I should not see "New Task"
+    Then I should not see the add task button
 
   Scenario: Developer cannot access new task page directly
     Given I am logged in as a developer on project "Alpha"

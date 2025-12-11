@@ -2,8 +2,13 @@
 <% @is_manager = @current_collaborator&.manager? %>
 <% @is_completed = @task.completed_at.present? %>
 <% @can_comment = @current_collaborator && %w[manager developer].include?(@current_collaborator.role) %>
+<% @is_assignee = @current_collaborator && @task.assignee_id == @current_collaborator.id %>
 
-<div class="task-page-container">
+<div class="dashboard-layout">
+  <%= render "application/sidebar" %>
+
+  <div class="main-content">
+    <div class="task-page-container">
   <% if flash[:notice] %>
     <div class="notice"><%= flash[:notice] %></div>
   <% end %>
@@ -113,6 +118,8 @@
                     <button type="button" class="btn btn-secondary assign-btn" data-action="click->inline-edit#showEditor" data-field="assignee_id">
                       Assign Someone
                     </button>
+                  <% elsif @current_collaborator&.developer? && !@is_completed %>
+                    <%= button_to "Assign to Me", assign_to_me_project_task_path(@project, @task), method: :patch, class: "btn btn-secondary assign-btn" %>
                   <% end %>
                 </div>
               </div>
@@ -197,6 +204,18 @@
           </div>
         </div>
 
+        <% unless @is_completed %>
+          <div class="workflow-actions">
+            <% if @is_assignee && @task.in_progress? %>
+              <%= button_to "Request Review", request_review_project_task_path(@project, @task), method: :patch, class: "btn btn-workflow btn-request-review" %>
+            <% elsif @is_assignee && @task.in_review? %>
+              <%= button_to "Cancel Request", cancel_review_project_task_path(@project, @task), method: :patch, class: "btn btn-workflow btn-cancel-review" %>
+            <% elsif @is_manager && @task.in_review? %>
+              <%= button_to "Mark as Completed", mark_complete_project_task_path(@project, @task), method: :patch, class: "btn btn-workflow btn-mark-complete" %>
+            <% end %>
+          </div>
+        <% end %>
+
         <div class="meta-field">
           <label class="meta-label">Type</label>
           <div class="inline-edit-field" data-field="type">
@@ -273,6 +292,12 @@
   <div class="task-media-section">
     <div class="section-header">
       <h2 class="section-title">Media Gallery</h2>
+      <% if @is_completed %>
+        <div class="comments-locked-inline">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <span>Locked</span>
+        </div>
+      <% end %>
     </div>
 
     <% if @task.media_files.attached? %>
@@ -362,11 +387,33 @@
     <div class="section-header">
       <h2 class="section-title">Comments</h2>
       <span class="comment-count"><%= @task.comments.count %></span>
+      <% if @is_completed %>
+        <div class="comments-locked-inline">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <span>Locked</span>
+        </div>
+      <% end %>
     </div>
+
+    <% if @can_comment && !@is_completed %>
+      <div class="new-comment-form">
+        <%= form_with model: [@project, @task, Comment.new], url: project_task_comments_path(@project, @task), method: :post, local: true do |form| %>
+          <div class="comment-form-header">
+            <div class="comment-avatar"><%= Current.session.user.username[0].upcase %></div>
+            <span class="comment-form-label">Add a comment</span>
+          </div>
+          <%= form.text_area :content, class: "comment-textarea", rows: 4, placeholder: "Write a comment... Markdown is supported." %>
+          <div class="comment-form-footer">
+            <span class="markdown-hint">Supports **bold**, *italic*, `code`, and more</span>
+            <%= form.submit "Post Comment", class: "btn btn-primary" %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
 
     <% if @task.comments.any? %>
       <div class="comments-list">
-        <% @task.comments.includes(collaborator: :user).order(created_at: :asc).each do |comment| %>
+        <% @task.comments.includes(collaborator: :user).order(created_at: :desc).each do |comment| %>
           <div class="comment-card" id="comment-<%= comment.id %>">
             <div class="comment-header">
               <div class="comment-author">
@@ -424,26 +471,6 @@
       </div>
     <% end %>
 
-    <% if @can_comment && !@is_completed %>
-      <div class="new-comment-form">
-        <%= form_with model: [@project, @task, Comment.new], url: project_task_comments_path(@project, @task), method: :post, local: true do |form| %>
-          <div class="comment-form-header">
-            <div class="comment-avatar"><%= Current.session.user.username[0].upcase %></div>
-            <span class="comment-form-label">Add a comment</span>
-          </div>
-          <%= form.text_area :content, class: "comment-textarea", rows: 4, placeholder: "Write a comment... Markdown is supported." %>
-          <div class="comment-form-footer">
-            <span class="markdown-hint">Supports **bold**, *italic*, `code`, and more</span>
-            <%= form.submit "Post Comment", class: "btn btn-primary" %>
-          </div>
-        <% end %>
-      </div>
-    <% elsif @is_completed %>
-      <div class="comments-locked-notice">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        <span>Comments are locked on completed tasks.</span>
-      </div>
-    <% end %>
   </div>
 
   <script>
@@ -459,4 +486,6 @@
       }
     }
   </script>
+    </div>
+  </div>
 </div>

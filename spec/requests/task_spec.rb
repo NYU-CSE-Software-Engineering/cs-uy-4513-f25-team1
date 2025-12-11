@@ -36,7 +36,8 @@ RSpec.describe "Tasks", type: :request do
       it "shows assignee dropdown with developers available for assignment" do
         get new_project_task_path(project)
         expect(response.body).to include(developer_user.username)
-        expect(response.body).to include("Assignee (optional)")
+        expect(response.body).to include("Assignee")
+        expect(response.body).to include("(optional)")
       end
     end
 
@@ -360,6 +361,283 @@ RSpec.describe "Tasks", type: :request do
     it "prevents assignee changes" do
       patch project_task_path(project, completed_task), params: { task: { assignee_id: developer_collaborator.id } }
       expect(completed_task.reload.assignee_id).to be_nil
+    end
+  end
+
+  describe "PATCH /projects/:project_id/tasks/:id/request_review" do
+    let!(:in_progress_task) do
+      Task.create!(
+        title: "In Progress Task",
+        description: "Working on it",
+        status: :in_progress,
+        project: project,
+        assignee: developer_collaborator
+      )
+    end
+
+    context "when user is the assigned developer" do
+      before { sign_in(developer_user) }
+
+      it "changes status from in_progress to in_review" do
+        patch request_review_project_task_path(project, in_progress_task)
+
+        expect(in_progress_task.reload.status).to eq("in_review")
+      end
+
+      it "redirects to task show page with success notice" do
+        patch request_review_project_task_path(project, in_progress_task)
+
+        expect(response).to redirect_to(project_task_path(project, in_progress_task))
+        expect(flash[:notice]).to eq("Review requested.")
+      end
+    end
+
+    context "when task is not in_progress" do
+      let!(:todo_task) do
+        Task.create!(
+          title: "Todo Task",
+          description: "Not started",
+          status: :todo,
+          project: project,
+          assignee: developer_collaborator
+        )
+      end
+
+      before { sign_in(developer_user) }
+
+      it "does not change status" do
+        patch request_review_project_task_path(project, todo_task)
+
+        expect(todo_task.reload.status).to eq("todo")
+      end
+
+      it "redirects with error message" do
+        patch request_review_project_task_path(project, todo_task)
+
+        expect(response).to redirect_to(project_task_path(project, todo_task))
+        expect(flash[:alert]).to include("in progress")
+      end
+    end
+
+    context "when user is not the assignee" do
+      let!(:other_developer) { User.create!(email_address: 'other_dev@example.com', username: 'otherdev', password: 'SecurePassword123') }
+      let!(:other_developer_collaborator) { Collaborator.create!(user: other_developer, project: project, role: :developer) }
+
+      before { sign_in(other_developer) }
+
+      it "does not allow requesting review" do
+        patch request_review_project_task_path(project, in_progress_task)
+
+        expect(response).to redirect_to(project_task_path(project, in_progress_task))
+        expect(flash[:alert]).to include("assigned developer")
+      end
+    end
+  end
+
+  describe "PATCH /projects/:project_id/tasks/:id/cancel_review" do
+    let!(:in_review_task) do
+      Task.create!(
+        title: "In Review Task",
+        description: "Ready for review",
+        status: :in_review,
+        project: project,
+        assignee: developer_collaborator
+      )
+    end
+
+    context "when user is the assigned developer" do
+      before { sign_in(developer_user) }
+
+      it "changes status from in_review to in_progress" do
+        patch cancel_review_project_task_path(project, in_review_task)
+
+        expect(in_review_task.reload.status).to eq("in_progress")
+      end
+
+      it "redirects to task show page with success notice" do
+        patch cancel_review_project_task_path(project, in_review_task)
+
+        expect(response).to redirect_to(project_task_path(project, in_review_task))
+        expect(flash[:notice]).to eq("Review request cancelled.")
+      end
+    end
+
+    context "when task is not in_review" do
+      let!(:in_progress_task) do
+        Task.create!(
+          title: "In Progress Task",
+          description: "Working on it",
+          status: :in_progress,
+          project: project,
+          assignee: developer_collaborator
+        )
+      end
+
+      before { sign_in(developer_user) }
+
+      it "does not change status" do
+        patch cancel_review_project_task_path(project, in_progress_task)
+
+        expect(in_progress_task.reload.status).to eq("in_progress")
+      end
+
+      it "redirects with error message" do
+        patch cancel_review_project_task_path(project, in_progress_task)
+
+        expect(response).to redirect_to(project_task_path(project, in_progress_task))
+        expect(flash[:alert]).to include("in review")
+      end
+    end
+  end
+
+  describe "PATCH /projects/:project_id/tasks/:id/mark_complete" do
+    let!(:in_review_task) do
+      Task.create!(
+        title: "In Review Task",
+        description: "Ready for review",
+        status: :in_review,
+        project: project,
+        assignee: developer_collaborator
+      )
+    end
+
+    context "when user is a manager" do
+      before { sign_in(manager_user) }
+
+      it "changes status from in_review to completed" do
+        patch mark_complete_project_task_path(project, in_review_task)
+
+        expect(in_review_task.reload.status).to eq("completed")
+      end
+
+      it "sets completed_at timestamp" do
+        patch mark_complete_project_task_path(project, in_review_task)
+
+        expect(in_review_task.reload.completed_at).not_to be_nil
+      end
+
+      it "redirects to task show page with success notice" do
+        patch mark_complete_project_task_path(project, in_review_task)
+
+        expect(response).to redirect_to(project_task_path(project, in_review_task))
+        expect(flash[:notice]).to eq("Task marked as completed.")
+      end
+    end
+
+    context "when task is not in_review" do
+      let!(:in_progress_task) do
+        Task.create!(
+          title: "In Progress Task",
+          description: "Working on it",
+          status: :in_progress,
+          project: project,
+          assignee: developer_collaborator
+        )
+      end
+
+      before { sign_in(manager_user) }
+
+      it "does not change status" do
+        patch mark_complete_project_task_path(project, in_progress_task)
+
+        expect(in_progress_task.reload.status).to eq("in_progress")
+      end
+
+      it "redirects with error message" do
+        patch mark_complete_project_task_path(project, in_progress_task)
+
+        expect(response).to redirect_to(project_task_path(project, in_progress_task))
+        expect(flash[:alert]).to include("in review")
+      end
+    end
+
+    context "when user is a developer" do
+      before { sign_in(developer_user) }
+
+      it "does not allow marking complete" do
+        patch mark_complete_project_task_path(project, in_review_task)
+
+        expect(response).to redirect_to(project_task_path(project, in_review_task))
+        expect(flash[:alert]).to include("managers")
+        expect(in_review_task.reload.status).to eq("in_review")
+      end
+    end
+  end
+
+  describe "PATCH /projects/:project_id/tasks/:id/assign_to_me" do
+    let!(:unassigned_task) do
+      Task.create!(
+        title: "Unassigned Task",
+        description: "Needs someone to work on it",
+        status: :todo,
+        project: project,
+        assignee: nil
+      )
+    end
+
+    context "when user is a developer" do
+      before { sign_in(developer_user) }
+
+      it "assigns the task to the developer" do
+        patch assign_to_me_project_task_path(project, unassigned_task)
+
+        expect(unassigned_task.reload.assignee).to eq(developer_collaborator)
+      end
+
+      it "changes status to in_progress" do
+        patch assign_to_me_project_task_path(project, unassigned_task)
+
+        expect(unassigned_task.reload.status).to eq("in_progress")
+      end
+
+      it "redirects with success notice" do
+        patch assign_to_me_project_task_path(project, unassigned_task)
+
+        expect(response).to redirect_to(project_task_path(project, unassigned_task))
+        expect(flash[:notice]).to eq("Task assigned to you.")
+      end
+    end
+
+    context "when task is already assigned" do
+      let!(:assigned_task) do
+        Task.create!(
+          title: "Assigned Task",
+          description: "Already being worked on",
+          status: :in_progress,
+          project: project,
+          assignee: developer_collaborator
+        )
+      end
+
+      let!(:other_developer) { User.create!(email_address: 'other_dev@example.com', username: 'otherdev', password: 'SecurePassword123') }
+      let!(:other_developer_collaborator) { Collaborator.create!(user: other_developer, project: project, role: :developer) }
+
+      before { sign_in(other_developer) }
+
+      it "does not reassign the task" do
+        patch assign_to_me_project_task_path(project, assigned_task)
+
+        expect(assigned_task.reload.assignee).to eq(developer_collaborator)
+      end
+
+      it "redirects with error message" do
+        patch assign_to_me_project_task_path(project, assigned_task)
+
+        expect(response).to redirect_to(project_task_path(project, assigned_task))
+        expect(flash[:alert]).to include("already assigned")
+      end
+    end
+
+    context "when user is a manager" do
+      before { sign_in(manager_user) }
+
+      it "does not allow managers to self-assign" do
+        patch assign_to_me_project_task_path(project, unassigned_task)
+
+        expect(response).to redirect_to(project_task_path(project, unassigned_task))
+        expect(flash[:alert]).to include("developers")
+        expect(unassigned_task.reload.assignee).to be_nil
+      end
     end
   end
 end
