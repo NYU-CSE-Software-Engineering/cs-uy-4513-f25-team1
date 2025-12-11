@@ -1,0 +1,27 @@
+<h1>Settings</h1>
+
+<%= form_with model: @user do |f| %>
+  <p>
+    <%= f.label :email_address, "Email" %><br>
+    <%= f.text_field :email_address %>
+  </p>
+
+  <p>
+    <%= f.label :username %><br>
+    <%= f.text_field :username %>
+  </p>
+
+  <p>
+    <%= f.label :password %><br>
+    <%= f.password_field :password %>
+  </p>
+
+  <p>
+    <%= f.label :password_confirmation, "Repeat password" %><br>
+    <%= f.password_field :password_confirmation %>
+  </p>
+
+  <p>
+    <%= f.submit "Update Account" %>
+  </p>
+<% end %>
