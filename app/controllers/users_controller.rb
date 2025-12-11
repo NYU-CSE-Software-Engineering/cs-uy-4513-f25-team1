@@ -20,8 +20,9 @@ class UsersController < ApplicationController
   def create
     @user = User.new(user_params)
     if @user.save
+      start_new_session_for @user
       session[:user_id] = @user.id
-      redirect_to "/"
+      redirect_to projects_path
     else
       render :new
     end
