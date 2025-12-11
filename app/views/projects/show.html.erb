@@ -31,10 +31,26 @@
         <div class="collaborators-carousel-section">
           <h3 class="carousel-section-title">Collaborators:</h3>
           <% all_members = [@project_manager, *@collaborators.reject { |c| c == @project_manager }].compact %>
-          <% if all_members.any? %>
-            <div class="collaborators-carousel-wrapper">
-              <div class="carousel-fade carousel-fade-left"></div>
-              <div class="collaborators-carousel">
+          <div class="collaborators-carousel-wrapper">
+            <div class="carousel-fade carousel-fade-left"></div>
+            <div class="collaborators-carousel">
+              <% if is_manager? %>
+                <button type="button" class="collaborator-carousel-card add-collaborator-card" data-action="open-invite-modal">
+                  <div class="add-collaborator-content">
+                    <div class="add-collaborator-icon">
+                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="8.5" cy="7" r="4"/>
+                        <line x1="20" y1="8" x2="20" y2="14"/>
+                        <line x1="23" y1="11" x2="17" y2="11"/>
+                      </svg>
+                    </div>
+                    <span class="add-collaborator-text">Add Collaborator</span>
+                    <span class="add-collaborator-hint">Invite by email</span>
+                  </div>
+                </button>
+              <% end %>
+              <% if all_members.any? %>
                 <% all_members.each do |collaborator| %>
                   <%= link_to project_collaborator_path(@project, collaborator), class: "collaborator-carousel-card #{'is-manager' if collaborator.manager?}" do %>
                     <% if collaborator.manager? %>
@@ -52,23 +68,28 @@
                     <div class="carousel-card-stats">
                       <div class="carousel-stat">
                         <span class="stat-value"><%= collaborator.task_count %></span>
-                        <span class="stat-label">Tasks</span>
+                        <span class="stat-label">Assigned</span>
                       </div>
                       <div class="carousel-stat">
-                        <span class="stat-value"><%= collaborator.completed_task_count %></span>
-                        <span class="stat-label">Completed</span>
+                        <span class="stat-value"><%= collaborator.completion_rate %>%</span>
+                        <span class="stat-label">Complete</span>
                       </div>
                       <div class="carousel-stat">
-                        <span class="stat-value"><%= collaborator.contribution_percentage %>%</span>
-                        <span class="stat-label">Contrib</span>
+                        <span class="stat-value"><%= collaborator.current_wip_count %></span>
+                        <span class="stat-label">Active</span>
+                      </div>
+                      <div class="carousel-stat <%= 'stat-warning' if collaborator.overdue_task_count > 0 %>">
+                        <span class="stat-value"><%= collaborator.overdue_task_count %></span>
+                        <span class="stat-label">Overdue</span>
                       </div>
                     </div>
                   <% end %>
                 <% end %>
-              </div>
-              <div class="carousel-fade carousel-fade-right"></div>
+              <% end %>
             </div>
-          <% else %>
+            <div class="carousel-fade carousel-fade-right"></div>
+          </div>
+          <% if all_members.empty? && !is_manager? %>
             <div class="empty-carousel-state">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
               <span>No team members yet</span>
@@ -83,10 +104,17 @@
     <!-- Tasks Section -->
     <div class="tasks-section">
       <div class="tasks-controls">
-        <h2 class="section-title">Tasks</h2>
-        <% if is_manager? %>
-          <%= link_to "New Task", new_project_task_path(@project), class: "button new-task-btn" %>
-        <% end %>
+        <div class="tasks-header-row">
+          <h2 class="section-title">Tasks</h2>
+          <% if is_manager? %>
+            <%= link_to new_project_task_path(@project), class: "add-task-btn", title: "New Task" do %>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+            <% end %>
+          <% end %>
+        </div>
       </div>
 
       <!-- Task Table with Filters -->
@@ -94,52 +122,95 @@
         <table id="tasks-table" class="task-table">
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Priority</th>
-              <th>Assignee</th>
-              <th>Status</th>
-              <th>Due Date</th>
-            </tr>
-            <tr class="filters-row">
               <th>
-                <!-- No filter for Name column -->
+                <div class="column-header-label">Name</div>
+                <input type="text" id="filter-name" class="table-filter" placeholder="Search tasks..." aria-label="Search by name">
               </th>
               <th>
-                <select id="filter-priority" class="table-filter" aria-label="Filter by priority">
-                  <option value="">All Priorities</option>
-                  <option value="no_priority">No Priority</option>
-                  <option value="low">Low</option>
-                  <option value="medium">Medium</option>
-                  <option value="high">High</option>
-                  <option value="urgent">Urgent</option>
-                </select>
+                <div class="column-header-label">Status</div>
+                <div class="custom-dropdown" data-filter="status" id="filter-status">
+                  <button type="button" class="dropdown-trigger" aria-label="Filter by status">
+                    <span class="dropdown-value"><span class="text-placeholder">All Statuses</span></span>
+                    <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+                  </button>
+                  <div class="dropdown-menu">
+                    <div class="dropdown-option selected" data-value=""><span class="option-text">All Statuses</span></div>
+                    <div class="dropdown-option" data-value="todo"><span class="status-badge status-to-do">To Do</span></div>
+                    <div class="dropdown-option" data-value="in_progress"><span class="status-badge status-in-progress">In Progress</span></div>
+                    <div class="dropdown-option" data-value="in_review"><span class="status-badge status-in-review">In Review</span></div>
+                    <div class="dropdown-option" data-value="completed"><span class="status-badge status-completed">Completed</span></div>
+                  </div>
+                </div>
               </th>
               <th>
-                <select id="filter-assignee" class="table-filter" aria-label="Filter by assignee">
-                  <option value="">All Assignees</option>
-                  <% @collaborators.each do |collaborator| %>
-                    <option value="<%= collaborator.user.username %>"><%= collaborator.user.username %></option>
-                  <% end %>
-                </select>
+                <div class="column-header-label">Due Date</div>
+                <div class="custom-dropdown" data-filter="due-date" id="filter-due-date">
+                  <button type="button" class="dropdown-trigger" aria-label="Filter by due date">
+                    <span class="dropdown-value"><span class="text-placeholder">All Due Dates</span></span>
+                    <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+                  </button>
+                  <div class="dropdown-menu">
+                    <div class="dropdown-option selected" data-value=""><span class="option-text">All Due Dates</span></div>
+                    <div class="dropdown-option" data-value="overdue"><span class="due-date-badge due-overdue">Overdue</span></div>
+                    <div class="dropdown-option" data-value="due_today"><span class="due-date-badge due-today">Due Today</span></div>
+                    <div class="dropdown-option" data-value="due_this_week"><span class="due-date-badge due-this-week">Due This Week</span></div>
+                    <div class="dropdown-option" data-value="due_this_month"><span class="due-date-badge due-this-month">Due This Month</span></div>
+                  </div>
+                </div>
               </th>
               <th>
-                <select id="filter-status" class="table-filter" aria-label="Filter by status">
-                  <option value="">All Statuses</option>
-                  <option value="todo">To Do</option>
-                  <option value="in_progress">In Progress</option>
-                  <option value="in_review">In Review</option>
-                  <option value="completed">Completed</option>
-                </select>
+                <div class="column-header-label">Assignee</div>
+                <div class="custom-dropdown" data-filter="assignee" id="filter-assignee">
+                  <button type="button" class="dropdown-trigger" aria-label="Filter by assignee">
+                    <span class="dropdown-value"><span class="text-placeholder">All Assignees</span></span>
+                    <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+                  </button>
+                  <div class="dropdown-menu">
+                    <div class="dropdown-option selected" data-value=""><span class="option-text">All Assignees</span></div>
+                    <% @collaborators.each do |collaborator| %>
+                      <div class="dropdown-option" data-value="<%= collaborator.user.username %>">
+                        <span class="assignee-pill" style="--assignee-color: <%= assignee_color(collaborator.user.username) %>">
+                          <span class="assignee-pill-avatar"><%= collaborator.user.username[0].upcase %></span>
+                          <span class="assignee-pill-name"><%= collaborator.user.username %></span>
+                        </span>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
               </th>
               <th>
-                <select id="filter-due-date" class="table-filter" aria-label="Filter by due date">
-                  <option value="">All Due Dates</option>
-                  <option value="overdue">Overdue</option>
-                  <option value="due_today">Due Today</option>
-                  <option value="due_this_week">Due This Week</option>
-                  <option value="due_this_month">Due This Month</option>
-                  <option value="no_due_date">No Due Date</option>
-                </select>
+                <div class="column-header-label">Type</div>
+                <div class="custom-dropdown" data-filter="type" id="filter-type">
+                  <button type="button" class="dropdown-trigger" aria-label="Filter by type">
+                    <span class="dropdown-value"><span class="text-placeholder">All Types</span></span>
+                    <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+                  </button>
+                  <div class="dropdown-menu">
+                    <div class="dropdown-option selected" data-value=""><span class="option-text">All Types</span></div>
+                    <div class="dropdown-option" data-value="Bug"><span class="task-type-badge" data-type="BUG">Bug</span></div>
+                    <div class="dropdown-option" data-value="Feature"><span class="task-type-badge" data-type="FEATURE">Feature</span></div>
+                    <div class="dropdown-option" data-value="Improvement"><span class="task-type-badge" data-type="IMPROVEMENT">Improvement</span></div>
+                    <div class="dropdown-option" data-value="Chore"><span class="task-type-badge" data-type="CHORE">Chore</span></div>
+                    <div class="dropdown-option" data-value="Documentation"><span class="task-type-badge" data-type="DOCUMENTATION">Documentation</span></div>
+                    <div class="dropdown-option" data-value="Backlog"><span class="task-type-badge" data-type="BACKLOG">Backlog</span></div>
+                  </div>
+                </div>
+              </th>
+              <th>
+                <div class="column-header-label">Priority</div>
+                <div class="custom-dropdown" data-filter="priority" id="filter-priority">
+                  <button type="button" class="dropdown-trigger" aria-label="Filter by priority">
+                    <span class="dropdown-value"><span class="text-placeholder">All Priorities</span></span>
+                    <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+                  </button>
+                  <div class="dropdown-menu">
+                    <div class="dropdown-option selected" data-value=""><span class="option-text">All Priorities</span></div>
+                    <div class="dropdown-option" data-value="low"><span class="priority-badge priority-low">Low</span></div>
+                    <div class="dropdown-option" data-value="medium"><span class="priority-badge priority-medium">Medium</span></div>
+                    <div class="dropdown-option" data-value="high"><span class="priority-badge priority-high">High</span></div>
+                    <div class="dropdown-option" data-value="urgent"><span class="priority-badge priority-urgent">Urgent</span></div>
+                  </div>
+                </div>
               </th>
             </tr>
           </thead>
@@ -152,30 +223,11 @@
                     data-status="<%= task.status %>"
                     data-assignee="<%= task.assignee&.user&.username || '' %>"
                     data-priority="<%= task.priority || 'no_priority' %>"
+                    data-type="<%= task.type || '' %>"
                     data-due-date="<%= task.due_at&.iso8601 || '' %>">
                   <td class="task-title-cell">
                     <%= link_to task_url, class: "task-row-link" do %>
                       <span class="task-title"><%= task.title %></span>
-                      <% if task.type.present? %>
-                        <span class="task-type-badge" data-type="<%= task.type.upcase %>"><%= task.type %></span>
-                      <% end %>
-                    <% end %>
-                  </td>
-                  <td>
-                    <%= link_to task_url, class: "task-row-link" do %>
-                      <% priority_value = task.priority || 'no_priority' %>
-                      <span class="priority-badge priority-<%= priority_value.gsub('_', '-') %>">
-                        <%= priority_value == 'no_priority' ? 'No Priority' : priority_value.titleize %>
-                      </span>
-                    <% end %>
-                  </td>
-                  <td class="assignee-cell">
-                    <%= link_to task_url, class: "task-row-link" do %>
-                      <% if task.assignee.present? %>
-                        <span class="user-name"><%= task.assignee.user.username %></span>
-                      <% else %>
-                        <span class="text-muted">Unassigned</span>
-                      <% end %>
                     <% end %>
                   </td>
                   <td>
@@ -188,9 +240,43 @@
                   <td>
                     <%= link_to task_url, class: "task-row-link" do %>
                       <% if task.due_at.present? %>
-                        <%= task.due_at.strftime("%B %d, %Y") %>
+                        <span class="due-date-badge <%= due_date_category(task.due_at) %>">
+                          <%= task.due_at.strftime("%B %d, %Y") %>
+                        </span>
                       <% else %>
-                        <span class="text-muted">No due date</span>
+                        <span class="text-muted">—</span>
+                      <% end %>
+                    <% end %>
+                  </td>
+                  <td class="assignee-cell">
+                    <%= link_to task_url, class: "task-row-link" do %>
+                      <% if task.assignee.present? %>
+                        <span class="assignee-pill" style="--assignee-color: <%= assignee_color(task.assignee.user.username) %>">
+                          <span class="assignee-pill-avatar"><%= task.assignee.user.username[0].upcase %></span>
+                          <span class="assignee-pill-name"><%= task.assignee.user.username %></span>
+                        </span>
+                      <% else %>
+                        <span class="text-muted">—</span>
+                      <% end %>
+                    <% end %>
+                  </td>
+                  <td>
+                    <%= link_to task_url, class: "task-row-link" do %>
+                      <% if task.type.present? %>
+                        <span class="task-type-badge" data-type="<%= task.type.upcase %>"><%= task.type %></span>
+                      <% else %>
+                        <span class="text-muted">—</span>
+                      <% end %>
+                    <% end %>
+                  </td>
+                  <td>
+                    <%= link_to task_url, class: "task-row-link" do %>
+                      <% if task.priority.present? && task.priority != 'no_priority' %>
+                        <span class="priority-badge priority-<%= task.priority.gsub('_', '-') %>">
+                          <%= task.priority.titleize %>
+                        </span>
+                      <% else %>
+                        <span class="text-muted">—</span>
                       <% end %>
                     <% end %>
                   </td>
@@ -198,7 +284,7 @@
               <% end %>
             <% else %>
               <tr>
-                <td colspan="5" class="empty-table-state">No tasks found</td>
+                <td colspan="6" class="empty-table-state">No tasks found</td>
               </tr>
             <% end %>
           </tbody>
@@ -207,4 +293,45 @@
     </div>
   </div>
 </div>
+
+<% if is_manager? %>
+<!-- Invite Collaborator Modal -->
+<div id="invite-modal" class="invite-modal" data-project-id="<%= @project.id %>">
+  <div class="invite-modal-overlay" data-action="close-invite-modal"></div>
+  <div class="invite-modal-content">
+    <div class="invite-modal-header">
+      <h2 class="invite-modal-title">Invite Collaborator</h2>
+      <button type="button" class="invite-modal-close" data-action="close-invite-modal">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    <div class="invite-modal-body">
+      <p class="invite-modal-description">Enter the email address or username of the person you'd like to invite to this project.</p>
+      <form id="invite-form" class="invite-form">
+        <div class="form-group">
+          <label for="invite-email" class="form-label">Email or Username</label>
+          <input type="text" id="invite-email" name="identifier" class="form-input" placeholder="colleague@example.com" required autocomplete="off">
+        </div>
+        <div id="invite-feedback" class="invite-feedback"></div>
+        <div class="invite-modal-actions">
+          <button type="button" class="btn btn-secondary" data-action="close-invite-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="invite-submit-btn">
+            <span class="btn-text">Send Invitation</span>
+            <span class="btn-loading" style="display: none;">
+              <svg class="spinner" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" stroke-opacity="0.25"/>
+                <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/>
+              </svg>
+              Sending...
+            </span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<% end %>
 

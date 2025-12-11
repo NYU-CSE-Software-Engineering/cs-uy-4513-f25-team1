@@ -3,7 +3,8 @@ When("I go to the projects page") do
 end
 
 When("I click the new project button") do
-  click_link 'Create Project'
+  # The new project button is an icon button with class 'add-project-btn'
+  find('.add-project-btn').click
 end
 
 When("I fill in the project form with:") do |table|
