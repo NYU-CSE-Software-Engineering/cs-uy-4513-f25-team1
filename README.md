@@ -4,7 +4,8 @@ Quadratic
 Quadratic gives your team everything needed to plan, track, and ship -- without the bloat.
 
 <details>
-Formerly known as Jira-lite/Lira
+<summary>Quadratic?</summary>
+This project was formerly known as Jira-lite/Lira
 </details>
 
 Features
