@@ -119,9 +119,10 @@ When('I click on {string}') do |link_text|
   click_link link_text
 end
 
-When('I visit the collaborators page for project {string}') do |project_name|
-  project = Project.find_by(name: project_name)
-  visit project_collaborators_path(project)
+When('I click on collaborator {string} in the carousel') do |username|
+  within('.collaborators-carousel') do
+    click_link username
+  end
 end
 
 When('I visit the profile page for {string} on project {string}') do |username, project_name|
@@ -131,12 +132,12 @@ When('I visit the profile page for {string} on project {string}') do |username, 
   visit project_collaborator_path(project, collaborator)
 end
 
-When('I click on {string} for collaborator {string}') do |action, username|
-  # Find the link containing the username text, then find its parent collaborator card
-  # and click the action link within that card
-  within(:css, ".collaborator-card", text: username) do
-    click_link action
-  end
+When('I click the edit collaborator button') do
+  find('.profile-edit-btn').click
+end
+
+Then('I should see the edit collaborator button') do
+  expect(page).to have_css('.profile-edit-btn')
 end
 
 # Removed duplicate step definitions - these are already in common_steps.rb and other files
@@ -146,34 +147,15 @@ When('I confirm the removal') do
   # This step exists for clarity but doesn't need implementation
 end
 
-Then('I should see the collaborators page') do
-  expect(page).to have_current_path(/\/projects\/\d+\/collaborators/)
-end
-
-Then('I should see {string} in the managers section') do |username|
-  within('.role-section', text: 'Managers') do
+Then('I should see {string} in the collaborators carousel') do |username|
+  within('.collaborators-carousel') do
     expect(page).to have_content(username)
   end
 end
 
-Then('I should see {string} in the developers section') do |username|
-  within('.role-section', text: 'Developers') do
-    expect(page).to have_content(username)
-  end
-end
-
-Then('I should not see an {string} link for {string}') do |link_text, username|
-  within(:css, ".collaborator-card", text: username) do
-    expect(page).not_to have_link(link_text)
-  end
-rescue Capybara::ElementNotFound
-  # If the card is not found, the link doesn't exist either
-  expect(true).to be true
-end
-
-Then('I should not see {string} in any collaborator list') do |username|
-  within('.collaborators-list') do
-    expect(page).not_to have_content(username)
+Then('I should see {string} for collaborator {string} in the carousel') do |text, username|
+  within('.collaborator-carousel-card', text: username) do
+    expect(page).to have_content(text)
   end
 end
 
@@ -183,12 +165,6 @@ end
 
 Then('I should see {string} link') do |link_text|
   expect(page).to have_link(link_text)
-end
-
-Then('I should see {string} for {string}') do |text, username|
-  within(:css, ".collaborator-card", text: username) do
-    expect(page).to have_content(text)
-  end
 end
 
 Then('I should see {string} in the completed section') do |task_title|

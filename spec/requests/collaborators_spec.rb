@@ -50,9 +50,9 @@ RSpec.describe "Collaborators", type: :request do
         }.not_to change { developer_collab.reload.role }
       end
 
-      it "redirects to collaborators page without changing anything" do
+      it "redirects to project page without changing anything" do
         patch project_collaborator_path(project, developer_collab)
-        expect(response).to redirect_to(project_collaborators_path(project))
+        expect(response).to redirect_to(project_path(project))
         expect(developer_collab.reload.role).to eq('developer')
       end
     end
@@ -119,27 +119,6 @@ RSpec.describe "Collaborators", type: :request do
     end
   end
 
-  describe "GET /projects/:project_id/collaborators" do
-    let!(:developer) { Collaborator.create!(user: other_user, project: project, role: :developer) }
-
-    before { sign_in(manager) }
-
-    it "displays all collaborators for a project" do
-      get project_collaborators_path(project)
-
-      expect(response).to have_http_status(:success)
-      expect(response.body).to include('manager')
-      expect(response.body).to include('other')
-    end
-
-    it "groups collaborators by role" do
-      get project_collaborators_path(project)
-
-      expect(response.body).to include('Managers')
-      expect(response.body).to include('Developers')
-    end
-  end
-
   describe "GET /projects/:project_id/collaborators/:id" do
     let!(:developer) { Collaborator.create!(user: other_user, project: project, role: :developer) }
 
@@ -155,15 +134,14 @@ RSpec.describe "Collaborators", type: :request do
 
       expect(response).to have_http_status(:success)
       expect(response.body).to include('other')
-      expect(response.body).to include('Contribution Statistics')
+      expect(response.body).to include('Performance Metrics')
     end
 
-    it "displays tasks by status" do
+    it "displays task statistics" do
       get project_collaborator_path(project, developer)
 
-      expect(response.body).to include('In Progress')
-      expect(response.body).to include('Task 1')
-      expect(response.body).to include('Task 2')
+      expect(response.body).to include('Total Assigned')
+      expect(response.body).to include('Total Completed')
     end
   end
 
@@ -176,7 +154,7 @@ RSpec.describe "Collaborators", type: :request do
       get edit_project_collaborator_path(project, developer)
 
       expect(response).to have_http_status(:success)
-      expect(response.body).to include('Edit Collaborator')
+      expect(response.body).to include('Edit other')
     end
 
     context "when manager edits a collaborator" do
@@ -200,7 +178,7 @@ RSpec.describe "Collaborators", type: :request do
           collaborator: { role: 'manager' }
         }
 
-        expect(response).to redirect_to(project_collaborators_path(project))
+        expect(response).to redirect_to(project_path(project))
         expect(developer.reload.role).to eq('manager')
       end
 
@@ -237,10 +215,10 @@ RSpec.describe "Collaborators", type: :request do
         }.to change(Collaborator, :count).by(-1)
       end
 
-      it "redirects to collaborators index" do
+      it "redirects to project page" do
         delete project_collaborator_path(project, developer)
 
-        expect(response).to redirect_to(project_collaborators_path(project))
+        expect(response).to redirect_to(project_path(project))
       end
 
       it "displays success message" do
@@ -256,11 +234,6 @@ RSpec.describe "Collaborators", type: :request do
     let!(:invite) { Collaborator.create!(user: invited_user, project: project, role: :invited) }
 
     context "when not signed in" do
-      it "redirects to login for index" do
-        get project_collaborators_path(project)
-        expect(response).to redirect_to(new_session_path)
-      end
-
       it "redirects to login for show" do
         get project_collaborator_path(project, invite)
         expect(response).to redirect_to(new_session_path)
@@ -280,6 +253,148 @@ RSpec.describe "Collaborators", type: :request do
         delete project_collaborator_path(project, invite)
         expect(response).to redirect_to(new_session_path)
       end
+    end
+  end
+
+  describe "POST /projects/:project_id/collaborators (JSON API invite)" do
+    let!(:user_to_invite) { User.create!(email_address: 'newinvite@example.com', username: 'newinvite', password: 'SecurePassword123') }
+
+    context "when user is a manager" do
+      before { sign_in(manager) }
+
+      it "creates invitation with valid email and returns JSON success" do
+        expect {
+          post project_collaborators_path(project), params: { identifier: user_to_invite.email_address }
+        }.to change(Collaborator, :count).by(1)
+
+        expect(response).to have_http_status(:created)
+        json_response = JSON.parse(response.body)
+        expect(json_response['success']).to be true
+        expect(json_response['message']).to include(user_to_invite.username)
+      end
+
+      it "creates invitation with valid username and returns JSON success" do
+        expect {
+          post project_collaborators_path(project), params: { identifier: user_to_invite.username }
+        }.to change(Collaborator, :count).by(1)
+
+        expect(response).to have_http_status(:created)
+        json_response = JSON.parse(response.body)
+        expect(json_response['success']).to be true
+        expect(json_response['collaborator']['username']).to eq(user_to_invite.username)
+        expect(json_response['collaborator']['role']).to eq('invited')
+      end
+
+      it "returns JSON error for non-existent user" do
+        expect {
+          post project_collaborators_path(project), params: { identifier: 'nonexistent@example.com' }
+        }.not_to change(Collaborator, :count)
+
+        expect(response).to have_http_status(:not_found)
+        json_response = JSON.parse(response.body)
+        expect(json_response['success']).to be false
+        expect(json_response['error']).to include('No user found')
+      end
+
+      it "returns JSON error when inviting self" do
+        expect {
+          post project_collaborators_path(project), params: { identifier: manager.email_address }
+        }.not_to change(Collaborator, :count)
+
+        expect(response).to have_http_status(:unprocessable_content)
+        json_response = JSON.parse(response.body)
+        expect(json_response['success']).to be false
+        expect(json_response['error']).to include('cannot invite yourself')
+      end
+
+      it "returns JSON error for already-invited user" do
+        Collaborator.create!(user: user_to_invite, project: project, role: :invited)
+
+        expect {
+          post project_collaborators_path(project), params: { identifier: user_to_invite.email_address }
+        }.not_to change(Collaborator, :count)
+
+        expect(response).to have_http_status(:unprocessable_content)
+        json_response = JSON.parse(response.body)
+        expect(json_response['success']).to be false
+        expect(json_response['error']).to include('already a collaborator')
+      end
+
+      it "returns JSON error for blank identifier" do
+        expect {
+          post project_collaborators_path(project), params: { identifier: '' }
+        }.not_to change(Collaborator, :count)
+
+        expect(response).to have_http_status(:unprocessable_content)
+        json_response = JSON.parse(response.body)
+        expect(json_response['success']).to be false
+        expect(json_response['error']).to include('enter an email')
+      end
+
+      it "returns JSON error when identifier is nil" do
+        expect {
+          post project_collaborators_path(project), params: { identifier: nil }
+        }.not_to change(Collaborator, :count)
+
+        expect(response).to have_http_status(:unprocessable_content)
+      end
+    end
+
+    context "when user is a developer" do
+      let!(:developer) { Collaborator.create!(user: other_user, project: project, role: :developer) }
+
+      before { sign_in(other_user) }
+
+      it "returns JSON forbidden error" do
+        expect {
+          post project_collaborators_path(project), params: { identifier: user_to_invite.email_address }
+        }.not_to change(Collaborator, :count)
+
+        expect(response).to have_http_status(:forbidden)
+        json_response = JSON.parse(response.body)
+        expect(json_response['success']).to be false
+        expect(json_response['error']).to include('managers')
+      end
+    end
+
+    context "when user is invited (view-only)" do
+      let!(:invite) { Collaborator.create!(user: invited_user, project: project, role: :invited) }
+
+      before { sign_in(invited_user) }
+
+      it "returns JSON forbidden error" do
+        expect {
+          post project_collaborators_path(project), params: { identifier: user_to_invite.email_address }
+        }.not_to change(Collaborator, :count)
+
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+  end
+
+  describe "developer leaving project" do
+    let!(:developer) { Collaborator.create!(user: other_user, project: project, role: :developer) }
+
+    before { sign_in(other_user) }
+
+    it "allows developer to remove themselves from project" do
+      expect {
+        delete project_collaborator_path(project, developer)
+      }.to change(Collaborator, :count).by(-1)
+    end
+
+    it "unassigns tasks when developer leaves" do
+      task = Task.create!(
+        title: 'Assigned Task',
+        description: 'Description',
+        status: :in_progress,
+        project: project,
+        assignee: developer
+      )
+
+      delete project_collaborator_path(project, developer)
+
+      expect(task.reload.assignee_id).to be_nil
     end
   end
 end
