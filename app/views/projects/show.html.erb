@@ -28,10 +28,10 @@
             <% end %>
           </div>
 
-          <% if @project.repo.present? %>
+          <% if @project.repo.present? && safe_url(@project.repo) %>
             <div class="summary-item">
               <strong>Repository:</strong>
-              <a href="<%= @project.repo %>" target="_blank" rel="noopener noreferrer"><%= @project.repo %></a>
+              <a href="<%= safe_url(@project.repo) %>" target="_blank" rel="noopener noreferrer"><%= @project.repo %></a>
             </div>
           <% end %>
           

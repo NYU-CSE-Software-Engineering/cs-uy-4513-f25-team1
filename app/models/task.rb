@@ -57,6 +57,11 @@ class Task < ApplicationRecord
     end
   end
 
+  # Prevents modification of tasks that were already marked as completed.
+  # Uses Active Record's dirty tracking: `completed_at_was` returns the value
+  # of completed_at before any changes in the current transaction. This ensures
+  # we check the persisted state, not the in-memory state being saved.
+  # Allows updated_at changes since Rails automatically touches this timestamp.
   def completed_task_cannot_be_modified
     return unless completed_at_was.present?
 

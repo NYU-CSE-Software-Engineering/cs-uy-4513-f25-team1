@@ -6,7 +6,8 @@ class RefactorTasksSchema < ActiveRecord::Migration[8.0]
     # Rename user_id to assignee_id
     rename_column :tasks, :user_id, :assignee_id
 
-    # Make assignee_id nullable (assignee is optional)
+    # Make assignee_id nullable because assignees are now optional in the new schema.
+    # Previously, tasks required a user assignment; now tasks can be unassigned.
     change_column_null :tasks, :assignee_id, true
 
     # Add new foreign key to collaborators table
@@ -34,7 +35,8 @@ class RefactorTasksSchema < ActiveRecord::Migration[8.0]
     # Remove foreign key to collaborators
     remove_foreign_key :tasks, :collaborators
 
-    # Make assignee_id not nullable
+    # Restore original NOT NULL constraint: the old schema required user assignment.
+    # This reverts the nullable change made in `up` to match the original table definition.
     change_column_null :tasks, :assignee_id, false
 
     # Rename assignee_id back to user_id
