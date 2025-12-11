@@ -12,6 +12,7 @@ class CommentsController < ApplicationController
     @comment.collaborator = @collaborator
 
     if @comment.save
+      return_task_to_in_progress_if_manager_review_comment
       redirect_to project_task_path(@project, @task, anchor: "comments-section"),
                   notice: "Comment added.",
                   status: :see_other
@@ -82,5 +83,11 @@ class CommentsController < ApplicationController
 
   def comment_params
     params.require(:comment).permit(:content)
+  end
+
+  def return_task_to_in_progress_if_manager_review_comment
+    return unless @collaborator.manager? && @task.in_review?
+
+    @task.update!(status: :in_progress)
   end
 end

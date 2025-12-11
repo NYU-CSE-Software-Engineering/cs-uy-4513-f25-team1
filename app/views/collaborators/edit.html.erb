@@ -1,146 +1,111 @@
-<%= render "application/sidebar" %>
+<div class="dashboard-layout">
+  <%= render "application/sidebar" %>
 
-<h1>Edit Collaborator: <%= @collaborator.user.username %></h1>
-
-<p><%= link_to "← Back to Collaborators", project_collaborators_path(@project), class: "button" %></p>
-
-<hr>
-
-<div class="edit-collaborator">
-  <section class="collaborator-info">
-    <h2>Collaborator Information</h2>
-    <p><strong>Username:</strong> <%= @collaborator.user.username %></p>
-    <p><strong>Email:</strong> <%= @collaborator.user.email_address %></p>
-    <p><strong>Current Role:</strong> <%= @collaborator.role.titleize %></p>
-  </section>
-
-  <% if @current_user_role == "manager" && !@collaborator.invited? %>
-    <section class="change-role">
-      <h2>Change Role</h2>
-      <%= form_with model: @collaborator, url: project_collaborator_path(@project, @collaborator), method: :patch do |form| %>
-        <div class="form-group">
-          <%= form.label :role, "Select New Role:" %>
-          <%= form.select :role, 
-                options_for_select([
-                  ["Manager", "manager"],
-                  ["Developer", "developer"]
-                ], @collaborator.role),
-                {},
-                { class: "form-control" } %>
+  <div class="main-content">
+    <div class="collaborator-page-container">
+      <div class="collaborator-page-header">
+        <div class="header-nav">
+          <%= link_to project_collaborator_path(@project, @collaborator), class: "back-link" do %>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 18 9 12 15 6"/>
+            </svg>
+            Back to Collaborator
+          <% end %>
         </div>
-        
-        <%= form.submit "Update Role", class: "button button-primary" %>
-      <% end %>
-    </section>
-  <% end %>
+      </div>
 
-  <% if @current_user_role == "manager" %>
-    <section class="remove-collaborator">
-      <h2>Remove Collaborator</h2>
-      <p class="warning">
-        <strong>Warning:</strong> Removing this collaborator will remove their access to the project. 
-        Their tasks will remain in the project but will still be assigned to them.
-      </p>
-      
-      <%= button_to "Remove #{@collaborator.user.username} from Project", 
-                    project_collaborator_path(@project, @collaborator),
-                    method: :delete,
-                    data: { confirm: "Are you sure you want to remove #{@collaborator.user.username} from this project?" },
-                    class: "button button-danger" %>
-    </section>
-  <% end %>
+      <div class="collaborator-content-grid">
+        <div class="collaborator-main-content">
+          <div class="collaborator-profile-card">
+            <div class="profile-card-header">
+              <div class="profile-avatar-lg">
+                <%= @collaborator.user.username[0].upcase %>
+              </div>
+              <div class="profile-header-info">
+                <h1 class="profile-username">Edit <%= @collaborator.user.username %></h1>
+                <span class="profile-role-badge role-<%= @collaborator.role %>"><%= @collaborator.role.titleize %></span>
+              </div>
+            </div>
 
-  <% if @collaborator.user_id == Current.session&.user_id && @current_user_role != "manager" %>
-    <section class="leave-project">
-      <h2>Leave Project</h2>
-      <p class="warning">
-        <strong>Warning:</strong> If you leave this project, you will lose access to it. 
-        A manager will need to re-invite you if you want to join again.
-      </p>
-      
-      <%= button_to "Leave Project", 
-                    project_collaborator_path(@project, @collaborator),
-                    method: :delete,
-                    data: { confirm: "Are you sure you want to leave #{@project.name}?" },
-                    class: "button button-danger" %>
-    </section>
-  <% end %>
+            <div class="profile-info-grid">
+              <div class="profile-info-item">
+                <span class="profile-info-label">Username</span>
+                <span class="profile-info-value"><%= @collaborator.user.username %></span>
+              </div>
+              <div class="profile-info-item">
+                <span class="profile-info-label">Email</span>
+                <span class="profile-info-value"><%= @collaborator.user.email_address %></span>
+              </div>
+              <div class="profile-info-item">
+                <span class="profile-info-label">Current Role</span>
+                <span class="profile-info-value"><%= @collaborator.role.titleize %></span>
+              </div>
+            </div>
+          </div>
+
+          <% if @current_user_role == "manager" && !@collaborator.invited? %>
+            <section class="collaborator-edit-section">
+              <h2 class="section-title">Change Role</h2>
+              <%= form_with model: @collaborator, url: project_collaborator_path(@project, @collaborator), method: :patch, class: "collaborator-edit-form" do |form| %>
+                <div class="form-group">
+                  <%= form.label :role, "Select New Role", class: "form-label" %>
+                  <%= form.select :role, 
+                        options_for_select([
+                          ["Manager", "manager"],
+                          ["Developer", "developer"]
+                        ], @collaborator.role),
+                        {},
+                        { class: "form-input" } %>
+                </div>
+                
+                <div class="form-actions-inline">
+                  <%= form.submit "Update Role", class: "btn btn-primary" %>
+                </div>
+              <% end %>
+            </section>
+          <% end %>
+
+          <% if @current_user_role == "manager" %>
+            <section class="collaborator-edit-section danger">
+              <h2 class="section-title">Remove Collaborator</h2>
+              <div class="collaborator-warning-banner">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                  <line x1="12" y1="9" x2="12" y2="13"/>
+                  <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+                <p>Removing this collaborator will remove their access to the project. Their tasks will remain in the project but will be unassigned.</p>
+              </div>
+              
+              <%= button_to "Remove #{@collaborator.user.username} from Project", 
+                            project_collaborator_path(@project, @collaborator),
+                            method: :delete,
+                            data: { turbo_confirm: "Are you sure you want to remove #{@collaborator.user.username} from this project?" },
+                            class: "btn btn-danger" %>
+            </section>
+          <% end %>
+
+          <% if @collaborator.user_id == Current.session&.user_id && @current_user_role != "manager" %>
+            <section class="collaborator-edit-section danger">
+              <h2 class="section-title">Leave Project</h2>
+              <div class="collaborator-warning-banner">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                  <line x1="12" y1="9" x2="12" y2="13"/>
+                  <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+                <p>If you leave this project, you will lose access to it and your tasks will be unassigned. A manager will need to re-invite you if you want to join again.</p>
+              </div>
+              
+              <%= button_to "Leave Project", 
+                            project_collaborator_path(@project, @collaborator),
+                            method: :delete,
+                            data: { turbo_confirm: "Are you sure you want to leave #{@project.name}?" },
+                            class: "btn btn-danger" %>
+            </section>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
-
-<style>
-  .edit-collaborator {
-    max-width: 600px;
-  }
-  
-  .edit-collaborator section {
-    background: #f8f9fa;
-    border: 1px solid #ddd;
-    padding: 20px;
-    margin: 20px 0;
-    border-radius: 5px;
-  }
-  
-  .edit-collaborator h2 {
-    margin-top: 0;
-    border-bottom: 2px solid #333;
-    padding-bottom: 10px;
-  }
-  
-  .form-group {
-    margin: 15px 0;
-  }
-  
-  .form-group label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-  }
-  
-  .form-control {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 14px;
-  }
-  
-  .warning {
-    background: #fff3cd;
-    border: 1px solid #ffc107;
-    padding: 10px;
-    border-radius: 4px;
-    margin: 10px 0;
-  }
-  
-  .button {
-    padding: 10px 20px;
-    color: white;
-    text-decoration: none;
-    border-radius: 4px;
-    display: inline-block;
-    border: none;
-    cursor: pointer;
-    font-size: 14px;
-  }
-  
-  .button-primary {
-    background-color: #007bff;
-  }
-  
-  .button-primary:hover {
-    background-color: #0056b3;
-  }
-  
-  .button-danger {
-    background-color: #dc3545;
-  }
-  
-  .button-danger:hover {
-    background-color: #c82333;
-  }
-  
-  .remove-collaborator,
-  .leave-project {
-    border-color: #dc3545;
-  }
-</style>

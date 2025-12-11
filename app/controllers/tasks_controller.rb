@@ -2,9 +2,11 @@ class TasksController < ApplicationController
   class TaskNotFoundError < StandardError; end
 
   before_action :set_project
-  before_action :set_task, only: [ :show, :update ]
+  before_action :set_task, only: [ :show, :update, :request_review, :cancel_review, :mark_complete, :assign_to_me ]
   before_action :authorize_manager, only: [ :new, :create ]
   before_action :authorize_project_edit, only: [ :show, :update ]
+  before_action :authorize_assignee, only: [ :request_review, :cancel_review ]
+  before_action :authorize_manager_for_completion, only: [ :mark_complete ]
   before_action :set_assignable_collaborators, only: [ :show, :new, :create, :update ]
 
   def new
@@ -34,6 +36,65 @@ class TasksController < ApplicationController
     else
       handle_standard_update
     end
+  end
+
+  def request_review
+    unless @task.in_progress?
+      redirect_to project_task_path(@project, @task),
+                  alert: "Can only request review for tasks that are in progress.",
+                  status: :see_other
+      return
+    end
+
+    @task.update!(status: :in_review)
+    redirect_to project_task_path(@project, @task),
+                notice: "Review requested.",
+                status: :see_other
+  end
+
+  def cancel_review
+    unless @task.in_review?
+      redirect_to project_task_path(@project, @task),
+                  alert: "Can only cancel review for tasks that are in review.",
+                  status: :see_other
+      return
+    end
+
+    @task.update!(status: :in_progress)
+    redirect_to project_task_path(@project, @task),
+                notice: "Review request cancelled.",
+                status: :see_other
+  end
+
+  def mark_complete
+    unless @task.in_review?
+      redirect_to project_task_path(@project, @task),
+                  alert: "Can only mark tasks as complete when they are in review.",
+                  status: :see_other
+      return
+    end
+
+    @task.update!(status: :completed)
+    redirect_to project_task_path(@project, @task),
+                notice: "Task marked as completed.",
+                status: :see_other
+  end
+
+  def assign_to_me
+    collaborator = Collaborator.find_by(user_id: Current.session&.user_id, project_id: @project.id)
+
+    unless collaborator&.developer?
+      redirect_to project_task_path(@project, @task), alert: "Only developers can assign tasks to themselves."
+      return
+    end
+
+    if @task.assignee_id.present?
+      redirect_to project_task_path(@project, @task), alert: "This task is already assigned."
+      return
+    end
+
+    @task.update!(assignee_id: collaborator.id, status: :in_progress)
+    redirect_to project_task_path(@project, @task), notice: "Task assigned to you.", status: :see_other
   end
 
   private
@@ -150,6 +211,22 @@ class TasksController < ApplicationController
   def current_user_is_manager?
     collaborator = Collaborator.find_by(user_id: Current.session&.user_id, project_id: @project.id)
     collaborator&.manager?
+  end
+
+  def authorize_assignee
+    collaborator = Collaborator.find_by(user_id: Current.session&.user_id, project_id: @project.id)
+    unless collaborator && @task.assignee_id == collaborator.id
+      flash[:alert] = "Only the assigned developer can perform this action."
+      redirect_to project_task_path(@project, @task)
+    end
+  end
+
+  def authorize_manager_for_completion
+    collaborator = Collaborator.find_by(user_id: Current.session&.user_id, project_id: @project.id)
+    unless collaborator&.manager?
+      flash[:alert] = "Only managers can mark tasks as complete."
+      redirect_to project_task_path(@project, @task)
+    end
   end
 
   def inline_edit_params

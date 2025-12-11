@@ -1,137 +1,310 @@
-<%= render "application/sidebar" %>
+<div class="dashboard-layout">
+  <%= render "application/sidebar" %>
 
-<h1><%= @collaborator.user.username %>'s Profile</h1>
-
-<p><%= link_to "← Back to Collaborators", project_collaborators_path(@project), class: "button" %></p>
-
-<hr>
-
-<div class="collaborator-details">
-  <section class="profile-info">
-    <h2>Profile Information</h2>
-    <p><strong>Username:</strong> <%= @collaborator.user.username %></p>
-    <p><strong>Email:</strong> <%= @collaborator.user.email_address %></p>
-    <p><strong>Role:</strong> <%= @collaborator.role.titleize %></p>
-    <p><strong>Joined Project:</strong> <%= @collaborator.created_at.strftime("%B %d, %Y") %></p>
-  </section>
-
-  <% unless @collaborator.invited? %>
-    <section class="contribution-stats">
-      <h2>Contribution Statistics</h2>
-      <p><strong>Total Tasks:</strong> <%= @collaborator.task_count %></p>
-      <p><strong>Completed Tasks:</strong> <%= @collaborator.completed_task_count %></p>
-      <p><strong>Contribution Percentage:</strong> <%= @collaborator.contribution_percentage %>%</p>
-    </section>
-
-    <section class="tasks-by-status">
-      <h2>Tasks by Status</h2>
-      
-      <% @tasks_by_status.each do |status, tasks| %>
-        <div class="status-section">
-          <h3><%= status %> (<%= tasks.count %>)</h3>
-          <% if tasks.any? %>
-            <ul>
-              <% tasks.each do |task| %>
-                <li>
-                  <%= link_to task.title, project_task_path(@project, task) %>
-                  <% if task.type.present? %>
-                    <span class="task-type">[<%= task.type %>]</span>
-                  <% end %>
-                  <span class="task-date">- Updated: <%= task.updated_at.strftime("%b %d, %Y") %></span>
-                </li>
-              <% end %>
-            </ul>
-          <% else %>
-            <p class="no-tasks">No tasks in this status</p>
+  <div class="main-content">
+    <div class="collaborator-page-container">
+      <div class="collaborator-page-header">
+        <div class="header-nav">
+          <%= link_to project_path(@project), class: "back-link" do %>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 18 9 12 15 6"/>
+            </svg>
+            Back to Project
           <% end %>
         </div>
-      <% end %>
-    </section>
-  <% else %>
-    <section class="invitation-pending">
-      <h2>Invitation Status</h2>
-      <p>This user has been invited but has not yet accepted the invitation.</p>
-    </section>
-  <% end %>
+      </div>
 
-  <section class="actions">
-    <% if @current_user_role == "manager" || @collaborator.user_id == Current.session&.user_id %>
-      <%= link_to "Edit Collaborator", edit_project_collaborator_path(@project, @collaborator), class: "button" %>
-    <% end %>
-  </section>
+      <div class="collaborator-content-grid">
+        <div class="collaborator-main-content">
+          <div class="collaborator-profile-card">
+            <div class="profile-card-header">
+              <div class="profile-avatar-lg">
+                <%= @collaborator.user.username[0].upcase %>
+              </div>
+              <div class="profile-header-info">
+                <h1 class="profile-username"><%= @collaborator.user.username %></h1>
+                <span class="profile-role-badge role-<%= @collaborator.role %>"><%= @collaborator.role.titleize %></span>
+              </div>
+              <% if @current_user_role == "manager" || @collaborator.user_id == Current.session&.user_id %>
+                <%= link_to edit_project_collaborator_path(@project, @collaborator), class: "profile-edit-btn" do %>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                  </svg>
+                <% end %>
+              <% end %>
+            </div>
+
+            <div class="profile-info-grid">
+              <div class="profile-info-item">
+                <span class="profile-info-label">Email</span>
+                <span class="profile-info-value"><%= @collaborator.user.email_address %></span>
+              </div>
+              <div class="profile-info-item">
+                <span class="profile-info-label">Joined Project</span>
+                <span class="profile-info-value"><%= @collaborator.created_at.strftime("%B %d, %Y") %></span>
+              </div>
+              <div class="profile-info-item">
+                <span class="profile-info-label">Days on Project</span>
+                <span class="profile-info-value"><%= @collaborator.days_on_project %></span>
+              </div>
+            </div>
+          </div>
+
+          <% unless @collaborator.invited? %>
+            <section class="collaborator-metrics-section">
+              <h2 class="section-title">Performance Metrics</h2>
+              
+              <div class="stat-cards-grid">
+                <div class="stat-card">
+                  <span class="stat-value"><%= @metrics[:avg_completion_time] || "N/A" %></span>
+                  <span class="stat-label">Avg Days to Complete</span>
+                </div>
+                <div class="stat-card">
+                  <span class="stat-value"><%= @metrics[:on_time_rate] ? "#{@metrics[:on_time_rate]}%" : "N/A" %></span>
+                  <span class="stat-label">On-Time Rate</span>
+                </div>
+                <div class="stat-card <%= 'warning' if @metrics[:overdue_count] > 0 %>">
+                  <span class="stat-value"><%= @metrics[:overdue_count] %></span>
+                  <span class="stat-label">Overdue Tasks</span>
+                </div>
+                <div class="stat-card">
+                  <span class="stat-value"><%= @metrics[:completion_rate] %>%</span>
+                  <span class="stat-label">Completion Rate</span>
+                </div>
+              </div>
+
+              <div class="stat-cards-grid">
+                <div class="stat-card highlight">
+                  <span class="stat-value"><%= @metrics[:weekly_velocity] %></span>
+                  <span class="stat-label">Tasks This Week</span>
+                </div>
+                <div class="stat-card highlight">
+                  <span class="stat-value"><%= @metrics[:monthly_velocity] %></span>
+                  <span class="stat-label">Tasks This Month</span>
+                </div>
+                <div class="stat-card">
+                  <span class="stat-value"><%= @metrics[:tasks_per_day] %></span>
+                  <span class="stat-label">Tasks/Day Avg</span>
+                </div>
+                <div class="stat-card">
+                  <span class="stat-value"><%= @metrics[:days_since_completion] || "N/A" %></span>
+                  <span class="stat-label">Days Since Last Done</span>
+                </div>
+              </div>
+
+              <div class="stat-cards-grid">
+                <div class="stat-card">
+                  <span class="stat-value"><%= @metrics[:current_wip] %></span>
+                  <span class="stat-label">Current WIP</span>
+                </div>
+                <div class="stat-card <%= 'warning' if @metrics[:stale_tasks] > 0 %>">
+                  <span class="stat-value"><%= @metrics[:stale_tasks] %></span>
+                  <span class="stat-label">Stale Tasks (7+ days)</span>
+                </div>
+                <div class="stat-card">
+                  <span class="stat-value"><%= @metrics[:high_priority_rate] ? "#{@metrics[:high_priority_rate]}%" : "N/A" %></span>
+                  <span class="stat-label">High Priority Done</span>
+                </div>
+                <div class="stat-card <%= 'warning' if @metrics[:open_urgent] > 0 %>">
+                  <span class="stat-value"><%= @metrics[:open_urgent] %></span>
+                  <span class="stat-label">Open Urgent</span>
+                </div>
+              </div>
+
+              <div class="stat-cards-grid">
+                <div class="stat-card">
+                  <span class="stat-value"><%= @metrics[:total_comments] %></span>
+                  <span class="stat-label">Total Comments</span>
+                </div>
+                <div class="stat-card">
+                  <span class="stat-value"><%= @metrics[:avg_comments_per_task] %></span>
+                  <span class="stat-label">Avg Comments/Task</span>
+                </div>
+                <div class="stat-card">
+                  <span class="stat-value"><%= @collaborator.task_count %></span>
+                  <span class="stat-label">Total Assigned</span>
+                </div>
+                <div class="stat-card">
+                  <span class="stat-value"><%= @collaborator.completed_task_count %></span>
+                  <span class="stat-label">Total Completed</span>
+                </div>
+              </div>
+            </section>
+
+            <section class="collaborator-analytics-section">
+              <h2 class="section-title">Analytics</h2>
+              
+              <div class="charts-grid">
+                <div class="chart-container">
+                  <h3>Weekly Velocity Trend</h3>
+                  <canvas id="velocityChart"></canvas>
+                </div>
+                <div class="chart-container">
+                  <h3>Priority Distribution</h3>
+                  <canvas id="priorityChart"></canvas>
+                </div>
+              </div>
+              
+              <div class="charts-grid">
+                <div class="chart-container">
+                  <h3>Task Type Distribution</h3>
+                  <canvas id="typeChart"></canvas>
+                </div>
+                <div class="chart-container">
+                  <h3>Avg Completion Time by Type</h3>
+                  <canvas id="completionTimeChart"></canvas>
+                </div>
+              </div>
+            </section>
+          <% else %>
+            <section class="collaborator-invitation-pending">
+              <div class="invitation-icon">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                  <polyline points="22,6 12,13 2,6"/>
+                </svg>
+              </div>
+              <h2>Invitation Pending</h2>
+              <p>This user has been invited but has not yet accepted the invitation.</p>
+            </section>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
-<style>
-  .collaborator-details {
-    max-width: 800px;
+<% unless @collaborator.invited? %>
+<script type="module">
+  import Chart from "chart.js/auto";
+
+  const velocityData = <%= raw @velocity_trend.to_json %>;
+  const priorityData = <%= raw @priority_breakdown.to_json %>;
+  const typeData = <%= raw @type_breakdown.to_json %>;
+  const completionTimeData = <%= raw @completion_time_by_type.to_json %>;
+
+  function destroyExistingChart(canvasId) {
+    const existingChart = Chart.getChart(canvasId);
+    if (existingChart) {
+      existingChart.destroy();
+    }
   }
-  
-  .collaborator-details section {
-    background: #f8f9fa;
-    border: 1px solid #ddd;
-    padding: 20px;
-    margin: 20px 0;
-    border-radius: 5px;
+
+  function initCharts() {
+    const velocityCtx = document.getElementById("velocityChart");
+    if (velocityCtx) {
+      destroyExistingChart("velocityChart");
+      new Chart(velocityCtx, {
+        type: "bar",
+        data: {
+          labels: velocityData.map(d => d.week),
+          datasets: [{
+            label: "Tasks Completed",
+            data: velocityData.map(d => d.count),
+            backgroundColor: "rgba(59, 130, 246, 0.8)",
+            borderColor: "rgba(59, 130, 246, 1)",
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: { stepSize: 1 }
+            }
+          }
+        }
+      });
+    }
+
+    const priorityCtx = document.getElementById("priorityChart");
+    if (priorityCtx) {
+      destroyExistingChart("priorityChart");
+      const priorityLabels = Object.keys(priorityData).map(k => k.replace("_", " ").replace(/\b\w/g, l => l.toUpperCase()));
+      const priorityValues = Object.values(priorityData);
+      const priorityColors = [
+        "rgba(156, 163, 175, 0.8)",
+        "rgba(34, 197, 94, 0.8)",
+        "rgba(250, 204, 21, 0.8)",
+        "rgba(249, 115, 22, 0.8)",
+        "rgba(239, 68, 68, 0.8)"
+      ];
+
+      new Chart(priorityCtx, {
+        type: "doughnut",
+        data: {
+          labels: priorityLabels,
+          datasets: [{
+            data: priorityValues,
+            backgroundColor: priorityColors,
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false
+        }
+      });
+    }
+
+    const typeCtx = document.getElementById("typeChart");
+    if (typeCtx) {
+      destroyExistingChart("typeChart");
+      const typeLabels = Object.keys(typeData);
+      const typeValues = Object.values(typeData);
+      const typeColors = typeLabels.map((_, i) => `hsl(${(i * 360) / typeLabels.length}, 70%, 60%)`);
+
+      new Chart(typeCtx, {
+        type: "doughnut",
+        data: {
+          labels: typeLabels,
+          datasets: [{
+            data: typeValues,
+            backgroundColor: typeColors,
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false
+        }
+      });
+    }
+
+    const completionCtx = document.getElementById("completionTimeChart");
+    if (completionCtx) {
+      destroyExistingChart("completionTimeChart");
+      const ctLabels = Object.keys(completionTimeData);
+      const ctValues = Object.values(completionTimeData);
+
+      new Chart(completionCtx, {
+        type: "bar",
+        data: {
+          labels: ctLabels,
+          datasets: [{
+            label: "Avg Days",
+            data: ctValues,
+            backgroundColor: "rgba(16, 185, 129, 0.8)",
+            borderColor: "rgba(16, 185, 129, 1)",
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
   }
-  
-  .collaborator-details h2 {
-    margin-top: 0;
-    border-bottom: 2px solid #333;
-    padding-bottom: 10px;
-  }
-  
-  .collaborator-details p {
-    margin: 10px 0;
-  }
-  
-  .status-section {
-    margin: 15px 0;
-  }
-  
-  .status-section h3 {
-    color: #555;
-  }
-  
-  .status-section ul {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .status-section li {
-    padding: 8px 0;
-    border-bottom: 1px solid #eee;
-  }
-  
-  .task-type {
-    color: #007bff;
-    font-weight: bold;
-  }
-  
-  .task-date {
-    color: #666;
-    font-size: 0.9em;
-  }
-  
-  .no-tasks {
-    color: #999;
-    font-style: italic;
-  }
-  
-  .invitation-pending {
-    background: #fff3cd;
-    border-color: #ffc107;
-  }
-  
-  .button {
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    text-decoration: none;
-    border-radius: 4px;
-    display: inline-block;
-  }
-  
-  .button:hover {
-    background-color: #0056b3;
-  }
-</style>
+
+  initCharts();
+</script>
+<% end %>

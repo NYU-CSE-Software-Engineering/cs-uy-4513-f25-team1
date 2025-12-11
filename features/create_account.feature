@@ -8,7 +8,7 @@ Feature:Create an account
         And I am on the register page
 	When I type for email username password repeat-password "testing@gmail.com" "testingUser" "password" "password"
         And I click "Create Account"
-        Then I should be on the home page
+        Then I should be on the projects page
 
     Scenario: User creates an account with invalid email
         Given I am a logged out user
@@ -21,6 +21,7 @@ Feature:Create an account
         Given I am a logged out user
         And I am on the register page
         When I input a taken email with other valid fields
+        And I click "Create Account"
         Then I should be on the same register page
     
     Scenario: User creates an account with invalid password

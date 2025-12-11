@@ -13,15 +13,20 @@ Rails.application.routes.draw do
 
   resources :projects do
     resources :tasks, only: [ :new, :create, :update, :show ] do
+      member do
+        patch :request_review
+        patch :cancel_review
+        patch :mark_complete
+        patch :assign_to_me
+      end
       resources :comments, only: [ :create, :update, :destroy ]
     end
-    resources :collaborators, only: [ :index, :show, :edit, :update, :destroy ]
+    resources :collaborators, only: [ :show, :edit, :update, :destroy, :create ]
   end
 
   # Registration routes
   resources :users, only: [ :new, :create, :edit, :update ]
 
   # Defines the root path route ("/")
-  get "features" => "home#features"
   root "home#index"
 end
