@@ -1,10 +1,3 @@
-<% 
-  # Self-initialize variables if they aren't set (e.g., if byassed/testing), matching Authentication concern
-  @manager_projects ||= Collaborator.joins(:project).where(collaborators: { user_id: session[:user_id], role: :manager })
-  @developer_projects ||= Collaborator.joins(:project).where(collaborators: { user_id: session[:user_id], role: :developer })
-  @invited_projects ||= Collaborator.joins(:project).where(collaborators: { user_id: session[:user_id], role: :invited })
-%>
-
 <div class="sidebar" id="app-sidebar" data-turbo-permanent data-controller="sidebar-resize sidebar-search">
   <!-- Logo -->
   <div class="sidebar-logo">
@@ -42,108 +35,13 @@
   </div>
 
   <!-- Manager Projects Section -->
-  <div class="sidebar-section" data-sidebar-search-target="section">
-    <div class="section-header">
-      <h2>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
-        </svg>
-        Managed
-        <span class="section-count"><%= @manager_projects.count %></span>
-      </h2>
-      <%= link_to new_project_path, class: "add-project-btn", title: "New Project" do %>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-        </svg>
-      <% end %>
-    </div>
-    <div class="section-scroll">
-      <% if @manager_projects.empty? %>
-        <p class="empty-section-text">No managed projects</p>
-      <% else %>
-        <% @manager_projects.each do |p| %>
-          <%= link_to p.project.name, project_path(p.project_id), 
-              class: "project-link",
-              data: { 
-                sidebar_search_target: "project",
-                project_name: p.project.name,
-                managers: manager_usernames_for(p.project)
-              } %>
-        <% end %>
-        <p class="empty-section-text sidebar-search-hidden" data-sidebar-search-target="emptyState">No matching projects</p>
-      <% end %>
-    </div>
-  </div>
+  <%= render "application/sidebar_manager_section" %>
 
   <!-- Developer Projects Section -->
-  <div class="sidebar-section" data-sidebar-search-target="section">
-    <div class="section-header">
-      <h2>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
-        </svg>
-        Developer
-        <span class="section-count"><%= @developer_projects.count %></span>
-      </h2>
-    </div>
-    <div class="section-scroll">
-      <% if @developer_projects.empty? %>
-        <p class="empty-section-text">No developer projects</p>
-      <% else %>
-        <% @developer_projects.each do |p| %>
-          <%= link_to p.project.name, project_path(p.project_id), 
-              class: "project-link",
-              data: { 
-                sidebar_search_target: "project",
-                project_name: p.project.name,
-                managers: manager_usernames_for(p.project)
-              } %>
-        <% end %>
-        <p class="empty-section-text sidebar-search-hidden" data-sidebar-search-target="emptyState">No matching projects</p>
-      <% end %>
-    </div>
-  </div>
+  <%= render "application/sidebar_developer_section" %>
 
   <!-- Invites Section -->
-  <div class="sidebar-section" data-sidebar-search-target="section">
-    <div class="section-header">
-      <h2>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-          <polyline points="22,6 12,13 2,6"/>
-        </svg>
-        Invites
-        <span class="section-count"><%= @invited_projects.count %></span>
-      </h2>
-    </div>
-    <div class="section-scroll">
-      <% if @invited_projects.present? %>
-        <% @invited_projects.each do |invite| %>
-          <div class="invite-row" 
-               data-sidebar-search-target="project"
-               data-project-name="<%= invite.project.name %>"
-               data-managers="<%= manager_usernames_for(invite.project) %>">
-            <%= link_to invite.project.name, project_path(invite.project), class: "invite-project-name" %>
-            <div class="invite-actions-compact">
-              <%= button_to project_collaborator_path(invite.project, invite), method: :patch, class: "invite-btn invite-accept", title: "Accept" do %>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="20 6 9 17 4 12"/>
-                </svg>
-              <% end %>
-              <%= button_to project_collaborator_path(invite.project, invite), method: :delete, class: "invite-btn invite-reject", title: "Reject" do %>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-                </svg>
-              <% end %>
-            </div>
-          </div>
-        <% end %>
-        <p class="empty-section-text sidebar-search-hidden" data-sidebar-search-target="emptyState">No matching invites</p>
-      <% else %>
-        <p class="empty-section-text">No pending invites</p>
-      <% end %>
-    </div>
-  </div>
+  <%= render "application/sidebar_invites_section" %>
 
   <!-- Footer -->
   <div class="sidebar-footer">

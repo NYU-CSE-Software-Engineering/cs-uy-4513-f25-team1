@@ -68,8 +68,13 @@ class CollaboratorsController < ApplicationController
     # Handle invitation acceptance (existing functionality)
     if @collaborator.invited? && @collaborator.user_id == Current.session.user_id
       @collaborator.developer!
-      flash[:notice] = "You have joined #{@project.name} as a developer."
-      redirect_back fallback_location: projects_path
+      respond_to do |format|
+        format.turbo_stream { load_sidebar_data }
+        format.html do
+          flash[:notice] = "You have joined #{@project.name} as a developer."
+          redirect_back fallback_location: projects_path
+        end
+      end
       return
     end
 
@@ -98,8 +103,13 @@ class CollaboratorsController < ApplicationController
     # Handle invitation decline (existing functionality)
     if @collaborator.invited? && @collaborator.user_id == Current.session.user_id
       @collaborator.destroy
-      flash[:notice] = "You have declined the invitation to #{@project.name}."
-      redirect_back fallback_location: projects_path
+      respond_to do |format|
+        format.turbo_stream { load_sidebar_data }
+        format.html do
+          flash[:notice] = "You have declined the invitation to #{@project.name}."
+          redirect_back fallback_location: projects_path
+        end
+      end
       return
     end
 
@@ -182,5 +192,12 @@ class CollaboratorsController < ApplicationController
     @type_breakdown = @collaborator.type_breakdown
     @velocity_trend = @collaborator.weekly_velocity_trend
     @completion_time_by_type = @collaborator.avg_completion_time_by_type
+  end
+
+  def load_sidebar_data
+    user_id = Current.session&.user_id
+    @manager_projects = Collaborator.joins(:project).where(user_id: user_id, role: :manager)
+    @developer_projects = Collaborator.joins(:project).where(user_id: user_id, role: :developer)
+    @invited_projects = Collaborator.joins(:project).where(user_id: user_id, role: :invited)
   end
 end
