@@ -15,15 +15,8 @@ And('I am on the {string} project\'s tasks page') do |project_name|
   visit project_tasks_path(@project)
 end
 
-# WHEN: Standard Capybara action to select an option from a dropdown.
-When('I select {string} from {string}') do |value, field|
-  select value, from: field
-end
-
-# WHEN: Fills a field with an empty string, used for validation failure scenarios.
-When('I leave {string} blank') do |field|
-  fill_in field, with: ''
-end
+# Note: 'I select {string} from {string}' and 'I leave {string} blank'
+# are defined in task_steps.rb to avoid duplication
 
 # THEN: Checks if specific content (success message or error message) is visible.
 

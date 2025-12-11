@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_10_021152) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_10_030520) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -68,14 +68,19 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_10_021152) do
 
   create_table "tasks", force: :cascade do |t|
     t.string "title"
-    t.string "status"
     t.integer "project_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "user_id", null: false
+    t.integer "assignee_id"
     t.string "type"
+    t.string "description", null: false
+    t.string "branch_link"
+    t.integer "priority"
+    t.datetime "due_at"
+    t.datetime "completed_at"
+    t.integer "status", default: 0
+    t.index ["assignee_id"], name: "index_tasks_on_assignee_id"
     t.index ["project_id"], name: "index_tasks_on_project_id"
-    t.index ["user_id"], name: "index_tasks_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -91,6 +96,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_10_021152) do
   add_foreign_key "collaborators", "projects"
   add_foreign_key "collaborators", "users"
   add_foreign_key "sessions", "users"
+  add_foreign_key "tasks", "collaborators", column: "assignee_id"
   add_foreign_key "tasks", "projects"
-  add_foreign_key "tasks", "users"
 end

@@ -17,8 +17,7 @@ Feature: Collaborator Management
     And I am signed in as "manager"
 
   Scenario: Manager views all collaborators
-    When I visit the project "Test Project" page
-    And I click on "View All Collaborators"
+    When I visit the collaborators page for project "Test Project"
     Then I should see the collaborators page
     And I should see "manager" in the managers section
     And I should see "dev1" in the developers section
@@ -62,9 +61,9 @@ Feature: Collaborator Management
 
   Scenario: Collaborators summary shows on project page
     When I visit the project "Test Project" page
-    Then I should see "Collaborators (2)"
-    And I should see collaborator badges
-    And I should see "View All Collaborators" link
+    Then I should see "Collaborators:"
+    And I should see "manager"
+    And I should see "dev1"
 
   Scenario: Contribution percentage is calculated correctly
     Given "dev1" has 5 completed tasks on project "Test Project"

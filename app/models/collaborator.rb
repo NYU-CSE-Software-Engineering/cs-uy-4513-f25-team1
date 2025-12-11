@@ -12,17 +12,17 @@ class Collaborator < ApplicationRecord
     total_tasks = project.tasks.count
     return 0 if total_tasks.zero?
 
-    completed_tasks = project.tasks.where(user_id: user_id, status: "Completed").count
+    completed_tasks = project.tasks.where(assignee_id: id, status: :completed).count
     ((completed_tasks.to_f / total_tasks) * 100).round(1)
   end
 
-  # Count tasks by user in this project
+  # Count tasks assigned to this collaborator in this project
   def task_count
-    project.tasks.where(user_id: user_id).count
+    project.tasks.where(assignee_id: id).count
   end
 
-  # Count completed tasks by user in this project
+  # Count completed tasks by this collaborator in this project
   def completed_task_count
-    project.tasks.where(user_id: user_id, status: "Completed").count
+    project.tasks.where(assignee_id: id, status: :completed).count
   end
 end

@@ -237,6 +237,38 @@
     font-weight: 500;
 }
 
+.project-summary-details {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.summary-item {
+    font-size: 0.95rem;
+    color: #495057;
+}
+
+.summary-item strong {
+    color: #212529;
+    margin-right: 0.5rem;
+}
+
+.collaborators-section {
+    display: inline;
+}
+
+.collaborator-link {
+    color: #0d6efd;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.collaborator-link:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
 /* Collaborators */
 .project-collaborators {
     display: flex;
@@ -380,12 +412,55 @@
     border-bottom: 1px solid #dee2e6;
 }
 
+.task-table .filters-row th {
+    background-color: #ffffff;
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.table-filter {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    background-color: #ffffff;
+    color: #495057;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+.table-filter:hover {
+    border-color: #adb5bd;
+}
+
+.table-filter:focus {
+    outline: none;
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+}
+
 .task-table td {
-    padding: 0.75rem 1rem;
+    padding: 0;
     border-bottom: 1px solid #f1f3f5;
     vertical-align: middle;
     color: #212529;
     font-size: 0.95rem;
+    position: relative;
+}
+
+.task-row-link {
+    display: block;
+    padding: 0.75rem 1rem;
+    text-decoration: none;
+    color: inherit;
+    width: 100%;
+    min-height: 100%;
+    box-sizing: border-box;
+}
+
+.task-row-link * {
+    pointer-events: none;
 }
 
 .task-table tbody tr:last-child td {
@@ -401,38 +476,79 @@
     background-color: #f8f9fa;
 }
 
-/* Status Badges */
-.status-badge {
-    display: inline-block;
-    padding: 0.25rem 0.6rem;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    font-weight: 500;
-    white-space: nowrap;
+.task-row:hover .task-row-link {
+    color: inherit;
 }
 
+.task-row-link:hover {
+    text-decoration: none;
+}
+
+/* Base Badge Style - Uniform for all enums */
+.status-badge,
+.priority-badge,
+.task-type-badge {
+    display: inline-block;
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    line-height: 1;
+}
+
+/* Status Badges */
 .status-to-do {
-    background-color: #e9ecef;
-    color: #495057;
+    background-color: #6c757d;
+    color: #ffffff;
 }
 
 .status-in-progress {
-    background-color: #e7f5ff;
-    color: #1c7ed6;
+    background-color: #0d6efd;
+    color: #ffffff;
 }
 
 .status-in-review {
-    background-color: #fff3bf;
-    color: #f08c00;
+    background-color: #fd7e14;
+    color: #ffffff;
 }
 
 .status-completed {
-    background-color: #ebfbee;
-    color: #2f9e44;
+    background-color: #198754;
+    color: #ffffff;
+}
+
+/* Priority Badges */
+.priority-no-priority {
+    background-color: #6c757d;
+    color: #ffffff;
+}
+
+.priority-low {
+    background-color: #198754;
+    color: #ffffff;
+}
+
+.priority-medium {
+    background-color: #ffc107;
+    color: #000000;
+}
+
+.priority-high {
+    background-color: #fd7e14;
+    color: #ffffff;
+}
+
+.priority-urgent {
+    background-color: #dc3545;
+    color: #ffffff;
+    font-weight: 700;
 }
 
 /* Task Title Cell */
-.task-title-cell {
+.task-title-cell .task-row-link {
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -442,18 +558,40 @@
     font-weight: 500;
 }
 
-.task-type-badge {
-    font-size: 0.75rem;
-    padding: 1px 6px;
-    border-radius: 4px;
-    background-color: #f1f3f5;
-    color: #868e96;
-    border: 1px solid #dee2e6;
-    text-transform: uppercase;
+/* Task Type Badges - Specific colors for task types */
+.task-type-badge[data-type="BUG"] {
+    background-color: #dc3545;
+    color: #ffffff;
+}
+
+.task-type-badge[data-type="FEATURE"] {
+    background-color: #0d6efd;
+    color: #ffffff;
+}
+
+.task-type-badge[data-type="IMPROVEMENT"] {
+    background-color: #6f42c1;
+    color: #ffffff;
+}
+
+.task-type-badge[data-type="CHORE"] {
+    background-color: #6c757d;
+    color: #ffffff;
+}
+
+.task-type-badge[data-type="DOCUMENTATION"] {
+    background-color: #20c997;
+    color: #ffffff;
+}
+
+/* Fallback for any other task types */
+.task-type-badge:not([data-type]) {
+    background-color: #6c757d;
+    color: #ffffff;
 }
 
 /* Assignee Cell */
-.assignee-cell {
+.assignee-cell .task-row-link {
     display: flex;
     align-items: center;
     gap: 0.5rem;

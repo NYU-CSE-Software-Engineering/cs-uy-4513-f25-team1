@@ -7,6 +7,11 @@
   <div class="alert"><%= flash[:alert] %></div>
 <% end %>
 
+<% if @task.completed_at.present? %>
+  <div class="alert">This task was completed on <%= @task.completed_at.strftime("%B %d, %Y at %I:%M %p") %> and cannot be modified.</div>
+  <p><%= link_to "Back to Task", project_task_path(@project, @task), class: "btn btn-secondary" %></p>
+<% else %>
+
 <%= form_with model: [@project, @task], local: true do |form| %>
   <% if @task.errors.any? %>
     <div id="error_explanation">
@@ -21,7 +26,12 @@
 
   <div>
     <%= form.label :title, "Title" %>
-    <%= form.text_field :title %>
+    <%= form.text_field :title, required: true %>
+  </div>
+
+  <div>
+    <%= form.label :description, "Description" %>
+    <%= form.text_area :description, rows: 4, required: true %>
   </div>
 
   <div>
@@ -36,15 +46,44 @@
   <div>
     <%= form.label :status, "Task Status" %>
     <%= form.select :status, options_for_select([
-      ["To Do", "To Do"],
-      ["In Progress", "In Progress"],
-      ["In Review", "In Review"],
-      ["Completed", "Completed"]
+      ["To Do", "todo"],
+      ["In Progress", "in_progress"],
+      ["In Review", "in_review"],
+      ["Completed", "completed"]
     ], @task.status) %>
   </div>
 
   <div>
-    <%= form.submit "Update Task" %>
+    <%= form.label :branch_link, "Branch Link (optional)" %>
+    <%= form.url_field :branch_link, placeholder: "https://github.com/org/repo/tree/branch-name" %>
+  </div>
+
+  <div>
+    <%= form.label :assignee_id, "Assignee (optional)" %>
+    <%= form.select :assignee_id,
+      options_from_collection_for_select(@collaborators, :id, ->(c) { c.user.username }, @task.assignee_id),
+      { include_blank: "Unassigned" } %>
+  </div>
+
+  <div>
+    <%= form.label :priority, "Priority (optional)" %>
+    <%= form.select :priority, options_for_select([
+      ["No Priority", "no_priority"],
+      ["Low", "low"],
+      ["Medium", "medium"],
+      ["High", "high"],
+      ["Urgent", "urgent"]
+    ], @task.priority), { include_blank: "Select Priority" } %>
+  </div>
+
+  <div>
+    <%= form.label :due_at, "Due Date (optional)" %>
+    <%= form.datetime_local_field :due_at %>
+  </div>
+
+  <div class="form-actions">
+    <%= form.submit "Update Task", class: "btn btn-primary" %>
+    <%= link_to "Cancel", project_task_path(@project, @task), class: "btn btn-secondary" %>
   </div>
 <% end %>
 
@@ -98,5 +137,9 @@
   <% end %>
 </div>
 
-<%= link_to "View Task", project_task_path(@project, @task), class: "btn btn-secondary" %>
-<%= link_to "Back to Project", project_path(@project), class: "btn btn-secondary" %>
+<div class="task-navigation">
+  <%= link_to "View Task", project_task_path(@project, @task), class: "btn btn-secondary" %>
+  <%= link_to "Back to Project", project_path(@project), class: "btn btn-secondary" %>
+</div>
+
+<% end %>

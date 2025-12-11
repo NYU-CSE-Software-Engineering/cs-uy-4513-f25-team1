@@ -1,155 +1,109 @@
-<div class="task-detail-container">
-  <!-- Header Section -->
-  <div class="task-header">
-    <div class="header-left">
-      <span class="task-id">#<%= @task.id %></span>
-      <h1 class="task-title-lg"><%= @task.title %></h1>
-    </div>
-    <div class="header-actions">
-       <%= link_to "Back to Project", project_path(@project), class: "btn btn-secondary btn-sm" %>
-    </div>
+<h1>Task Details</h1>
+
+<% if flash[:notice] %>
+  <div class="notice"><%= flash[:notice] %></div>
+<% end %>
+<% if flash[:alert] %>
+  <div class="alert"><%= flash[:alert] %></div>
+<% end %>
+
+<% if @task.completed_at.present? %>
+  <div class="notice">This task was completed on <%= @task.completed_at.strftime("%B %d, %Y at %I:%M %p") %> and cannot be modified.</div>
+<% end %>
+
+<div class="task-details">
+  <div class="task-info">
+    <p><strong>Title:</strong> <%= @task.title %></p>
+    <p><strong>Description:</strong> <%= @task.description %></p>
+    <p><strong>Type:</strong> <%= @task.type.presence || "Not specified" %></p>
+    <p><strong>Status:</strong> <%= @task.status.titleize %></p>
+    <p><strong>Priority:</strong> <%= @task.priority&.titleize || "No Priority" %></p>
+    <p><strong>Project:</strong> <%= @project.name %></p>
+    <p><strong>Assignee:</strong> <%= @task.assignee&.user&.username || "Unassigned" %></p>
+    <% if @task.branch_link.present? && safe_url(@task.branch_link) %>
+      <p><strong>Branch Link:</strong> <%= link_to @task.branch_link, safe_url(@task.branch_link), target: "_blank", rel: "noopener noreferrer" %></p>
+    <% end %>
+    <% if @task.due_at.present? %>
+      <p><strong>Due Date:</strong> <%= @task.due_at.strftime("%B %d, %Y at %I:%M %p") %></p>
+    <% end %>
+    <p><strong>Created:</strong> <%= @task.created_at.strftime("%B %d, %Y at %I:%M %p") %></p>
+    <p><strong>Last Updated:</strong> <%= @task.updated_at.strftime("%B %d, %Y at %I:%M %p") %></p>
+    <% if @task.completed_at.present? %>
+      <p><strong>Completed At:</strong> <%= @task.completed_at.strftime("%B %d, %Y at %I:%M %p") %></p>
+    <% end %>
   </div>
 
-  <div class="task-body">
-    <!-- Left Column: Description & Media -->
-    <div class="task-main-content">
-      
-      <!-- Section 1: Task Description -->
-      <section class="task-section task-description-section">
-        <div class="section-header">
-          <h3>Description</h3>
-        </div>
-        <div class="description-content">
-           <%# Placeholder since description column doesn't exist %>
-           <% if @task.attributes.key?("description") && @task.description.present? %>
-              <%= simple_format @task.description %>
-           <% else %>
-              <p class="text-placeholder">No description provided.</p>
-           <% end %>
-        </div>
-        <div class="github-link-section">
-          <span class="github-icon">
-            <svg height="16" width="16" viewBox="0 0 16 16" fill="currentColor">
-                <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
-            </svg>
-          </span>
-          <span class="branch-link text-muted">Add GitHub Branch</span>
-        </div>
-      </section>
+  <div class="task-actions">
+    <% unless @task.completed_at.present? %>
+      <%= link_to "Edit Task", edit_project_task_path(@project, @task), class: "btn btn-secondary" %>
+    <% end %>
+    <%= link_to "Back to Project", project_path(@project), class: "btn btn-secondary" %>
+  </div>
+</div>
 
-      <!-- Section 3: Task Media -->
-      <section class="task-section task-media-section">
-        <div class="section-header">
-          <h3>Media</h3>
-        </div>
-        
-        <div class="media-container">
-          <% if @task.media_files.attached? %>
-            <div class="media-gallery finder-style">
-              <% @task.media_files.each do |file| %>
-                <div class="media-item-card">
-                  <div class="media-preview-box">
-                    <% if file.image? %>
-                       <%= image_tag file, class: "media-thumbnail-img" %>
-                    <% else %>
-                       <div class="file-type-icon">
-                          <span style="font-size: 2rem;">📄</span>
-                       </div>
-                    <% end %>
-                  </div>
-                  <div class="media-details-box">
-                    <span class="media-name" title="<%= file.filename %>"><%= file.filename %></span>
-                    <span class="media-meta"><%= number_to_human_size(file.byte_size) %></span>
-                  </div>
-                  <div class="media-actions-overlay">
-                    <%= link_to rails_blob_path(file, disposition: "inline"), target: "_blank", class: "btn-icon-view", title: "View" do %>
-                      View
-                    <% end %>
-                    <%= form_with model: [@project, @task], url: project_task_path(@project, @task), method: :patch, local: true do |form| %>
-                      <%= hidden_field_tag "task[remove_media_file_ids][]", file.id %>
-                      <%= hidden_field_tag :redirect_to_show, "1" %>
-                      <button type="submit" class="btn-icon-remove" title="Remove" data-confirm="Are you sure?">
-                        &times;
-                      </button>
-                    <% end %>
-                  </div>
-                </div>
+<hr>
+
+<h2>Media Files</h2>
+
+<% if @task.media_files.attached? %>
+  <div class="media-gallery">
+    <% @task.media_files.each do |file| %>
+      <div class="media-item">
+        <% if file.image? %>
+          <div class="media-preview">
+            <%= image_tag file, class: "media-thumbnail" %>
+          </div>
+        <% else %>
+          <div class="media-preview media-file-icon">
+            <span class="file-icon">📄</span>
+          </div>
+        <% end %>
+        <div class="media-info">
+          <p class="media-filename"><%= file.filename %></p>
+          <p class="media-size"><%= number_to_human_size(file.byte_size) %></p>
+          <div class="media-actions">
+            <%= link_to "View", rails_blob_path(file, disposition: "inline"), target: "_blank", class: "btn btn-secondary" %>
+            <% unless @task.completed_at.present? %>
+              <%= form_with model: [@project, @task], url: project_task_path(@project, @task), method: :patch, local: true, class: "inline-form" do |form| %>
+                <%= hidden_field_tag "task[remove_media_file_ids][]", file.id %>
+                <%= hidden_field_tag :redirect_to_show, "1" %>
+                <%= form.submit "Remove", class: "btn btn-danger", data: { confirm: "Are you sure you want to remove this file?" } %>
               <% end %>
-            </div>
-          <% else %>
-            <div class="empty-media-state">
-              <p>No media files attached.</p>
-            </div>
-          <% end %>
-
-          <!-- Media Upload Area -->
-          <div class="media-upload-area">
-             <%= form_with model: [@project, @task], url: project_task_path(@project, @task), method: :patch, local: true, multipart: true, class: "upload-form" do |form| %>
-              <%= hidden_field_tag :redirect_to_show, "1" %>
-              <div class="drop-zone">
-                <p>Drag & drop files here or</p>
-                <label class="btn btn-secondary btn-sm upload-btn-label">
-                    Browser
-                    <%= form.file_field :media_files, multiple: true, class: "hidden-file-input", onchange: "this.form.submit()" %>
-                </label>
-              </div>
             <% end %>
           </div>
         </div>
-      </section>
-
-    </div>
-
-    <!-- Right Column: Task Summary -->
-    <aside class="task-sidebar">
-      <div class="sidebar-section task-summary-section">
-        <h3>Summary</h3>
-        
-        <div class="summary-group">
-          <label>Status</label>
-          <div class="summary-value">
-             <span class="status-badge <%= @task.status.to_s.parameterize %>"><%= @task.status %></span>
-          </div>
-        </div>
-
-        <div class="summary-group">
-          <label>Priority</label>
-          <div class="summary-value clickable-placeholder" title="Mock interaction">
-             <span class="priority-dot priority-medium"></span> Medium
-          </div>
-        </div>
-
-        <div class="summary-group">
-          <label>Due Date</label>
-          <div class="summary-value clickable-placeholder">
-             <span>Dec 24, 2025</span>
-          </div>
-        </div>
-
-        <div class="summary-group">
-          <label>Assignee</label>
-          <div class="summary-value">
-             <% if @task.user %>
-                <div class="assignee-pill">
-                  <span class="avatar-circle"><%= @task.user.username[0].upcase %></span>
-                  <span class="assignee-name"><%= @task.user.username %></span>
-                </div>
-             <% else %>
-                <span class="text-muted">Unassigned</span>
-             <% end %>
-          </div>
-        </div>
-
       </div>
-      
-      <div class="sidebar-meta">
-         <p>Created by <%= @task.user.username %></p>
-      </div>
-
-      <div class="sidebar-actions">
-        <%= link_to "Edit Task", edit_project_task_path(@project, @task), class: "btn btn-block btn-outline" %>
-      </div>
-
-    </aside>
+    <% end %>
   </div>
-</div>
+<% else %>
+  <p>No media files attached to this task.</p>
+<% end %>
+
+<% unless @task.completed_at.present? %>
+  <div class="media-upload-section">
+    <h3>Add Media Files</h3>
+    <%= form_with model: [@project, @task], url: project_task_path(@project, @task), method: :patch, local: true, multipart: true do |form| %>
+      <%= hidden_field_tag :redirect_to_show, "1" %>
+      <% if @task.errors.any? %>
+        <div id="error_explanation">
+          <h2><%= pluralize(@task.errors.count, "error") %> prohibited media from being saved:</h2>
+          <ul>
+            <% @task.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div>
+        <%= form.label :media_files, "Select files to upload" %>
+        <%= form.file_field :media_files, multiple: true, accept: "image/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" %>
+        <p class="help-text">Maximum 10 files, 10MB per file. Allowed: images, PDFs, Word, Excel</p>
+      </div>
+
+      <div>
+        <%= form.submit "Upload Media", class: "btn btn-primary" %>
+      </div>
+    <% end %>
+  </div>
+<% end %>

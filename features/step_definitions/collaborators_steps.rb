@@ -1,5 +1,16 @@
 # Collaborators Step Definitions
 
+# Helper to map human-readable status to enum symbol
+def status_to_enum(status_string)
+  {
+    'Completed' => :completed,
+    'In Progress' => :in_progress,
+    'In Review' => :in_review,
+    'To Do' => :todo,
+    'Todo' => :todo
+  }[status_string] || :todo
+end
+
 Given('the following users exist:') do |table|
   table.hashes.each do |row|
     User.create!(
@@ -15,7 +26,7 @@ Given('the following project exists:') do |table|
   row = table.hashes.first
   Project.create!(
     name: row['name'],
-    wip_limit: row['wip_limit'].to_i
+    description: row['description'] || 'Test project description'
   )
 end
 
@@ -42,39 +53,45 @@ end
 Given('{string} has {int} completed tasks on project {string}') do |username, count, project_name|
   user = User.find_by(username: username)
   project = Project.find_by(name: project_name)
+  collaborator = Collaborator.find_by(user: user, project: project)
   count.times do |i|
     Task.create!(
       title: "Completed Task #{i + 1}",
-      status: 'Completed',
+      description: "Completed task description #{i + 1}",
+      status: :completed,
+      completed_at: Time.current,
       project: project,
-      user: user
+      assignee: collaborator
     )
   end
 end
 
 Given('the project {string} has {int} total tasks') do |project_name, count|
   project = Project.find_by(name: project_name)
-  users = project.users
+  collaborators = project.collaborators.where(role: :developer)
   count.times do |i|
     Task.create!(
       title: "Task #{i + 1}",
-      status: 'To Do',
+      description: "Task description #{i + 1}",
+      status: :todo,
       project: project,
-      user: users.sample
+      assignee: collaborators.sample
     )
   end
 end
 
 Given('the project {string} has {int} additional tasks from other users') do |project_name, count|
   project = Project.find_by(name: project_name)
-  # Get users that are not dev1
-  other_users = project.users.where.not(username: 'dev1')
+  # Get collaborators that are not dev1
+  dev1_user = User.find_by(username: 'dev1')
+  other_collaborators = project.collaborators.where.not(user: dev1_user).where(role: :developer)
   count.times do |i|
     Task.create!(
       title: "Other Task #{i + 1}",
-      status: 'To Do',
+      description: "Other task description #{i + 1}",
+      status: :todo,
       project: project,
-      user: other_users.sample
+      assignee: other_collaborators.sample
     )
   end
 end
@@ -82,20 +99,20 @@ end
 Given('{string} has the following tasks on project {string}:') do |username, project_name, table|
   user = User.find_by(username: username)
   project = Project.find_by(name: project_name)
+  collaborator = Collaborator.find_by(user: user, project: project)
 
   table.hashes.each do |row|
-    Task.create!(
+    status_sym = status_to_enum(row['status'])
+    task_attrs = {
       title: row['title'],
-      status: row['status'],
+      description: "#{row['title']} description",
+      status: status_sym,
       project: project,
-      user: user
-    )
+      assignee: collaborator
+    }
+    task_attrs[:completed_at] = Time.current if status_sym == :completed
+    Task.create!(task_attrs)
   end
-end
-
-When('I visit the project {string} page') do |project_name|
-  project = Project.find_by(name: project_name)
-  visit project_path(project)
 end
 
 When('I click on {string}') do |link_text|

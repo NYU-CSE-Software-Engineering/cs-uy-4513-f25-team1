@@ -7,9 +7,8 @@ RSpec.describe Task, type: :model do
   end
 
   describe "media files validations" do
-    let(:user) { create(:user) }
     let(:project) { create(:project) }
-    let(:task) { create(:task, project: project, user: user) }
+    let(:task) { create(:task, project: project) }
 
     context "with valid media files" do
       it "allows attaching a single image file" do
@@ -151,10 +150,9 @@ RSpec.describe Task, type: :model do
   end
 
   describe "media files scoping" do
-    let(:user) { create(:user) }
     let(:project) { create(:project) }
-    let(:task1) { create(:task, project: project, user: user) }
-    let(:task2) { create(:task, project: project, user: user) }
+    let(:task1) { create(:task, project: project) }
+    let(:task2) { create(:task, project: project) }
 
     it "scopes media files to the specific task" do
       file1 = create_test_file('test_image.png', 'image/png')

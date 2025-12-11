@@ -2,7 +2,7 @@ class ProjectsController < ApplicationController
   before_action :set_project, only: :show
   before_action :set_user
   before_action :set_user_role, only: :show
-  helper_method :can_edit_project?
+  helper_method :can_edit_project?, :is_manager?
 
   def index
     @projects = Project.all
@@ -66,15 +66,17 @@ class ProjectsController < ApplicationController
   end
 
   def show
-    @tasks = @project.tasks
+    @project_manager = @project.collaborators.manager.first
+    @collaborators = @project.collaborators.includes(:user).where.not(role: :invited)
+    @tasks = @project.tasks.includes(:assignee).includes(assignee: :user)
 
     # Filter by type if specified
     if params[:type].present? && %w[Feature Bug Backlog].include?(params[:type])
       @tasks = @tasks.where(type: params[:type])
     end
 
-    # Filter by status if specified
-    valid_statuses = [ "To Do", "In Progress", "In Review", "Completed" ]
+    # Filter by status if specified (using enum values)
+    valid_statuses = %w[todo in_progress in_review completed]
     if params[:status].present? && valid_statuses.include?(params[:status])
       @tasks = @tasks.where(status: params[:status])
     end
@@ -114,5 +116,9 @@ class ProjectsController < ApplicationController
 
   def can_edit_project?
     @user_role.present? && @user_role != "invited"
+  end
+
+  def is_manager?
+    @user_role == "manager"
   end
 end

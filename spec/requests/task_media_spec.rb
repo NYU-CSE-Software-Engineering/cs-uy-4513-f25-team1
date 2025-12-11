@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe "Task Media", type: :request do
   let!(:user) { create(:user) }
   let!(:project) { create(:project) }
-  let!(:task) { create(:task, project: project, user: user) }
+  let!(:task) { create(:task, project: project) }
 
   def sign_in(user)
     post "/session", params: { email_address: user.email_address, password: "password" }
@@ -135,7 +135,7 @@ RSpec.describe "Task Media", type: :request do
     end
 
     it "prevents removing media from a different task" do
-      other_task = create(:task, project: project, user: user)
+      other_task = create(:task, project: project)
       other_attachment = other_task.media_files.attach(create_test_image)
       other_task.save!
 
@@ -171,7 +171,7 @@ RSpec.describe "Task Media", type: :request do
         post project_tasks_path(project), params: {
           task: {
             title: "New Task with Media",
-            status: "To Do",
+            description: "A task with media attachments",
             type: "Feature",
             media_files: [ create_test_image ]
           }
@@ -202,7 +202,7 @@ RSpec.describe "Task Media", type: :request do
 
   describe "security: media scoping" do
     let!(:other_project) { create(:project) }
-    let!(:other_task) { create(:task, project: other_project, user: user) }
+    let!(:other_task) { create(:task, project: other_project) }
 
     it "prevents accessing media from a task in a different project" do
       other_task.media_files.attach(create_test_image)

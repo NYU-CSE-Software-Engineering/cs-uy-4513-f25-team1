@@ -146,8 +146,8 @@ RSpec.describe "Collaborators", type: :request do
     before do
       sign_in(manager)
       # Create some tasks for stats
-      Task.create!(title: 'Task 1', status: 'Completed', project: project, user: other_user)
-      Task.create!(title: 'Task 2', status: 'In Progress', project: project, user: other_user)
+      Task.create!(title: 'Task 1', description: 'Description', status: :completed, project: project, assignee: developer)
+      Task.create!(title: 'Task 2', description: 'Description', status: :in_progress, project: project, assignee: developer)
     end
 
     it "displays individual collaborator details" do
