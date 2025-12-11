@@ -40,12 +40,12 @@ When('I input a taken email with other valid fields') do
   @user = User.create!(
     email_address: 'taken@gmail.com',
     username: 'user',
-    password_digest: 'securePassword'
+    password: 'securePassword'
   )
   fill_in 'Email', with: "taken@gmail.com"
   fill_in 'Username', with: "user"
-  fill_in 'Password', with: "password"
-  fill_in 'Repeat password', with: "password"
+  fill_in 'Password', with: "longpassword"
+  fill_in 'Repeat password', with: "longpassword"
 end
 
 When('I input an invalid password with other valid fields') do

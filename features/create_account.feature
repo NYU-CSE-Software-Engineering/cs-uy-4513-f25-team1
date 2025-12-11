@@ -23,6 +23,13 @@ Feature:Create an account
         When I input a taken email with other valid fields
         Then I should be on the same register page
     
+    Scenario: User creates an account with invalid password
+        Given I am a logged out user
+        And I am on the register page
+	When I type for email username password repeat-password "testing@gmail.com" "testingUser" "pass" "pass"
+        And I click "Create Account"
+        Then I should be on the same register page
+    
     Scenario: User creates an account with invalid repeated_password
         Given I am a logged out user
         And I am on the register page
