@@ -1,109 +1,462 @@
-<h1>Task Details</h1>
+<% @current_collaborator = Collaborator.find_by(user_id: Current.session&.user_id, project_id: @project.id) %>
+<% @is_manager = @current_collaborator&.manager? %>
+<% @is_completed = @task.completed_at.present? %>
+<% @can_comment = @current_collaborator && %w[manager developer].include?(@current_collaborator.role) %>
 
-<% if flash[:notice] %>
-  <div class="notice"><%= flash[:notice] %></div>
-<% end %>
-<% if flash[:alert] %>
-  <div class="alert"><%= flash[:alert] %></div>
-<% end %>
+<div class="task-page-container">
+  <% if flash[:notice] %>
+    <div class="notice"><%= flash[:notice] %></div>
+  <% end %>
+  <% if flash[:alert] %>
+    <div class="alert"><%= flash[:alert] %></div>
+  <% end %>
 
-<% if @task.completed_at.present? %>
-  <div class="notice">This task was completed on <%= @task.completed_at.strftime("%B %d, %Y at %I:%M %p") %> and cannot be modified.</div>
-<% end %>
+  <% if @is_completed %>
+    <div class="notice">This task was completed on <%= @task.completed_at.strftime("%B %d, %Y at %I:%M %p") %> and cannot be modified.</div>
+  <% end %>
 
-<div class="task-details">
-  <div class="task-info">
-    <p><strong>Title:</strong> <%= @task.title %></p>
-    <p><strong>Description:</strong> <%= @task.description %></p>
-    <p><strong>Type:</strong> <%= @task.type.presence || "Not specified" %></p>
-    <p><strong>Status:</strong> <%= @task.status.titleize %></p>
-    <p><strong>Priority:</strong> <%= @task.priority&.titleize || "No Priority" %></p>
-    <p><strong>Project:</strong> <%= @project.name %></p>
-    <p><strong>Assignee:</strong> <%= @task.assignee&.user&.username || "Unassigned" %></p>
-    <% if @task.branch_link.present? && safe_url(@task.branch_link) %>
-      <p><strong>Branch Link:</strong> <%= link_to @task.branch_link, safe_url(@task.branch_link), target: "_blank", rel: "noopener noreferrer" %></p>
-    <% end %>
-    <% if @task.due_at.present? %>
-      <p><strong>Due Date:</strong> <%= @task.due_at.strftime("%B %d, %Y at %I:%M %p") %></p>
-    <% end %>
-    <p><strong>Created:</strong> <%= @task.created_at.strftime("%B %d, %Y at %I:%M %p") %></p>
-    <p><strong>Last Updated:</strong> <%= @task.updated_at.strftime("%B %d, %Y at %I:%M %p") %></p>
-    <% if @task.completed_at.present? %>
-      <p><strong>Completed At:</strong> <%= @task.completed_at.strftime("%B %d, %Y at %I:%M %p") %></p>
-    <% end %>
+  <div class="task-page-header">
+    <div class="header-nav">
+      <%= link_to "← Back to Project", project_path(@project), class: "back-link" %>
+    </div>
   </div>
 
-  <div class="task-actions">
-    <% unless @task.completed_at.present? %>
-      <%= link_to "Edit Task", edit_project_task_path(@project, @task), class: "btn btn-secondary" %>
-    <% end %>
-    <%= link_to "Back to Project", project_path(@project), class: "btn btn-secondary" %>
-  </div>
-</div>
-
-<hr>
-
-<h2>Media Files</h2>
-
-<% if @task.media_files.attached? %>
-  <div class="media-gallery">
-    <% @task.media_files.each do |file| %>
-      <div class="media-item">
-        <% if file.image? %>
-          <div class="media-preview">
-            <%= image_tag file, class: "media-thumbnail" %>
+  <div class="task-info-grid" data-controller="inline-edit" data-inline-edit-url-value="<%= project_task_path(@project, @task) %>">
+    <div class="task-info-left">
+      <div class="task-name-section">
+        <div class="inline-edit-field title-field" data-field="title">
+          <div class="field-display title-display" data-inline-edit-target="display">
+            <h1 class="task-page-title"><%= @task.title %></h1>
           </div>
-        <% else %>
-          <div class="media-preview media-file-icon">
-            <span class="file-icon">📄</span>
+          <% if @is_manager && !@is_completed %>
+            <button type="button" class="edit-trigger title-edit-btn" data-action="click->inline-edit#showEditor" data-field="title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </button>
+            <div class="field-editor title-editor" data-inline-edit-target="editor" style="display: none;">
+              <input type="text" class="inline-input title-input" data-field="title" name="task[title]" value="<%= @task.title %>" placeholder="Enter task title..." required>
+              <div class="title-editor-actions">
+                <button type="button" class="cancel-btn" data-action="click->inline-edit#hideEditor">Cancel</button>
+                <button type="button" class="btn btn-primary btn-sm" data-action="click->inline-edit#saveTitle" data-field="title">Save</button>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="task-description-section">
+        <h3 class="section-label">Description</h3>
+        <div class="inline-edit-field description-field" data-field="description">
+          <div class="field-display description-display" data-inline-edit-target="display">
+            <div class="description-content">
+              <%= @task.description.presence || content_tag(:span, "No description provided", class: "text-placeholder") %>
+            </div>
+          </div>
+          <% if @is_manager && !@is_completed %>
+            <button type="button" class="edit-trigger description-edit-btn" data-action="click->inline-edit#showEditor" data-field="description">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </button>
+            <div class="field-editor description-editor" data-inline-edit-target="editor" style="display: none;">
+              <textarea class="inline-textarea" data-field="description" name="task[description]" rows="4" placeholder="Enter description..."><%= @task.description %></textarea>
+              <div class="description-editor-actions">
+                <button type="button" class="cancel-btn" data-action="click->inline-edit#hideEditor">Cancel</button>
+                <button type="button" class="btn btn-primary btn-sm" data-action="click->inline-edit#saveDescription" data-field="description">Save</button>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="task-assignee-section">
+        <h3 class="section-label">Assignee</h3>
+        <div class="inline-edit-field" data-field="assignee_id">
+          <div class="field-display" data-inline-edit-target="display">
+            <% if @task.assignee.present? %>
+              <div class="assignee-card-wrapper">
+                <%= link_to project_collaborator_path(@project, @task.assignee), class: "assignee-card assignee-card-link", data: { turbo_frame: "_top" } do %>
+                  <div class="assignee-card-header">
+                    <div class="assignee-avatar-lg"><%= @task.assignee.user.username[0].upcase %></div>
+                    <div class="assignee-info">
+                      <span class="assignee-username"><%= @task.assignee.user.username %></span>
+                      <span class="assignee-role-badge role-<%= @task.assignee.role %>"><%= @task.assignee.role.titleize %></span>
+                    </div>
+                  </div>
+                  <div class="assignee-card-stats">
+                    <div class="assignee-stat">
+                      <span class="stat-value"><%= @task.assignee.task_count %></span>
+                      <span class="stat-label">Tasks Assigned</span>
+                    </div>
+                    <div class="assignee-stat">
+                      <span class="stat-value"><%= @task.assignee.completed_task_count %></span>
+                      <span class="stat-label">Completed</span>
+                    </div>
+                    <div class="assignee-stat">
+                      <span class="stat-value"><%= @task.assignee.contribution_percentage %>%</span>
+                      <span class="stat-label">Contribution</span>
+                    </div>
+                  </div>
+                <% end %>
+                <% if @is_manager && !@is_completed %>
+                  <button type="button" class="edit-trigger assignee-edit-btn" data-action="click->inline-edit#showEditor" data-field="assignee_id">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                  </button>
+                <% end %>
+              </div>
+            <% else %>
+              <div class="assignee-card assignee-card-empty">
+                <div class="assignee-empty-content">
+                  <div class="assignee-avatar-lg empty-avatar">?</div>
+                  <div class="assignee-empty-text">
+                    <span class="empty-title">No Assignee</span>
+                    <span class="empty-subtitle">This task is unassigned</span>
+                  </div>
+                  <% if @is_manager && !@is_completed %>
+                    <button type="button" class="btn btn-secondary assign-btn" data-action="click->inline-edit#showEditor" data-field="assignee_id">
+                      Assign Someone
+                    </button>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+          </div>
+          <% if @is_manager && !@is_completed %>
+            <div class="field-editor assignee-editor" data-inline-edit-target="editor" style="display: none;">
+              <div class="assignee-editor-card">
+                <label class="editor-label">Select Assignee</label>
+                <select class="inline-select assignee-select" data-action="change->inline-edit#save" data-field="assignee_id" name="task[assignee_id]">
+                  <option value="">Unassigned</option>
+                  <% @collaborators.each do |collaborator| %>
+                    <option value="<%= collaborator.id %>" <%= 'selected' if @task.assignee_id == collaborator.id %>><%= collaborator.user.username %> (<%= collaborator.role.titleize %>)</option>
+                  <% end %>
+                </select>
+                <button type="button" class="cancel-btn" data-action="click->inline-edit#hideEditor">Cancel</button>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="task-branch-section">
+        <h3 class="section-label">Branch Link</h3>
+        <div class="inline-edit-field branch-link-field" data-field="branch_link">
+          <div class="field-display branch-link-display" data-inline-edit-target="display">
+            <% if @task.branch_link.present? && safe_url(@task.branch_link) %>
+              <div class="github-link-pill">
+                <svg class="github-icon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+                <%= link_to @task.branch_link, safe_url(@task.branch_link), target: "_blank", rel: "noopener noreferrer", class: "branch-link-text" %>
+              </div>
+            <% else %>
+              <span class="text-placeholder">No branch link</span>
+            <% end %>
+          </div>
+          <% if @is_manager && !@is_completed %>
+            <button type="button" class="edit-trigger branch-link-edit-btn" data-action="click->inline-edit#showEditor" data-field="branch_link">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </button>
+            <div class="field-editor branch-link-editor" data-inline-edit-target="editor" style="display: none;">
+              <input type="url" class="inline-input branch-link-input" data-field="branch_link" name="task[branch_link]" value="<%= @task.branch_link %>" placeholder="https://github.com/org/repo/tree/branch-name">
+              <div class="branch-link-editor-actions">
+                <button type="button" class="cancel-btn" data-action="click->inline-edit#hideEditor">Cancel</button>
+                <button type="button" class="btn btn-primary btn-sm" data-action="click->inline-edit#saveBranchLink" data-field="branch_link">Save</button>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <div class="task-info-right">
+      <div class="task-meta-card">
+        <div class="meta-field">
+          <label class="meta-label">Priority:</label>
+          <div class="inline-edit-field" data-field="priority">
+            <div class="field-display" data-inline-edit-target="display">
+              <span class="priority-badge priority-<%= @task.priority || 'no-priority' %>"><%= @task.priority&.titleize || "No Priority" %></span>
+              <% if @is_manager && !@is_completed %>
+                <button type="button" class="edit-trigger" data-action="click->inline-edit#showEditor" data-field="priority">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                </button>
+              <% end %>
+            </div>
+            <% if @is_manager && !@is_completed %>
+              <div class="field-editor" data-inline-edit-target="editor" style="display: none;">
+                <select class="inline-select" data-action="change->inline-edit#save" data-field="priority" name="task[priority]">
+                  <% Task.priorities.keys.each do |priority| %>
+                    <option value="<%= priority %>" <%= 'selected' if @task.priority == priority %>><%= priority.titleize %></option>
+                  <% end %>
+                </select>
+                <button type="button" class="cancel-btn" data-action="click->inline-edit#hideEditor">Cancel</button>
+              </div>
+            <% end %>
+          </div>
+        </div>
+
+        <div class="meta-field">
+          <label class="meta-label">Status</label>
+          <div class="field-display">
+            <span class="status-badge status-<%= @task.status.dasherize %>"><%= @task.status.titleize %></span>
+          </div>
+        </div>
+
+        <div class="meta-field">
+          <label class="meta-label">Type</label>
+          <div class="inline-edit-field" data-field="type">
+            <div class="field-display" data-inline-edit-target="display">
+              <% if @task.type.present? %>
+                <span class="task-type-badge" data-type="<%= @task.type.upcase %>"><%= @task.type %></span>
+              <% else %>
+                <span class="text-placeholder">Not specified</span>
+              <% end %>
+              <% if @is_manager && !@is_completed %>
+                <button type="button" class="edit-trigger" data-action="click->inline-edit#showEditor" data-field="type">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                </button>
+              <% end %>
+            </div>
+            <% if @is_manager && !@is_completed %>
+              <div class="field-editor" data-inline-edit-target="editor" style="display: none;">
+                <select class="inline-select" data-action="change->inline-edit#save" data-field="type" name="task[type]">
+                  <option value="">Not specified</option>
+                  <% %w[Bug Feature Improvement Chore Documentation].each do |type| %>
+                    <option value="<%= type %>" <%= 'selected' if @task.type == type %>><%= type %></option>
+                  <% end %>
+                </select>
+                <button type="button" class="cancel-btn" data-action="click->inline-edit#hideEditor">Cancel</button>
+              </div>
+            <% end %>
+          </div>
+        </div>
+
+        <div class="meta-field">
+          <label class="meta-label">Due Date</label>
+          <div class="inline-edit-field" data-field="due_at">
+            <div class="field-display" data-inline-edit-target="display">
+              <% if @task.due_at.present? %>
+                <span class="due-date-value"><%= @task.due_at.strftime("%B %d, %Y") %></span>
+              <% else %>
+                <span class="text-placeholder">No due date</span>
+              <% end %>
+              <% if @is_manager && !@is_completed %>
+                <button type="button" class="edit-trigger" data-action="click->inline-edit#showEditor" data-field="due_at">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                </button>
+              <% end %>
+            </div>
+            <% if @is_manager && !@is_completed %>
+              <div class="field-editor" data-inline-edit-target="editor" style="display: none;">
+                <input type="datetime-local" class="inline-input" data-action="change->inline-edit#save" data-field="due_at" name="task[due_at]" value="<%= @task.due_at&.strftime('%Y-%m-%dT%H:%M') %>">
+                <button type="button" class="cancel-btn" data-action="click->inline-edit#hideEditor">Cancel</button>
+              </div>
+            <% end %>
+          </div>
+        </div>
+
+        <div class="meta-timestamps">
+          <div class="timestamp-item">
+            <span class="timestamp-label">Created:</span>
+            <span class="timestamp-value"><%= @task.created_at.strftime("%b %d, %Y") %></span>
+          </div>
+          <div class="timestamp-item">
+            <span class="timestamp-label">Updated:</span>
+            <span class="timestamp-value"><%= @task.updated_at.strftime("%b %d, %Y") %></span>
+          </div>
+          <% if @is_completed %>
+            <div class="timestamp-item">
+              <span class="timestamp-label">Completed At:</span>
+              <span class="timestamp-value"><%= @task.completed_at.strftime("%b %d, %Y") %></span>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="task-media-section">
+    <div class="section-header">
+      <h2 class="section-title">Media Gallery</h2>
+    </div>
+
+    <% if @task.media_files.attached? %>
+      <div class="media-gallery-grid">
+        <% @task.media_files.each do |file| %>
+          <div class="media-card">
+            <div class="media-preview-container">
+              <% if file.image? %>
+                <%= image_tag file, class: "media-preview-image" %>
+              <% elsif file.content_type == 'application/pdf' %>
+                <iframe src="<%= rails_blob_path(file, disposition: 'inline') %>" class="media-preview-embed" title="<%= file.filename %>"></iframe>
+              <% elsif file.content_type.include?('word') || file.content_type.include?('excel') || file.content_type.include?('spreadsheet') %>
+                <div class="media-preview-doc">
+                  <div class="doc-icon">
+                    <% if file.content_type.include?('word') %>
+                      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#2b579a" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                    <% else %>
+                      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#217346" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/><line x1="8" y1="9" x2="16" y2="9"/></svg>
+                    <% end %>
+                  </div>
+                  <span class="doc-extension"><%= File.extname(file.filename.to_s).upcase.delete('.') %></span>
+                </div>
+              <% else %>
+                <div class="media-preview-doc">
+                  <div class="doc-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#6c757d" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                  </div>
+                  <span class="doc-extension"><%= File.extname(file.filename.to_s).upcase.delete('.') %></span>
+                </div>
+              <% end %>
+              <div class="media-card-overlay">
+                <%= link_to "View", rails_blob_path(file, disposition: "inline"), target: "_blank", class: "overlay-btn view-btn" %>
+                <% unless @is_completed %>
+                  <%= form_with model: [@project, @task], url: project_task_path(@project, @task), method: :patch, local: true, class: "overlay-form" do |form| %>
+                    <%= hidden_field_tag "task[remove_media_file_ids][]", file.id %>
+                    <%= hidden_field_tag :redirect_to_show, "1" %>
+                    <%= form.submit "Remove", class: "overlay-btn remove-btn", data: { confirm: "Are you sure you want to remove this file?" } %>
+                  <% end %>
+                <% end %>
+              </div>
+            </div>
+            <div class="media-card-info">
+              <span class="media-filename" title="<%= file.filename %>"><%= truncate(file.filename.to_s, length: 20) %></span>
+              <span class="media-filesize"><%= number_to_human_size(file.byte_size) %></span>
+            </div>
           </div>
         <% end %>
-        <div class="media-info">
-          <p class="media-filename"><%= file.filename %></p>
-          <p class="media-size"><%= number_to_human_size(file.byte_size) %></p>
-          <div class="media-actions">
-            <%= link_to "View", rails_blob_path(file, disposition: "inline"), target: "_blank", class: "btn btn-secondary" %>
-            <% unless @task.completed_at.present? %>
-              <%= form_with model: [@project, @task], url: project_task_path(@project, @task), method: :patch, local: true, class: "inline-form" do |form| %>
-                <%= hidden_field_tag "task[remove_media_file_ids][]", file.id %>
-                <%= hidden_field_tag :redirect_to_show, "1" %>
-                <%= form.submit "Remove", class: "btn btn-danger", data: { confirm: "Are you sure you want to remove this file?" } %>
+      </div>
+    <% else %>
+      <div class="empty-media-state">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        <p>No media files attached to this task.</p>
+      </div>
+    <% end %>
+
+    <% unless @is_completed %>
+      <div class="media-upload-zone" data-controller="file-upload">
+        <%= form_with model: [@project, @task], url: project_task_path(@project, @task), method: :patch, local: true, multipart: true, class: "upload-form", data: { file_upload_target: "form" } do |form| %>
+          <%= hidden_field_tag :redirect_to_show, "1" %>
+          <% if @task.errors.any? %>
+            <div class="upload-errors">
+              <% @task.errors.full_messages.each do |message| %>
+                <p><%= message %></p>
               <% end %>
+            </div>
+          <% end %>
+          <div class="drop-zone-content" data-file-upload-target="dropZone" data-action="click->file-upload#openFilePicker">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <p class="drop-zone-text">Drag files here or click to upload</p>
+            <p class="drop-zone-hint">Maximum 10 files, 10MB per file. Allowed: images, PDFs, Word, Excel</p>
+            <%= form.file_field :media_files, multiple: true, accept: "image/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", class: "drop-zone-input", id: "media-file-input", data: { file_upload_target: "input", action: "change->file-upload#handleFileSelect" } %>
+          </div>
+          <div class="selected-files-container" data-file-upload-target="fileList" style="display: none;">
+            <div class="selected-files-header">
+              <span class="selected-files-title">Selected Files</span>
+              <button type="button" class="clear-files-btn" data-action="click->file-upload#clearFiles">Clear All</button>
+            </div>
+            <ul class="selected-files-list" data-file-upload-target="fileListItems"></ul>
+          </div>
+          <%= form.submit "Upload Selected Media", class: "btn btn-primary upload-submit-btn", data: { file_upload_target: "submitBtn" }, style: "display: none;" %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="task-comments-section" id="comments-section">
+    <div class="section-header">
+      <h2 class="section-title">Comments</h2>
+      <span class="comment-count"><%= @task.comments.count %></span>
+    </div>
+
+    <% if @task.comments.any? %>
+      <div class="comments-list">
+        <% @task.comments.includes(collaborator: :user).order(created_at: :asc).each do |comment| %>
+          <div class="comment-card" id="comment-<%= comment.id %>">
+            <div class="comment-header">
+              <div class="comment-author">
+                <div class="comment-avatar"><%= comment.user.username[0].upcase %></div>
+                <div class="comment-author-info">
+                  <span class="comment-username"><%= comment.user.username %></span>
+                  <span class="comment-role-badge role-<%= comment.collaborator.role %>"><%= comment.collaborator.role.titleize %></span>
+                </div>
+              </div>
+              <div class="comment-meta">
+                <span class="comment-timestamp" title="<%= comment.created_at.strftime('%B %d, %Y at %I:%M %p') %>">
+                  <%= time_ago_in_words(comment.created_at) %> ago
+                  <% if comment.updated_at > comment.created_at + 1.minute %>
+                    <span class="comment-edited">(edited)</span>
+                  <% end %>
+                </span>
+                <% if comment.authored_by?(@current_collaborator) && !@is_completed %>
+                  <div class="comment-actions">
+                    <button type="button" class="comment-action-btn edit-comment-btn" data-comment-id="<%= comment.id %>" onclick="toggleEditComment(<%= comment.id %>)">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    </button>
+                    <%= button_to project_task_comment_path(@project, @task, comment),
+                        method: :delete,
+                        class: "comment-action-btn delete-comment-btn",
+                        data: { turbo_confirm: "Are you sure you want to delete this comment?" } do %>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                    <% end %>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+            <div class="comment-body" id="comment-body-<%= comment.id %>">
+              <div class="comment-content markdown-content">
+                <%= render_markdown(comment.content) %>
+              </div>
+            </div>
+            <% if comment.authored_by?(@current_collaborator) && !@is_completed %>
+              <div class="comment-edit-form" id="comment-edit-<%= comment.id %>" style="display: none;">
+                <%= form_with model: [@project, @task, comment], url: project_task_comment_path(@project, @task, comment), method: :patch, local: true do |form| %>
+                  <%= form.text_area :content, value: comment.content, class: "comment-textarea", rows: 4, placeholder: "Edit your comment..." %>
+                  <div class="comment-edit-actions">
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="toggleEditComment(<%= comment.id %>)">Cancel</button>
+                    <%= form.submit "Save", class: "btn btn-primary btn-sm" %>
+                  </div>
+                <% end %>
+              </div>
             <% end %>
           </div>
-        </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="empty-comments-state">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <p>No comments yet.</p>
+      </div>
+    <% end %>
+
+    <% if @can_comment && !@is_completed %>
+      <div class="new-comment-form">
+        <%= form_with model: [@project, @task, Comment.new], url: project_task_comments_path(@project, @task), method: :post, local: true do |form| %>
+          <div class="comment-form-header">
+            <div class="comment-avatar"><%= Current.session.user.username[0].upcase %></div>
+            <span class="comment-form-label">Add a comment</span>
+          </div>
+          <%= form.text_area :content, class: "comment-textarea", rows: 4, placeholder: "Write a comment... Markdown is supported." %>
+          <div class="comment-form-footer">
+            <span class="markdown-hint">Supports **bold**, *italic*, `code`, and more</span>
+            <%= form.submit "Post Comment", class: "btn btn-primary" %>
+          </div>
+        <% end %>
+      </div>
+    <% elsif @is_completed %>
+      <div class="comments-locked-notice">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <span>Comments are locked on completed tasks.</span>
       </div>
     <% end %>
   </div>
-<% else %>
-  <p>No media files attached to this task.</p>
-<% end %>
 
-<% unless @task.completed_at.present? %>
-  <div class="media-upload-section">
-    <h3>Add Media Files</h3>
-    <%= form_with model: [@project, @task], url: project_task_path(@project, @task), method: :patch, local: true, multipart: true do |form| %>
-      <%= hidden_field_tag :redirect_to_show, "1" %>
-      <% if @task.errors.any? %>
-        <div id="error_explanation">
-          <h2><%= pluralize(@task.errors.count, "error") %> prohibited media from being saved:</h2>
-          <ul>
-            <% @task.errors.full_messages.each do |message| %>
-              <li><%= message %></li>
-            <% end %>
-          </ul>
-        </div>
-      <% end %>
-
-      <div>
-        <%= form.label :media_files, "Select files to upload" %>
-        <%= form.file_field :media_files, multiple: true, accept: "image/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" %>
-        <p class="help-text">Maximum 10 files, 10MB per file. Allowed: images, PDFs, Word, Excel</p>
-      </div>
-
-      <div>
-        <%= form.submit "Upload Media", class: "btn btn-primary" %>
-      </div>
-    <% end %>
-  </div>
-<% end %>
+  <script>
+    function toggleEditComment(commentId) {
+      const body = document.getElementById('comment-body-' + commentId);
+      const form = document.getElementById('comment-edit-' + commentId);
+      if (body.style.display === 'none') {
+        body.style.display = 'block';
+        form.style.display = 'none';
+      } else {
+        body.style.display = 'none';
+        form.style.display = 'block';
+      }
+    }
+  </script>
+</div>
