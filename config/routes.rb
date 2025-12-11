@@ -12,14 +12,21 @@ Rails.application.routes.draw do
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
   resources :projects do
-    resources :tasks, only: [ :new, :create, :edit, :update, :show ]
-    resources :collaborators, only: [ :index, :show, :edit, :update, :destroy ]
+    resources :tasks, only: [ :new, :create, :update, :show ] do
+      member do
+        patch :request_review
+        patch :cancel_review
+        patch :mark_complete
+        patch :assign_to_me
+      end
+      resources :comments, only: [ :create, :update, :destroy ]
+    end
+    resources :collaborators, only: [ :show, :edit, :update, :destroy, :create ]
   end
 
   # Registration routes
   resources :users, only: [ :new, :create, :edit, :update ]
 
   # Defines the root path route ("/")
-  get "features" => "home#features"
   root "home#index"
 end

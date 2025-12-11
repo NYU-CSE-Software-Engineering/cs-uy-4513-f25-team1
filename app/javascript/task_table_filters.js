@@ -1,144 +1,220 @@
-// Task table filtering functionality
-(function() {
-  function initializeTaskFilters() {
-    const table = document.getElementById('tasks-table');
-    if (!table) return;
-    
-    const rows = table.querySelectorAll('tbody tr.task-row');
-    const statusFilter = document.getElementById('filter-status');
-    const assigneeFilter = document.getElementById('filter-assignee');
-    const priorityFilter = document.getElementById('filter-priority');
-    const dueDateFilter = document.getElementById('filter-due-date');
+// Task table filtering functionality using event delegation
 
-    if (!statusFilter || !assigneeFilter || !priorityFilter || !dueDateFilter) {
-      return;
-    }
+// Store filter values
+const filterValues = {
+  name: '',
+  type: '',
+  priority: '',
+  assignee: '',
+  status: '',
+  'due-date': ''
+};
 
-    function applyFilters() {
-      const statusValue = statusFilter.value;
-      const assigneeValue = assigneeFilter.value;
-      const priorityValue = priorityFilter.value;
-      const dueDateValue = dueDateFilter.value;
+// Close all dropdowns
+function closeAllDropdowns() {
+  document.querySelectorAll('.custom-dropdown.open').forEach(dropdown => {
+    dropdown.classList.remove('open');
+  });
+}
 
-      rows.forEach(row => {
-        let show = true;
+// Get filter value
+function getFilterValue(filterName) {
+  return filterValues[filterName] || '';
+}
 
-        // Status filter
-        if (statusValue) {
-          const rowStatus = row.dataset.status;
-          if (rowStatus !== statusValue) {
-            show = false;
-          }
-        }
+// Fuzzy match for search
+function fuzzyMatch(text, query) {
+  if (!query) return true;
+  return text.toLowerCase().includes(query.toLowerCase());
+}
 
-        // Assignee filter
-        if (assigneeValue) {
-          const rowAssignee = row.dataset.assignee || '';
-          if (rowAssignee !== assigneeValue) {
-            show = false;
-          }
-        }
+// Apply all filters to the table
+function applyFilters() {
+  const table = document.getElementById('tasks-table');
+  if (!table) return;
 
-        // Priority filter
-        if (priorityValue) {
-          const rowPriority = row.dataset.priority || 'no_priority';
-          if (rowPriority !== priorityValue) {
-            show = false;
-          }
-        }
+  const rows = table.querySelectorAll('tbody tr.task-row');
+  const nameFilter = document.getElementById('filter-name');
+  
+  const nameValue = nameFilter ? nameFilter.value.trim() : '';
+  const statusValue = getFilterValue('status');
+  const assigneeValue = getFilterValue('assignee');
+  const priorityValue = getFilterValue('priority');
+  const typeValue = getFilterValue('type');
+  const dueDateValue = getFilterValue('due-date');
 
-        // Due date filter
-        if (dueDateValue && show) {
-          const dueDateStr = row.dataset.dueDate;
-          if (!dueDateStr) {
-            if (dueDateValue !== 'no_due_date') {
-              show = false;
-            }
-          } else {
-            const dueDate = new Date(dueDateStr);
-            const now = new Date();
-            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-            const dueDateOnly = new Date(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate());
+  rows.forEach(row => {
+    let show = true;
 
-            switch (dueDateValue) {
-              case 'overdue':
-                if (dueDateOnly >= today) show = false;
-                break;
-              case 'due_today':
-                if (dueDateOnly.getTime() !== today.getTime()) show = false;
-                break;
-              case 'due_this_week':
-                const weekEnd = new Date(today);
-                weekEnd.setDate(weekEnd.getDate() + 7);
-                if (dueDateOnly < today || dueDateOnly >= weekEnd) show = false;
-                break;
-              case 'due_this_month':
-                const monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-                if (dueDateOnly < today || dueDateOnly > monthEnd) show = false;
-                break;
-              case 'no_due_date':
-                show = false;
-                break;
-            }
-          }
-        }
-
-        row.style.display = show ? '' : 'none';
-      });
-
-      // Show/hide empty state
-      const visibleRows = Array.from(rows).filter(row => {
-        const display = window.getComputedStyle(row).display;
-        return display !== 'none';
-      });
-      const emptyRow = table.querySelector('tbody tr:not(.task-row)');
-      if (emptyRow) {
-        emptyRow.style.display = visibleRows.length === 0 ? '' : 'none';
+    // Name filter
+    if (nameValue) {
+      const taskTitle = row.querySelector('.task-title');
+      const titleText = taskTitle ? taskTitle.textContent : '';
+      if (!fuzzyMatch(titleText, nameValue)) {
+        show = false;
       }
     }
 
-    // Add event listeners directly to each filter
-    statusFilter.addEventListener('change', applyFilters);
-    assigneeFilter.addEventListener('change', applyFilters);
-    priorityFilter.addEventListener('change', applyFilters);
-    dueDateFilter.addEventListener('change', applyFilters);
-    
-    // Also use event delegation as backup
-    table.addEventListener('change', function(e) {
-      if (e.target.matches('#filter-status, #filter-assignee, #filter-priority, #filter-due-date')) {
-        applyFilters();
+    // Status filter
+    if (statusValue && show) {
+      if (row.dataset.status !== statusValue) {
+        show = false;
       }
-    });
+    }
 
-    // Make rows clickable - rows are already clickable via links, but add fallback
-    rows.forEach(row => {
-      row.style.cursor = 'pointer';
-      row.addEventListener('click', function(e) {
-        // Don't navigate if clicking on a filter dropdown
-        if (e.target.closest('select')) {
-          return;
+    // Assignee filter
+    if (assigneeValue && show) {
+      if ((row.dataset.assignee || '') !== assigneeValue) {
+        show = false;
+      }
+    }
+
+    // Priority filter
+    if (priorityValue && show) {
+      if ((row.dataset.priority || 'no_priority') !== priorityValue) {
+        show = false;
+      }
+    }
+
+    // Type filter
+    if (typeValue && show) {
+      if ((row.dataset.type || '') !== typeValue) {
+        show = false;
+      }
+    }
+
+    // Due date filter
+    if (dueDateValue && show) {
+      const dueDateStr = row.dataset.dueDate;
+      if (!dueDateStr) {
+        if (dueDateValue !== 'no_due_date') {
+          show = false;
         }
-        // If clicking on a link, let it handle navigation
-        const link = e.target.closest('a.task-row-link');
-        if (link) {
-          return; // Let the link handle it
+      } else {
+        const dueDate = new Date(dueDateStr);
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const dueDateOnly = new Date(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate());
+
+        switch (dueDateValue) {
+          case 'overdue':
+            if (dueDateOnly >= today) show = false;
+            break;
+          case 'due_today':
+            if (dueDateOnly.getTime() !== today.getTime()) show = false;
+            break;
+          case 'due_this_week':
+            const weekEnd = new Date(today);
+            weekEnd.setDate(weekEnd.getDate() + 7);
+            if (dueDateOnly < today || dueDateOnly >= weekEnd) show = false;
+            break;
+          case 'due_this_month':
+            const monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+            if (dueDateOnly < today || dueDateOnly > monthEnd) show = false;
+            break;
+          case 'no_due_date':
+            show = false;
+            break;
         }
-        // Otherwise, navigate to the task URL
-        window.location.href = row.dataset.taskUrl;
-      });
-    });
-  }
+      }
+    }
 
-  // Initialize on page load
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initializeTaskFilters);
-  } else {
-    initializeTaskFilters();
-  }
+    row.style.display = show ? '' : 'none';
+  });
 
-  // Re-initialize on Turbo navigation (if using Turbo)
-  if (typeof Turbo !== 'undefined') {
-    document.addEventListener('turbo:load', initializeTaskFilters);
-    document.addEventListener('turbo:frame-load', initializeTaskFilters);
+  // Show/hide empty state
+  const visibleRows = Array.from(rows).filter(r => r.style.display !== 'none');
+  const emptyRow = table.querySelector('tbody tr:not(.task-row)');
+  if (emptyRow) {
+    emptyRow.style.display = visibleRows.length === 0 ? '' : 'none';
   }
-})();
+}
+
+// Handle dropdown trigger clicks using event delegation
+document.addEventListener('click', function(e) {
+  const trigger = e.target.closest('.dropdown-trigger');
+  
+  if (trigger) {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const dropdown = trigger.closest('.custom-dropdown');
+    if (!dropdown) return;
+    
+    const isOpen = dropdown.classList.contains('open');
+    closeAllDropdowns();
+    
+    if (!isOpen) {
+      dropdown.classList.add('open');
+    }
+    return;
+  }
+  
+  // Handle option clicks
+  const option = e.target.closest('.dropdown-option');
+  if (option) {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const dropdown = option.closest('.custom-dropdown');
+    if (!dropdown) return;
+    
+    const value = option.dataset.value;
+    const filterName = dropdown.dataset.filter;
+    const valueDisplay = dropdown.querySelector('.dropdown-value');
+    const options = dropdown.querySelectorAll('.dropdown-option');
+    
+    // Update selected state
+    options.forEach(opt => opt.classList.remove('selected'));
+    option.classList.add('selected');
+    
+    // Update display value
+    if (value === '') {
+      const optionText = option.querySelector('.option-text');
+      const placeholderText = optionText ? optionText.textContent : 'All';
+      valueDisplay.innerHTML = '<span class="text-placeholder">' + placeholderText + '</span>';
+    } else {
+      const badge = option.querySelector('.task-type-badge, .priority-badge, .status-badge, .due-date-badge, .assignee-pill');
+      if (badge) {
+        valueDisplay.innerHTML = badge.outerHTML;
+      } else {
+        valueDisplay.textContent = option.textContent.trim();
+      }
+    }
+    
+    // Store filter value and apply
+    filterValues[filterName] = value;
+    dropdown.classList.remove('open');
+    applyFilters();
+    return;
+  }
+  
+  // Handle row clicks for navigation
+  const row = e.target.closest('.task-row');
+  if (row && !e.target.closest('.custom-dropdown') && !e.target.closest('a.task-row-link')) {
+    window.location.href = row.dataset.taskUrl;
+    return;
+  }
+  
+  // Close dropdowns when clicking outside
+  if (!e.target.closest('.custom-dropdown')) {
+    closeAllDropdowns();
+  }
+});
+
+// Handle name filter input
+document.addEventListener('input', function(e) {
+  if (e.target.id === 'filter-name') {
+    applyFilters();
+  }
+});
+
+// Handle escape key to close dropdowns
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    closeAllDropdowns();
+  }
+});
+
+// Log to confirm script loaded
+console.log('Task table filters loaded');

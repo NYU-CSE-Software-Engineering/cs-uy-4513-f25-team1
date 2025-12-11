@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_10_030520) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_11_010056) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -47,6 +47,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_10_030520) do
     t.integer "role", default: 0, null: false
     t.index ["project_id"], name: "index_collaborators_on_project_id"
     t.index ["user_id"], name: "index_collaborators_on_user_id"
+  end
+
+  create_table "comments", force: :cascade do |t|
+    t.integer "task_id", null: false
+    t.integer "collaborator_id", null: false
+    t.text "content", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["collaborator_id"], name: "index_comments_on_collaborator_id"
+    t.index ["task_id"], name: "index_comments_on_task_id"
   end
 
   create_table "projects", force: :cascade do |t|
@@ -95,6 +105,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_10_030520) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "collaborators", "projects"
   add_foreign_key "collaborators", "users"
+  add_foreign_key "comments", "collaborators"
+  add_foreign_key "comments", "tasks"
   add_foreign_key "sessions", "users"
   add_foreign_key "tasks", "collaborators", column: "assignee_id"
   add_foreign_key "tasks", "projects"

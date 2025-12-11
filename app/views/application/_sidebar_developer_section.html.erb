@@ -1,0 +1,30 @@
+<% 
+  @developer_projects ||= Collaborator.joins(:project).where(collaborators: { user_id: session[:user_id], role: :developer })
+%>
+<div id="sidebar-developer-projects" class="sidebar-section" data-sidebar-search-target="section">
+  <div class="section-header">
+    <h2>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+      </svg>
+      Developer
+      <span class="section-count"><%= @developer_projects.count %></span>
+    </h2>
+  </div>
+  <div class="section-scroll">
+    <% if @developer_projects.empty? %>
+      <p class="empty-section-text">No developer projects</p>
+    <% else %>
+      <% @developer_projects.each do |p| %>
+        <%= link_to p.project.name, project_path(p.project_id), 
+            class: "project-link",
+            data: { 
+              sidebar_search_target: "project",
+              project_name: p.project.name,
+              managers: manager_usernames_for(p.project)
+            } %>
+      <% end %>
+      <p class="empty-section-text sidebar-search-hidden" data-sidebar-search-target="emptyState">No matching projects</p>
+    <% end %>
+  </div>
+</div>

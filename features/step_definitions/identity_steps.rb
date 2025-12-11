@@ -37,15 +37,22 @@ end
 
 
 When('I input a taken email with other valid fields') do
-  @user = User.create!(
-    email_address: 'taken@gmail.com',
-    username: 'user',
-    password: 'securePassword'
-  )
-  fill_in 'Email', with: "taken@gmail.com"
-  fill_in 'Username', with: "user"
-  fill_in 'Password', with: "longpassword"
-  fill_in 'Repeat password', with: "longpassword"
+  # First, create a user through the UI to avoid database transaction isolation issues
+  fill_in 'user_email_address', with: "taken@gmail.com"
+  fill_in 'user_username', with: "firstuser"
+  fill_in 'user_password', with: "securePassword123"
+  fill_in 'user_password_confirmation', with: "securePassword123"
+  click_button 'Create Account'
+
+  # Log out and go back to register page
+  click_button 'Log out'
+  visit new_user_path
+
+  # Now try to register with the same email
+  fill_in 'user_email_address', with: "taken@gmail.com"
+  fill_in 'user_username', with: "seconduser"
+  fill_in 'user_password', with: "longpassword123"
+  fill_in 'user_password_confirmation', with: "longpassword123"
 end
 
 When('I input an invalid password with other valid fields') do
@@ -84,7 +91,7 @@ end
 
 And('I edit my account with email, username, password: {string} {string} {string}') do |email, username, password|
   visit projects_path
-  click_link 'User Settings'
+  click_link 'Account'
   fill_in 'user_email_address', with: email
   fill_in 'user_username', with: username
   fill_in 'user_password', with: password
@@ -172,5 +179,5 @@ When('I type for email username password repeat-password {string} {string} {stri
 end
 
 Then('I should be on the same register page') do
-  expect(page).to have_content("Register")
+  expect(page).to have_content("Create Account")
 end

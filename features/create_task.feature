@@ -7,7 +7,7 @@ Feature: Create task
     Given I am logged in as a manager on project "Alpha"
 
   Scenario: Create a task with valid inputs
-    When I click "New Task"
+    When I click the add task button
     And I fill in "Title" with "Implement WIP limit"
     And I fill in "Description" with "Add work-in-progress limits to the board"
     And I click "Create Task"
@@ -16,14 +16,14 @@ Feature: Create task
     And I should see "Add work-in-progress limits to the board"
 
   Scenario: Task creation fails without title
-    When I click "New Task"
+    When I click the add task button
     And I leave "Title" blank
     And I fill in "Description" with "Some description"
     And I click "Create Task"
     Then I should see "Title can't be blank"
 
   Scenario: Task creation fails without description
-    When I click "New Task"
+    When I click the add task button
     And I fill in "Title" with "Missing description"
     And I leave "Description" blank
     And I click "Create Task"

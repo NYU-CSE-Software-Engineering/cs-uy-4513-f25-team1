@@ -1,0 +1,35 @@
+<% 
+  @manager_projects ||= Collaborator.joins(:project).where(collaborators: { user_id: session[:user_id], role: :manager })
+%>
+<div id="sidebar-manager-projects" class="sidebar-section" data-sidebar-search-target="section">
+  <div class="section-header">
+    <h2>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+      </svg>
+      Managed
+      <span class="section-count"><%= @manager_projects.count %></span>
+    </h2>
+    <%= link_to new_project_path, class: "add-project-btn", title: "New Project" do %>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+    <% end %>
+  </div>
+  <div class="section-scroll">
+    <% if @manager_projects.empty? %>
+      <p class="empty-section-text">No managed projects</p>
+    <% else %>
+      <% @manager_projects.each do |p| %>
+        <%= link_to p.project.name, project_path(p.project_id), 
+            class: "project-link",
+            data: { 
+              sidebar_search_target: "project",
+              project_name: p.project.name,
+              managers: manager_usernames_for(p.project)
+            } %>
+      <% end %>
+      <p class="empty-section-text sidebar-search-hidden" data-sidebar-search-target="emptyState">No matching projects</p>
+    <% end %>
+  </div>
+</div>

@@ -489,6 +489,894 @@ Collaborator.create!(user: inviter, project: invite_project, role: :manager)
 Collaborator.create!(user: main_user, project: invite_project, role: :invited)
 
 # =============================================================================
+# 9. Large Team Project - Many collaborators to test carousel scrolling
+# =============================================================================
+puts "  Creating large team project..."
+
+large_team_project = FactoryBot.create(:project,
+  name: "Large Team Project",
+  description: "Project with many team members to test carousel horizontal scrolling",
+  repo: "https://github.com/team/large-team-project"
+)
+
+# Create additional users for the large team
+team_users = []
+team_names = %w[alice bob charlie diana edward fiona george hannah ivan julia]
+team_names.each do |name|
+  team_users << FactoryBot.create(:user,
+    email_address: "#{name}@example.com",
+    username: name,
+    password: "password",
+    password_confirmation: "password"
+  )
+end
+
+# Main user is the manager
+large_team_manager = Collaborator.create!(user: main_user, project: large_team_project, role: :manager)
+
+# Add all team users as developers
+large_team_devs = team_users.map do |user|
+  Collaborator.create!(user: user, project: large_team_project, role: :developer)
+end
+
+# Create various tasks assigned to different team members
+puts "  Creating tasks for large team..."
+
+# Tasks for first few developers with varying completion rates
+FactoryBot.create(:task, :completed, :high_priority, :feature,
+  project: large_team_project, assignee: large_team_devs[0],
+  title: "Alice: User authentication", description: "Implemented OAuth2 login")
+FactoryBot.create(:task, :completed, :medium_priority, :bug,
+  project: large_team_project, assignee: large_team_devs[0],
+  title: "Alice: Fixed login redirect", description: "Fixed redirect after login")
+FactoryBot.create(:task, :in_progress, :high_priority, :feature,
+  project: large_team_project, assignee: large_team_devs[0],
+  title: "Alice: Dashboard widgets", description: "Building dashboard components")
+
+FactoryBot.create(:task, :completed, :urgent_priority, :bug,
+  project: large_team_project, assignee: large_team_devs[1],
+  title: "Bob: Critical security fix", description: "Patched XSS vulnerability")
+FactoryBot.create(:task, :completed, :high_priority, :feature,
+  project: large_team_project, assignee: large_team_devs[1],
+  title: "Bob: API endpoints", description: "Created REST API")
+FactoryBot.create(:task, :completed, :medium_priority, :improvement,
+  project: large_team_project, assignee: large_team_devs[1],
+  title: "Bob: Performance optimization", description: "Reduced load time by 40%")
+FactoryBot.create(:task, :in_review, :medium_priority, :feature,
+  project: large_team_project, assignee: large_team_devs[1],
+  title: "Bob: Search functionality", description: "Full-text search implementation")
+
+FactoryBot.create(:task, :completed, :medium_priority, :documentation,
+  project: large_team_project, assignee: large_team_devs[2],
+  title: "Charlie: API docs", description: "Documented all endpoints")
+FactoryBot.create(:task, :in_progress, :low_priority, :chore,
+  project: large_team_project, assignee: large_team_devs[2],
+  title: "Charlie: Dependency updates", description: "Updating outdated packages")
+
+FactoryBot.create(:task, :completed, :high_priority, :feature,
+  project: large_team_project, assignee: large_team_devs[3],
+  title: "Diana: Email notifications", description: "Transactional email system")
+FactoryBot.create(:task, :completed, :medium_priority, :bug,
+  project: large_team_project, assignee: large_team_devs[3],
+  title: "Diana: Email formatting fix", description: "Fixed HTML rendering")
+FactoryBot.create(:task, :completed, :low_priority, :improvement,
+  project: large_team_project, assignee: large_team_devs[3],
+  title: "Diana: Email templates", description: "Redesigned email templates")
+FactoryBot.create(:task, :completed, :medium_priority, :feature,
+  project: large_team_project, assignee: large_team_devs[3],
+  title: "Diana: Webhook integrations", description: "Slack and Discord webhooks")
+FactoryBot.create(:task, :in_progress, :high_priority, :feature,
+  project: large_team_project, assignee: large_team_devs[3],
+  title: "Diana: Push notifications", description: "Mobile push notification system")
+
+FactoryBot.create(:task, :in_progress, :medium_priority, :feature,
+  project: large_team_project, assignee: large_team_devs[4],
+  title: "Edward: File uploads", description: "Multi-file upload system")
+FactoryBot.create(:task, :todo, :low_priority, :improvement,
+  project: large_team_project, assignee: large_team_devs[4],
+  title: "Edward: Image compression", description: "Auto-compress uploaded images")
+
+FactoryBot.create(:task, :completed, :high_priority, :bug,
+  project: large_team_project, assignee: large_team_devs[5],
+  title: "Fiona: Database migration fix", description: "Fixed migration rollback")
+FactoryBot.create(:task, :completed, :medium_priority, :chore,
+  project: large_team_project, assignee: large_team_devs[5],
+  title: "Fiona: Test coverage", description: "Increased coverage to 85%")
+
+FactoryBot.create(:task, :todo, :medium_priority, :feature,
+  project: large_team_project, assignee: large_team_devs[6],
+  title: "George: Analytics dashboard", description: "Usage analytics visualization")
+
+FactoryBot.create(:task, :completed, :low_priority, :documentation,
+  project: large_team_project, assignee: large_team_devs[7],
+  title: "Hannah: User guide", description: "End-user documentation")
+FactoryBot.create(:task, :in_review, :medium_priority, :documentation,
+  project: large_team_project, assignee: large_team_devs[7],
+  title: "Hannah: Developer guide", description: "Technical documentation")
+
+FactoryBot.create(:task, :in_progress, :high_priority, :feature,
+  project: large_team_project, assignee: large_team_devs[8],
+  title: "Ivan: Payment integration", description: "Stripe payment processing")
+
+FactoryBot.create(:task, :todo, :urgent_priority, :bug,
+  project: large_team_project, assignee: large_team_devs[9],
+  title: "Julia: Memory leak fix", description: "Investigating memory leak in worker")
+FactoryBot.create(:task, :in_progress, :high_priority, :feature,
+  project: large_team_project, assignee: large_team_devs[9],
+  title: "Julia: Background jobs", description: "Sidekiq job processing")
+
+# =============================================================================
+# 10. Review Workflow Project - Testing task review workflow
+# =============================================================================
+puts "  Creating review workflow project..."
+
+review_workflow_project = FactoryBot.create(:project,
+  name: "Review Workflow Demo",
+  description: "Project demonstrating the task review workflow: In Progress -> In Review -> Completed",
+  repo: "https://github.com/team/review-workflow-demo"
+)
+
+# Main user is a developer on this project (to test Request Review button)
+review_dev = Collaborator.create!(user: main_user, project: review_workflow_project, role: :developer)
+
+# Create a separate manager user for this project
+review_manager_user = FactoryBot.create(:user,
+  email_address: "review_manager@example.com",
+  username: "review_manager",
+  password: "password",
+  password_confirmation: "password"
+)
+review_manager = Collaborator.create!(user: review_manager_user, project: review_workflow_project, role: :manager)
+
+# Another developer to show tasks assigned to others
+review_dev2_user = FactoryBot.create(:user,
+  email_address: "review_dev2@example.com",
+  username: "review_dev2",
+  password: "password",
+  password_confirmation: "password"
+)
+review_dev2 = Collaborator.create!(user: review_dev2_user, project: review_workflow_project, role: :developer)
+
+puts "  Creating review workflow tasks..."
+
+# Task assigned to main user (developer) - IN PROGRESS
+# User can click "Request Review" on this task
+in_progress_task = FactoryBot.create(:task, :in_progress, :medium_priority, :feature, :with_branch,
+  project: review_workflow_project,
+  assignee: review_dev,
+  title: "Feature: User profile page",
+  description: "Build a user profile page with editable fields. This task is assigned to you and is In Progress. Click 'Request Review' when you're done to submit for manager review.",
+  branch_link: "https://github.com/team/project/tree/feature/user-profile"
+)
+
+# Another In Progress task for main user
+FactoryBot.create(:task, :in_progress, :high_priority, :bug, :with_branch,
+  project: review_workflow_project,
+  assignee: review_dev,
+  title: "Bug: Session timeout issue",
+  description: "Fix the session timeout that logs users out unexpectedly. Ready to request review when fix is complete.",
+  branch_link: "https://github.com/team/project/tree/fix/session-timeout"
+)
+
+# Task assigned to main user (developer) - IN REVIEW
+# User can click "Cancel Request" on this task
+# Manager can click "Mark as Completed" or leave a comment to return to In Progress
+in_review_task = FactoryBot.create(:task, :in_review, :high_priority, :feature, :with_branch,
+  project: review_workflow_project,
+  assignee: review_dev,
+  title: "Feature: Dashboard analytics",
+  description: "Analytics dashboard with charts and metrics. This task is In Review - as the assignee you can 'Cancel Request' to return it to In Progress. The manager can 'Mark as Completed' or leave a comment to request changes.",
+  branch_link: "https://github.com/team/project/tree/feature/dashboard-analytics"
+)
+
+# Another In Review task for main user
+FactoryBot.create(:task, :in_review, :medium_priority, :improvement,
+  project: review_workflow_project,
+  assignee: review_dev,
+  title: "Improvement: Optimize database queries",
+  description: "Reduced N+1 queries in task listing. Awaiting manager review.",
+  branch_link: "https://github.com/team/project/tree/improve/db-optimization"
+)
+
+# Task assigned to another developer - IN REVIEW
+# Main user (as developer) cannot take action on this
+# Shows that only assignee can cancel review
+FactoryBot.create(:task, :in_review, :medium_priority, :feature,
+  project: review_workflow_project,
+  assignee: review_dev2,
+  title: "Feature: Email notifications (other dev)",
+  description: "Email notification system by another developer. You are not the assignee so you cannot cancel the review request.",
+  branch_link: "https://github.com/team/project/tree/feature/email-notifications"
+)
+
+# Completed task - shows the end state of the workflow
+completed_workflow_task = FactoryBot.create(:task, :completed, :high_priority, :feature,
+  project: review_workflow_project,
+  assignee: review_dev,
+  title: "Feature: Authentication system",
+  description: "Complete OAuth2 authentication flow. This task went through the full workflow: In Progress -> In Review -> Completed by manager approval."
+)
+
+# Completed task by other developer
+FactoryBot.create(:task, :completed, :medium_priority, :bug,
+  project: review_workflow_project,
+  assignee: review_dev2,
+  title: "Bug: Password reset flow",
+  description: "Fixed password reset email not sending. Completed through review workflow."
+)
+
+# Todo task (unassigned) - shows state before assignment
+FactoryBot.create(:task, :todo, :medium_priority, :feature,
+  project: review_workflow_project,
+  title: "Feature: Dark mode toggle",
+  description: "Unassigned task - will become In Progress when assigned to a developer."
+)
+
+# Add some comments to the in-review task to show manager feedback history
+Comment.create!(
+  task: in_review_task,
+  collaborator: review_manager,
+  content: "**First review**: Great progress! A few minor changes needed:\n- Please add input validation\n- The chart colors need to match our design system"
+)
+
+Comment.create!(
+  task: in_review_task,
+  collaborator: review_dev,
+  content: "Thanks for the feedback! I've addressed both issues:\n- Added validation for all input fields\n- Updated chart colors to use the design tokens"
+)
+
+# =============================================================================
+# 11. Manager Review Project - For testing manager actions on review workflow
+# =============================================================================
+puts "  Creating manager review project..."
+
+manager_review_project = FactoryBot.create(:project,
+  name: "Manager Review Demo",
+  description: "Project where main user is a manager - test Mark as Completed and comment-to-return-to-progress",
+  repo: "https://github.com/team/manager-review-demo"
+)
+
+# Main user is the manager on this project (to test Mark as Completed button)
+manager_on_project = Collaborator.create!(user: main_user, project: manager_review_project, role: :manager)
+
+# Create developers for this project
+mgr_dev1_user = FactoryBot.create(:user,
+  email_address: "mgr_dev1@example.com",
+  username: "mgr_dev1",
+  password: "password",
+  password_confirmation: "password"
+)
+mgr_dev1 = Collaborator.create!(user: mgr_dev1_user, project: manager_review_project, role: :developer)
+
+mgr_dev2_user = FactoryBot.create(:user,
+  email_address: "mgr_dev2@example.com",
+  username: "mgr_dev2",
+  password: "password",
+  password_confirmation: "password"
+)
+mgr_dev2 = Collaborator.create!(user: mgr_dev2_user, project: manager_review_project, role: :developer)
+
+puts "  Creating manager review tasks..."
+
+# Tasks in review - manager can Mark as Completed or comment to return to In Progress
+review_task_1 = FactoryBot.create(:task, :in_review, :high_priority, :feature, :with_branch,
+  project: manager_review_project,
+  assignee: mgr_dev1,
+  title: "Feature: Shopping cart",
+  description: "Full shopping cart implementation with add/remove items. Ready for your review - click 'Mark as Completed' to approve or leave a comment to request changes.",
+  branch_link: "https://github.com/team/project/tree/feature/shopping-cart"
+)
+
+review_task_2 = FactoryBot.create(:task, :in_review, :medium_priority, :bug,
+  project: manager_review_project,
+  assignee: mgr_dev2,
+  title: "Bug: Checkout calculation error",
+  description: "Fixed tax calculation rounding error in checkout. Review and approve or request changes via comment."
+)
+
+review_task_3 = FactoryBot.create(:task, :in_review, :urgent_priority, :feature,
+  project: manager_review_project,
+  assignee: mgr_dev1,
+  title: "Feature: Payment processing",
+  description: "Stripe integration for payment processing. High priority - please review promptly."
+)
+
+# In Progress tasks - developers are still working
+FactoryBot.create(:task, :in_progress, :medium_priority, :feature,
+  project: manager_review_project,
+  assignee: mgr_dev1,
+  title: "Feature: Order history",
+  description: "Building order history page - still in progress."
+)
+
+FactoryBot.create(:task, :in_progress, :low_priority, :improvement,
+  project: manager_review_project,
+  assignee: mgr_dev2,
+  title: "Improvement: Page load optimization",
+  description: "Working on reducing initial page load time."
+)
+
+# Completed tasks - show successful review completions
+FactoryBot.create(:task, :completed, :high_priority, :feature,
+  project: manager_review_project,
+  assignee: mgr_dev1,
+  title: "Feature: Product catalog",
+  description: "Product catalog with filtering and search. Approved and completed."
+)
+
+FactoryBot.create(:task, :completed, :medium_priority, :feature,
+  project: manager_review_project,
+  assignee: mgr_dev2,
+  title: "Feature: User registration",
+  description: "User registration with email verification. Completed via review workflow."
+)
+
+# Todo tasks waiting for assignment
+FactoryBot.create(:task, :todo, :high_priority, :feature,
+  project: manager_review_project,
+  title: "Feature: Wishlist",
+  description: "Allow users to save items to a wishlist. Needs assignment."
+)
+
+# =============================================================================
+# 12. Extra Projects for Main User - Test sidebar scrolling without switching accounts
+# =============================================================================
+puts "  Adding extra projects for main user..."
+
+# Additional managed projects for main user
+extra_managed_names = [
+  "Mobile App Redesign", "API Gateway v2", "Customer Portal", "Internal Tools",
+  "Analytics Dashboard", "Payment Integration", "Notification Service"
+]
+
+extra_managed_names.each do |name|
+  project = FactoryBot.create(:project, name: name, description: "#{name} - managed by main test user")
+  Collaborator.create!(user: main_user, project: project, role: :manager)
+end
+
+# Additional developer projects for main user (other users are managers)
+extra_dev_names = [
+  "Shared Component Library", "Design System", "CI/CD Pipeline", "Monitoring Stack",
+  "Load Testing Suite", "Security Audit Tools", "Database Migration Kit",
+  "API Documentation Portal", "Developer Sandbox"
+]
+
+# Exclude main_user from managers to avoid duplicate collaborator errors
+other_users = users.reject { |u| u == main_user }
+
+extra_dev_names.each do |name|
+  project = FactoryBot.create(:project, name: name, description: "#{name} - main user as developer")
+  Collaborator.create!(user: other_users.sample, project: project, role: :manager)
+  Collaborator.create!(user: main_user, project: project, role: :developer)
+end
+
+# Additional pending invites for main user
+extra_invite_names = [
+  "New Product Launch", "Q1 Initiative", "Hackathon 2025", "Research Project",
+  "Partner Integration", "Beta Program", "Pilot Feature", "Innovation Sprint"
+]
+
+extra_invite_names.each do |name|
+  project = FactoryBot.create(:project, name: name, description: "#{name} - invitation pending for main user")
+  Collaborator.create!(user: other_users.sample, project: project, role: :manager)
+  Collaborator.create!(user: main_user, project: project, role: :invited)
+end
+
+puts "    Main user now has extra projects:"
+puts "      - #{extra_managed_names.length} additional managed projects"
+puts "      - #{extra_dev_names.length} additional developer projects"
+puts "      - #{extra_invite_names.length} additional pending invites"
+
+# =============================================================================
+# 13. Sidebar Scroll Test User - Many projects and invites for scrolling
+# =============================================================================
+puts "  Creating sidebar scroll test user..."
+
+sidebar_user = FactoryBot.create(:user,
+  email_address: "sidebar@example.com",
+  username: "sidebar_tester",
+  password: "password",
+  password_confirmation: "password"
+)
+
+# Create 12+ managed projects for this user
+puts "    Creating managed projects..."
+managed_project_names = [
+  "Alpha Platform", "Beta Dashboard", "Gamma Analytics", "Delta API",
+  "Epsilon Mobile", "Zeta Backend", "Eta Frontend", "Theta Services",
+  "Iota Microservices", "Kappa Infrastructure", "Lambda ML Pipeline",
+  "Mu Data Warehouse", "Nu Cloud Platform", "Xi Security Suite"
+]
+
+managed_project_names.each do |name|
+  project = FactoryBot.create(:project, name: name, description: "#{name} - managed by sidebar_tester")
+  Collaborator.create!(user: sidebar_user, project: project, role: :manager)
+end
+
+# Create 10+ developer projects for this user (created by other users)
+puts "    Creating developer projects..."
+developer_project_names = [
+  "Open Source Lib", "Community Tools", "Shared Utils", "Common Services",
+  "Integration Hub", "External API", "Third Party SDK", "Partner Portal",
+  "Client Dashboard", "Public Website", "Documentation Site", "Support System"
+]
+
+# Exclude sidebar_user and main_user from managers
+sidebar_other_users = users.reject { |u| u == sidebar_user || u == main_user }
+
+developer_project_names.each do |name|
+  # Create project with a different manager
+  project = FactoryBot.create(:project, name: name, description: "#{name} - sidebar_tester is developer")
+  Collaborator.create!(user: sidebar_other_users.sample, project: project, role: :manager)
+  Collaborator.create!(user: sidebar_user, project: project, role: :developer)
+end
+
+# Create 8+ pending invites for this user
+puts "    Creating pending invites..."
+invite_project_names = [
+  "New Initiative", "Upcoming Release", "Q1 Sprint", "Hackathon Project",
+  "Research Prototype", "Experimental Feature", "Pilot Program", "Beta Test",
+  "Innovation Lab", "Skunkworks Project"
+]
+
+invite_project_names.each do |name|
+  project = FactoryBot.create(:project, name: name, description: "#{name} - invitation pending for sidebar_tester")
+  Collaborator.create!(user: sidebar_other_users.sample, project: project, role: :manager)
+  Collaborator.create!(user: sidebar_user, project: project, role: :invited)
+end
+
+puts "    Sidebar test user created with:"
+puts "      - #{managed_project_names.length} managed projects"
+puts "      - #{developer_project_names.length} developer projects"
+puts "      - #{invite_project_names.length} pending invites"
+
+# =============================================================================
+# 14. Analytics Demo Project - Rich data for collaborator metrics dashboard
+# =============================================================================
+puts "  Creating analytics demo project..."
+
+analytics_project = FactoryBot.create(:project,
+  name: "Analytics Demo Project",
+  description: "Project with rich historical data to showcase collaborator performance metrics and analytics dashboard",
+  repo: "https://github.com/team/analytics-demo"
+)
+
+# Main user is manager (can view all collaborator profiles)
+analytics_manager = Collaborator.create!(user: main_user, project: analytics_project, role: :manager)
+
+# Create dedicated developers for analytics demo
+analytics_dev1_user = FactoryBot.create(:user,
+  email_address: "analytics_star@example.com",
+  username: "analytics_star",
+  password: "password",
+  password_confirmation: "password"
+)
+analytics_dev1 = Collaborator.create!(user: analytics_dev1_user, project: analytics_project, role: :developer)
+
+analytics_dev2_user = FactoryBot.create(:user,
+  email_address: "analytics_avg@example.com",
+  username: "analytics_average",
+  password: "password",
+  password_confirmation: "password"
+)
+analytics_dev2 = Collaborator.create!(user: analytics_dev2_user, project: analytics_project, role: :developer)
+
+analytics_dev3_user = FactoryBot.create(:user,
+  email_address: "analytics_new@example.com",
+  username: "analytics_newbie",
+  password: "password",
+  password_confirmation: "password"
+)
+analytics_dev3 = Collaborator.create!(user: analytics_dev3_user, project: analytics_project, role: :developer)
+
+puts "    Creating historical completed tasks for velocity tracking..."
+
+# --- Developer 1 (Star Performer): High velocity, fast completion, good on-time rate ---
+
+# Week 4 ago - 3 tasks completed
+3.times do |i|
+  task = Task.create!(
+    project: analytics_project,
+    assignee: analytics_dev1,
+    title: "Week 4 Task #{i + 1} - Star Dev",
+    description: "Historical task completed 4 weeks ago",
+    status: :completed,
+    priority: [ :low, :medium, :high ].sample,
+    type: [ "Bug", "Feature", "Improvement" ].sample,
+    created_at: 5.weeks.ago,
+    updated_at: 4.weeks.ago
+  )
+  task.update_columns(completed_at: 4.weeks.ago + rand(1..3).days)
+end
+
+# Week 3 ago - 5 tasks completed
+5.times do |i|
+  task = Task.create!(
+    project: analytics_project,
+    assignee: analytics_dev1,
+    title: "Week 3 Task #{i + 1} - Star Dev",
+    description: "Historical task completed 3 weeks ago",
+    status: :completed,
+    priority: [ :medium, :high, :urgent ].sample,
+    type: [ "Bug", "Feature" ].sample,
+    created_at: 4.weeks.ago,
+    updated_at: 3.weeks.ago
+  )
+  task.update_columns(completed_at: 3.weeks.ago + rand(1..5).days)
+end
+
+# Week 2 ago - 4 tasks completed
+4.times do |i|
+  task = Task.create!(
+    project: analytics_project,
+    assignee: analytics_dev1,
+    title: "Week 2 Task #{i + 1} - Star Dev",
+    description: "Historical task completed 2 weeks ago",
+    status: :completed,
+    priority: [ :low, :medium, :high ].sample,
+    type: [ "Feature", "Improvement", "Chore" ].sample,
+    created_at: 3.weeks.ago,
+    updated_at: 2.weeks.ago
+  )
+  task.update_columns(completed_at: 2.weeks.ago + rand(1..4).days)
+end
+
+# Week 1 ago - 6 tasks completed (velocity increasing!)
+6.times do |i|
+  task = Task.create!(
+    project: analytics_project,
+    assignee: analytics_dev1,
+    title: "Week 1 Task #{i + 1} - Star Dev",
+    description: "Historical task completed last week",
+    status: :completed,
+    priority: [ :medium, :high ].sample,
+    type: [ "Bug", "Feature", "Improvement" ].sample,
+    created_at: 2.weeks.ago,
+    updated_at: 1.week.ago
+  )
+  task.update_columns(completed_at: 1.week.ago + rand(1..5).days)
+end
+
+# This week - 2 tasks completed so far
+2.times do |i|
+  task = Task.create!(
+    project: analytics_project,
+    assignee: analytics_dev1,
+    title: "This Week Task #{i + 1} - Star Dev",
+    description: "Task completed this week",
+    status: :completed,
+    priority: :high,
+    type: "Feature",
+    created_at: 5.days.ago,
+    updated_at: 2.days.ago
+  )
+  task.update_columns(completed_at: 2.days.ago + rand(0..24).hours)
+end
+
+# Tasks with due dates - some on time, some late
+puts "    Creating on-time and late completion data..."
+
+# On-time completions for dev1
+4.times do |i|
+  due = (3 - i).weeks.ago
+  created = due - rand(5..10).days
+  completed = due - rand(1..3).days  # Completed before due date
+  task = Task.create!(
+    project: analytics_project,
+    assignee: analytics_dev1,
+    title: "On-Time Task #{i + 1} - Star Dev",
+    description: "Task completed before deadline",
+    status: :completed,
+    priority: [ :medium, :high ].sample,
+    type: "Feature",
+    due_at: due,
+    created_at: created,
+    updated_at: completed
+  )
+  task.update_columns(completed_at: completed)
+end
+
+# Late completions for dev1 (just 1 to show good on-time rate)
+task = Task.create!(
+  project: analytics_project,
+  assignee: analytics_dev1,
+  title: "Late Task - Star Dev",
+  description: "Task completed after deadline",
+  status: :completed,
+  priority: :low,
+  type: "Chore",
+  due_at: 2.weeks.ago,
+  created_at: 3.weeks.ago,
+  updated_at: 10.days.ago
+)
+task.update_columns(completed_at: 10.days.ago)  # 4 days late
+
+# High priority tasks completed
+3.times do |i|
+  task = Task.create!(
+    project: analytics_project,
+    assignee: analytics_dev1,
+    title: "High Priority Done #{i + 1} - Star Dev",
+    description: "Urgent/high priority task completed",
+    status: :completed,
+    priority: [ :high, :urgent ].sample,
+    type: "Bug",
+    created_at: rand(2..4).weeks.ago,
+    updated_at: rand(1..2).weeks.ago
+  )
+  task.update_columns(completed_at: rand(1..2).weeks.ago)
+end
+
+# Current WIP for dev1
+Task.create!(
+  project: analytics_project,
+  assignee: analytics_dev1,
+  title: "Active Feature - Star Dev",
+  description: "Currently working on this feature",
+  status: :in_progress,
+  priority: :high,
+  type: "Feature"
+)
+
+Task.create!(
+  project: analytics_project,
+  assignee: analytics_dev1,
+  title: "In Review - Star Dev",
+  description: "Awaiting code review",
+  status: :in_review,
+  priority: :medium,
+  type: "Improvement"
+)
+
+# --- Developer 2 (Average Performer): Moderate velocity, some overdue ---
+
+puts "    Creating data for average performer..."
+
+# Week 4 ago - 1 task
+task = Task.create!(
+  project: analytics_project,
+  assignee: analytics_dev2,
+  title: "Week 4 Task - Avg Dev",
+  description: "Historical task",
+  status: :completed,
+  priority: :medium,
+  type: "Bug",
+  created_at: 5.weeks.ago,
+  updated_at: 4.weeks.ago
+)
+task.update_columns(completed_at: 4.weeks.ago)
+
+# Week 3 ago - 2 tasks
+2.times do |i|
+  task = Task.create!(
+    project: analytics_project,
+    assignee: analytics_dev2,
+    title: "Week 3 Task #{i + 1} - Avg Dev",
+    description: "Historical task",
+    status: :completed,
+    priority: [ :low, :medium ].sample,
+    type: [ "Feature", "Chore" ].sample,
+    created_at: 4.weeks.ago,
+    updated_at: 3.weeks.ago
+  )
+  task.update_columns(completed_at: 3.weeks.ago + rand(1..3).days)
+end
+
+# Week 2 ago - 3 tasks
+3.times do |i|
+  task = Task.create!(
+    project: analytics_project,
+    assignee: analytics_dev2,
+    title: "Week 2 Task #{i + 1} - Avg Dev",
+    description: "Historical task",
+    status: :completed,
+    priority: [ :medium, :high ].sample,
+    type: [ "Bug", "Feature" ].sample,
+    created_at: 3.weeks.ago,
+    updated_at: 2.weeks.ago
+  )
+  task.update_columns(completed_at: 2.weeks.ago + rand(1..4).days)
+end
+
+# Week 1 ago - 2 tasks
+2.times do |i|
+  task = Task.create!(
+    project: analytics_project,
+    assignee: analytics_dev2,
+    title: "Week 1 Task #{i + 1} - Avg Dev",
+    description: "Historical task",
+    status: :completed,
+    priority: :medium,
+    type: "Improvement",
+    created_at: 2.weeks.ago,
+    updated_at: 1.week.ago
+  )
+  task.update_columns(completed_at: 1.week.ago + rand(1..3).days)
+end
+
+# Mixed on-time rate for dev2
+2.times do |i|
+  due = (2 - i).weeks.ago
+  completed = due - rand(1..2).days
+  task = Task.create!(
+    project: analytics_project,
+    assignee: analytics_dev2,
+    title: "On-Time #{i + 1} - Avg Dev",
+    description: "Completed on time",
+    status: :completed,
+    priority: :medium,
+    type: "Feature",
+    due_at: due,
+    created_at: due - 1.week,
+    updated_at: completed
+  )
+  task.update_columns(completed_at: completed)
+end
+
+2.times do |i|
+  due = (3 - i).weeks.ago
+  completed = due + rand(2..5).days  # Late
+  task = Task.create!(
+    project: analytics_project,
+    assignee: analytics_dev2,
+    title: "Late #{i + 1} - Avg Dev",
+    description: "Completed after deadline",
+    status: :completed,
+    priority: :low,
+    type: "Documentation",
+    due_at: due,
+    created_at: due - 2.weeks,
+    updated_at: completed
+  )
+  task.update_columns(completed_at: completed)
+end
+
+# Overdue tasks for dev2
+Task.create!(
+  project: analytics_project,
+  assignee: analytics_dev2,
+  title: "Overdue Task 1 - Avg Dev",
+  description: "This task is past its due date",
+  status: :in_progress,
+  priority: :high,
+  type: "Bug",
+  due_at: 3.days.ago
+)
+
+Task.create!(
+  project: analytics_project,
+  assignee: analytics_dev2,
+  title: "Overdue Task 2 - Avg Dev",
+  description: "This task is significantly overdue",
+  status: :todo,
+  priority: :urgent,
+  type: "Bug",
+  due_at: 1.week.ago
+)
+
+# Stale task for dev2 (in_progress but not updated in 7+ days)
+stale_task = Task.create!(
+  project: analytics_project,
+  assignee: analytics_dev2,
+  title: "Stale Task - Avg Dev",
+  description: "This task has not been updated in over a week",
+  status: :in_progress,
+  priority: :medium,
+  type: "Feature"
+)
+stale_task.update_columns(updated_at: 10.days.ago, created_at: 3.weeks.ago)
+
+# Open urgent task for dev2
+Task.create!(
+  project: analytics_project,
+  assignee: analytics_dev2,
+  title: "Open Urgent - Avg Dev",
+  description: "Urgent task still open",
+  status: :todo,
+  priority: :urgent,
+  type: "Bug"
+)
+
+# --- Developer 3 (New/Low Activity): Few tasks, learning curve ---
+
+puts "    Creating data for new team member..."
+
+# Only completed 2 tasks total (new to project)
+task = Task.create!(
+  project: analytics_project,
+  assignee: analytics_dev3,
+  title: "First Task - New Dev",
+  description: "First completed task by new developer",
+  status: :completed,
+  priority: :low,
+  type: "Documentation",
+  created_at: 2.weeks.ago,
+  updated_at: 1.week.ago
+)
+task.update_columns(completed_at: 1.week.ago)
+
+task = Task.create!(
+  project: analytics_project,
+  assignee: analytics_dev3,
+  title: "Second Task - New Dev",
+  description: "Second completed task",
+  status: :completed,
+  priority: :low,
+  type: "Chore",
+  created_at: 10.days.ago,
+  updated_at: 5.days.ago
+)
+task.update_columns(completed_at: 5.days.ago)
+
+# Currently working on tasks
+Task.create!(
+  project: analytics_project,
+  assignee: analytics_dev3,
+  title: "Learning Task - New Dev",
+  description: "Getting familiar with the codebase",
+  status: :in_progress,
+  priority: :low,
+  type: "Improvement"
+)
+
+# --- Add comments for engagement metrics ---
+
+puts "    Creating comments for engagement metrics..."
+
+# Get all analytics project tasks
+analytics_tasks = Task.where(project: analytics_project)
+
+# Dev1 (star performer) - lots of comments
+analytics_tasks.where(assignee: analytics_dev1).limit(15).each do |task|
+  rand(1..3).times do
+    Comment.create!(
+      task: task,
+      collaborator: analytics_dev1,
+      content: [ "Updated progress on this task.", "Found a related issue to address.", "Ready for review.", "Made some optimizations.", "Fixed edge case." ].sample
+    )
+  end
+end
+
+# Manager comments on some tasks
+analytics_tasks.limit(10).each do |task|
+  Comment.create!(
+    task: task,
+    collaborator: analytics_manager,
+    content: [ "Looks good!", "Please add tests.", "Great work on this.", "Can you clarify the approach?", "Approved." ].sample
+  )
+end
+
+# Dev2 - moderate comments
+analytics_tasks.where(assignee: analytics_dev2).limit(8).each do |task|
+  rand(0..2).times do
+    Comment.create!(
+      task: task,
+      collaborator: analytics_dev2,
+      content: [ "Working on this.", "Need clarification.", "In progress.", "Almost done." ].sample
+    )
+  end
+end
+
+# Dev3 - few comments (new)
+analytics_tasks.where(assignee: analytics_dev3).each do |task|
+  Comment.create!(
+    task: task,
+    collaborator: analytics_dev3,
+    content: "Getting started on this task."
+  )
+end
+
+puts "    Analytics Demo Project created with:"
+puts "      - 1 manager, 3 developers with varying performance levels"
+puts "      - Star performer (analytics_star): High velocity, good on-time rate"
+puts "      - Average performer (analytics_average): Moderate velocity, some overdue/stale"
+puts "      - New member (analytics_newbie): Low activity, learning"
+puts "      - Historical completed tasks spanning 4+ weeks"
+puts "      - Tasks with due dates (on-time and late completions)"
+puts "      - Overdue and stale tasks"
+puts "      - Comments for engagement metrics"
+
+# =============================================================================
 # Summary
 # =============================================================================
 puts ""
@@ -499,7 +1387,9 @@ puts ""
 puts "Users created:"
 puts "  Main User: test@example.com / password"
 puts "  Inviter User: inviter@example.com / password"
-puts "  Additional users: #{users.count - 1} random users"
+puts "  Review Manager: review_manager@example.com / password"
+puts "  Sidebar Tester: sidebar@example.com / password (many projects/invites)"
+puts "  Additional users: #{User.count - 4} other users"
 puts ""
 puts "Projects created: #{Project.count}"
 puts "  - Empty Project (0 tasks)"
@@ -510,6 +1400,10 @@ puts "  - Assignee Scenarios (various assignee configs)"
 puts "  - Due Date Scenarios (various due date configs)"
 puts "  - Completed Project (all tasks completed)"
 puts "  - Invite Test Project (invitation testing)"
+puts "  - Large Team Project (11 collaborators for carousel testing)"
+puts "  - Review Workflow Demo (main user is developer - test Request Review)"
+puts "  - Manager Review Demo (main user is manager - test Mark Complete)"
+puts "  - Sidebar Test Projects (14 managed + 12 developer + 10 invites for scroll testing)"
 puts ""
 puts "Tasks created: #{Task.count}"
 puts "  By status:"

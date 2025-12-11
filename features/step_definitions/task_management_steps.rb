@@ -112,12 +112,6 @@ When('I visit the task page for {string} on project {string}') do |task_title, p
   visit project_task_path(@project, task)
 end
 
-When('I visit the edit task page for {string} on project {string}') do |task_title, project_name|
-  @project ||= Project.find_by!(name: project_name)
-  task = @project.tasks.find_by!(title: task_title)
-  visit edit_project_task_path(@project, task)
-end
-
 # Page location assertions
 Then('I should be on the new task page for project {string}') do |project_name|
   @project ||= Project.find_by!(name: project_name)
@@ -129,14 +123,26 @@ Then('I should be on the project {string} page') do |project_name|
   expect(page).to have_current_path(project_path(@project))
 end
 
-Then('I should be on the edit task page for {string}') do |task_title|
+Then('I should be on the task page for {string}') do |task_title|
   task = Task.find_by!(title: task_title)
-  expect(page).to have_current_path(edit_project_task_path(task.project, task))
+  expect(page).to have_current_path(project_task_path(task.project, task))
 end
 
 # Visibility assertions
 Then('I should not see {string}') do |text|
   expect(page).not_to have_content(text)
+end
+
+Then('I should see the add task button') do
+  expect(page).to have_css('.add-task-btn')
+end
+
+Then('I should not see the add task button') do
+  expect(page).not_to have_css('.add-task-btn')
+end
+
+When('I click the add task button') do
+  find('.add-task-btn').click
 end
 
 # Click on first matching task link
@@ -168,43 +174,80 @@ Then('I should not see {string} within the task list') do |text|
   end
 end
 
-# Select from status filter dropdown (using element id)
-# Note: This filter uses JavaScript to show/hide rows. Without a JS-capable driver,
-# the visual filtering won't work, but the select value will be set.
+# Select from status filter dropdown (using custom dropdown component)
+# Note: This step requires JavaScript to actually filter tasks
 When('I filter by status {string}') do |status_value|
-  # Map display value to the actual select option value
   status_map = {
     'Completed' => 'completed',
     'In Progress' => 'in_progress',
     'In Review' => 'in_review',
     'To Do' => 'todo'
   }
-  select_value = status_map[status_value] || status_value.downcase.gsub(' ', '_')
-  select status_value, from: 'filter-status'
-  # Note: JavaScript filtering requires @javascript tag on the scenario
-  # Without JS, the DOM won't be updated to hide non-matching rows
-  pending 'Status filtering requires JavaScript (add @javascript tag to scenario)' unless Capybara.current_driver == :selenium || Capybara.current_driver == :selenium_chrome || Capybara.current_driver == :selenium_headless
+  data_value = status_map[status_value] || status_value.downcase.gsub(' ', '_')
+
+  # Click the dropdown trigger to open it
+  within('#filter-status') do
+    find('.dropdown-trigger').click
+    # Click the option with the matching data-value
+    find(".dropdown-option[data-value='#{data_value}']").click
+  end
+
+  # Status filtering requires JavaScript - skip if not running with JS driver
+  js_drivers = [ :selenium, :selenium_chrome, :selenium_headless, :cuprite, :apparition ]
+  unless js_drivers.include?(Capybara.current_driver)
+    pending 'Status filtering requires JavaScript (add @javascript tag to scenario)'
+  end
 end
 
 # Form interaction steps
 When('I fill in the due date field with tomorrow\'s date') do
   tomorrow = (Date.today + 1).strftime('%Y-%m-%dT12:00')
-  fill_in 'Due Date (optional)', with: tomorrow
+  fill_in 'task_due_at', with: tomorrow
 end
 
-# Completion protection steps
+# Task update steps using form submission (simulating inline edit via standard form)
+When('I update task {string} with title {string}') do |task_title, new_title|
+  @project ||= Project.first
+  @task = @project.tasks.find_by!(title: task_title)
+  visit project_task_path(@project, @task)
+  page.driver.submit :patch, project_task_path(@project, @task), { task: { title: new_title } }
+end
+
+When('I update task {string} with status {string}') do |task_title, new_status|
+  @project ||= Project.first
+  @task = @project.tasks.find_by!(title: task_title)
+  visit project_task_path(@project, @task)
+  page.driver.submit :patch, project_task_path(@project, @task), { task: { status: new_status } }
+end
+
+When('I update task {string} with priority {string}') do |task_title, new_priority|
+  @project ||= Project.first
+  @task = @project.tasks.find_by!(title: task_title)
+  visit project_task_path(@project, @task)
+  page.driver.submit :patch, project_task_path(@project, @task), { task: { priority: new_priority } }
+end
+
+When('I update task {string} with:') do |task_title, table|
+  @project ||= Project.first
+  @task = @project.tasks.find_by!(title: task_title)
+  attrs = table.rows_hash.symbolize_keys
+  visit project_task_path(@project, @task)
+  page.driver.submit :patch, project_task_path(@project, @task), { task: attrs }
+end
+
+# Try to update (for testing permission denied scenarios)
 When('I try to update task {string} with title {string}') do |task_title, new_title|
   @project ||= Project.first
-  task = @project.tasks.find_by!(title: task_title)
-  visit edit_project_task_path(@project, task)
-
-  if page.has_field?('Title')
-    fill_in 'Title', with: new_title
-    click_button 'Update Task'
-  end
+  @task = @project.tasks.find_by!(title: task_title)
+  page.driver.submit :patch, project_task_path(@project, @task), { task: { title: new_title } }
 end
 
 Then('the task {string} should still have title {string}') do |expected_title, _|
   task = Task.find_by(title: expected_title)
   expect(task).to be_present
+end
+
+Then('the task should have title {string}') do |expected_title|
+  @task.reload
+  expect(@task.title).to eq(expected_title)
 end
