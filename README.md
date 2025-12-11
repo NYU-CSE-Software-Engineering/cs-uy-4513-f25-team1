@@ -31,7 +31,7 @@ Setup
 -----
 
 - You must have Ruby 3.4.5 and Bundler installed
-- Clone the repository and `cd` into it and run the following commands.
+- Clone the repository, `cd` into it, and run the following commands.
 
 ```
 bundle install
